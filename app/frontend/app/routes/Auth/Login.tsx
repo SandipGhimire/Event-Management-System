@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuthStore } from "../../store/useAuthStore";
+import { useAuthStore } from "../../store/Auth/auth.store";
 import { useNavigate } from "react-router";
 
 export default function Login() {
@@ -24,7 +24,12 @@ export default function Login() {
         <div className="text-center mb-10">
           <div className="inline-block p-4 rounded-full bg-primary/10 mb-4">
             <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0112 2v0c4.923 0 9.233 3.576 10.201 8.356M4.99 8.05a10.29 10.29 0 018.13-5.33M16 18l4-4m0 0l-4-4m4 4H8" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0112 2v0c4.923 0 9.233 3.576 10.201 8.356M4.99 8.05a10.29 10.29 0 018.13-5.33M16 18l4-4m0 0l-4-4m4 4H8"
+              />
             </svg>
           </div>
           <h2 className="text-3xl font-extrabold text-white tracking-tight">Welcome Back</h2>
@@ -47,7 +52,6 @@ export default function Login() {
           <div className="input-group">
             <div className="flex justify-between">
               <label className="input-label">Password</label>
-              <a href="#" className="text-xs text-primary hover:underline">Forgot?</a>
             </div>
             <input
               type="password"
@@ -60,24 +64,21 @@ export default function Login() {
           </div>
 
           <div className="flex items-center">
-            <input type="checkbox" className="w-4 h-4 rounded border-gray-700 bg-bg-dark text-primary focus:ring-primary/20" />
+            <input
+              type="checkbox"
+              className="w-4 h-4 rounded border-gray-700 bg-bg-dark text-primary focus:ring-primary/20"
+            />
             <span className="ml-2 text-sm text-gray-400">Remember session</span>
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className={`btn btn-primary btn-lg w-full ${isLoading ? 'btn-loader' : ''}`}
+            className={`btn btn-primary btn-lg w-full ${isLoading ? "btn-loader" : ""}`}
           >
             {isLoading ? "" : "Sign In to Workspace"}
           </button>
         </form>
-
-        <div className="mt-8 pt-6 border-t border-gray-800 text-center">
-          <p className="text-sm text-gray-400">
-            Internal app? <span className="text-primary font-medium hover:underline cursor-pointer">Contact IT Support</span>
-          </p>
-        </div>
       </div>
     </div>
   );

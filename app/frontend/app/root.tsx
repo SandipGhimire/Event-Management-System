@@ -9,7 +9,7 @@ import {
   useNavigate,
 } from "react-router";
 import { useEffect } from "react";
-import { useAuthStore } from "./store/useAuthStore";
+import { useAuthStore } from "./store/Auth/auth.store";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 

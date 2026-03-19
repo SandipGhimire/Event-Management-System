@@ -54,17 +54,15 @@
 
 #reader video {
   border-radius: 20px;
+  width: 100% !important;
+  height: 100% !important;
   object-fit: cover;
 }
-/*
-#reader__dashboard_section_csr button {
-  @apply btn btn-secondary btn-sm mb-4;
-} */
 
 #reader__status_span {
-  @apply text-gray-500 text-xs font-bold uppercase mt-2 block;
+  display: none !important;
 }
 
 #reader__camera_selection {
-  @apply mb-4;
+  display: none !important;
 }
