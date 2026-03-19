@@ -1,0 +1,37 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "prettier.prettier-vscode",
+  "editor.formatOnSaveMode": "file",
+
+  "[vue]": {
+    "editor.defaultFormatter": "prettier.prettier-vscode"
+  },
+  "[tsx]": {
+    "editor.defaultFormatter": "prettier.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "prettier.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "prettier.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "prettier.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "prettier.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "prettier.prettier-vscode"
+  },
+
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": true,
+  "explorer.fileNesting.patterns": {
+    "package.json": "package-lock.json, tsconfig.json, tsconfig.app.json, .prettierrc, .prettierignore, eslint.config.mjs, .eslintrc.js, .npmrc, .editorconfig, pnpm-lock.yaml, .eslintignore",
+    ".gitignore": ".gitattributes"
+  },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
+}

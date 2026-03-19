@@ -1,0 +1,7 @@
+# Copy the example file in Chyper.bru for environment
+vars {
+  api_url: http://test.localhost:3000
+  ACCESS_TOKEN: 
+  REFRESH_TOKEN: 
+  SESSION_ID: 
+}

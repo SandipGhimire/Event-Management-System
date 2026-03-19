@@ -1,0 +1,19 @@
+.input-group {
+  @apply flex flex-col gap-2 mb-4;
+}
+
+.input-label {
+  @apply text-sm font-medium text-gray-400 mb-1;
+}
+
+.input-field {
+  @apply w-full px-4 py-3 bg-secondary border border-gray-700 rounded-lg text-white placeholder:text-gray-500 transition-all duration-200 outline-none;
+}
+
+.input-field:focus {
+  @apply border-primary ring-2 ring-primary/20;
+}
+
+.input-field.error {
+  @apply border-accent ring-2 ring-accent/20;
+}

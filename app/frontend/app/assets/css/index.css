@@ -1,0 +1,70 @@
+@import "./tailwind.css";
+@import "./components/btn.css";
+@import "./components/input.css";
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar-thumb {
+  background: #374151;
+  border-radius: 9999px;
+  border: 1px solid #24282A;
+}
+
+.custom-scrollbar-thumb:hover {
+  background: #4B5563;
+}
+
+/* Auth Pages Background Gradient */
+.auth-bg {
+  @apply bg-bg-dark relative overflow-hidden;
+}
+
+.auth-bg::before {
+  content: "";
+  @apply absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full;
+}
+
+.auth-bg::after {
+  content: "";
+  @apply absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 blur-[120px] rounded-full;
+}
+
+@keyframes scan-line {
+  0% { top: 10%; }
+  100% { top: 90%; }
+}
+
+.animate-scan-line {
+  animation: scan-line 2s ease-in-out infinite;
+}
+
+/* Html5Qrcode Custom Styles */
+#reader {
+  border: none;
+  background: transparent;
+}
+
+#reader video {
+  border-radius: 20px;
+  object-fit: cover;
+}
+/*
+#reader__dashboard_section_csr button {
+  @apply btn btn-secondary btn-sm mb-4;
+} */
+
+#reader__status_span {
+  @apply text-gray-500 text-xs font-bold uppercase mt-2 block;
+}
+
+#reader__camera_selection {
+  @apply mb-4;
+}

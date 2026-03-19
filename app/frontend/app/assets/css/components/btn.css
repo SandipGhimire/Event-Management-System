@@ -1,0 +1,41 @@
+.btn {
+  @apply inline-flex items-center justify-center font-semibold transition-all duration-200 rounded-lg active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+}
+
+/* Sizes */
+.btn-sm { @apply px-3 py-1.5 text-sm; }
+.btn-md { @apply px-5 py-2.5 text-base; }
+.btn-lg { @apply px-8 py-3.5 text-lg; }
+
+/* Variants */
+.btn-primary {
+  @apply bg-primary text-secondary hover:bg-primary-hover shadow-lg shadow-primary/20;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-white hover:bg-black border border-gray-700;
+}
+
+.btn-accent {
+  @apply bg-accent text-white hover:bg-accent-hover shadow-lg shadow-accent/20;
+}
+
+.btn-outline {
+  @apply bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-secondary;
+}
+
+.btn-ghost {
+  @apply bg-transparent text-gray-400 hover:text-white hover:bg-white/10;
+}
+
+/* Special States */
+.btn-loader {
+  @apply relative !text-transparent;
+}
+
+.btn-loader::after {
+  content: "";
+  @apply absolute w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin;
+  left: calc(50% - 10px);
+  top: calc(50% - 10px);
+}

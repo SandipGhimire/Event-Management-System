@@ -1,0 +1,16 @@
+meta {
+  name: Logout Others
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{api_url}}/auth/logout-others
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
