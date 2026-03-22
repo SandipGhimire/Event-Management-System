@@ -1,14 +1,18 @@
 import { useLoaderStore } from "@/store/app/loader.store";
 import { useAuthStore } from "@/store/auth/auth.store";
+import { useNavigate } from "react-router";
 
 export default function Login() {
   const { loginDetail, login, setLoginDetail } = useAuthStore();
   const { isLoading } = useLoaderStore();
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-
-    await login();
+    await login(() => {
+      navigate("/dashboard");
+    });
   };
 
   return (
