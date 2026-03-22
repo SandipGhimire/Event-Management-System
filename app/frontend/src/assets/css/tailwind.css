@@ -71,6 +71,19 @@
   .delay-100 { animation-delay: 100ms; }
   .delay-200 { animation-delay: 200ms; }
   .delay-300 { animation-delay: 300ms; }
+
+  /* Accordion Transition Utility */
+  .grid-row-transition {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease-in-out;
+  }
+  .grid-row-transition.open {
+    grid-template-rows: 1fr;
+  }
+  .grid-row-transition > div {
+    overflow: hidden;
+  }
 }
 
 @layer base {
