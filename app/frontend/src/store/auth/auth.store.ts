@@ -22,7 +22,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   //Actions
-  login: async () => {
+  login: async (successCallback?: () => void) => {
     const { startLoader, stopLoader } = useLoaderStore.getState();
 
     startLoader("login");
@@ -35,6 +35,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           jwtServices.setRefreshToken(refreshToken);
         }
         set({ isAuthenticated: true });
+        successCallback?.();
       })
       .catch((err) => {
         console.log(err);

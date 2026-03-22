@@ -12,6 +12,6 @@ export interface AuthStore {
   setLoginDetail: (loginDetail: LoginDetail) => void;
 
   // Actions
-  login: () => void;
+  login: (successCallback?: () => void) => void;
   getUser: () => void;
 }
