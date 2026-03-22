@@ -116,9 +116,9 @@ export class AuthService {
 
     const deviceName = `${browser.name || "Unknown"} on ${os.name || "Unknown"}`;
 
-    // Create refresh token entry first to get the session ID
+    const sessionInactivityDays = this.config.get<number>("SESSION_INACTIVITY_DAYS") || 30;
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
+    expiresAt.setDate(expiresAt.getDate() + sessionInactivityDays);
 
     const refreshTokenEntry = await this.prisma.refreshToken.create({
       data: {
@@ -286,7 +286,7 @@ export class AuthService {
       }),
       this.jwtService.signAsync(payload, {
         secret: this.config.get("JWT_REFRESH_SECRET"),
-        expiresIn: this.config.get("JWT_REFRESH_SECRET_EXPIRE_TIME"),
+        expiresIn: `${this.config.get<number>("SESSION_INACTIVITY_DAYS") || 30}d`,
       }),
     ]);
 

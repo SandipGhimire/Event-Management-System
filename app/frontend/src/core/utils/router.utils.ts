@@ -35,7 +35,7 @@ export function buildRoutes(config: RouterConfig[], parentMeta?: RouteMeta): any
       index: r.index,
 
       lazy: async () => {
-        const mod = await r.import();
+        const mod = await r.component();
 
         return {
           Component: mod.default,

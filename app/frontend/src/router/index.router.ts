@@ -4,12 +4,18 @@ import { createBrowserRouter } from "react-router";
 
 const routes: RouterConfig[] = [
   {
-    index: true,
-    import: () => import("@/views/Auth/Login"),
+    path: "login",
+    component: () => import("@/views/Auth/Login"),
+    meta: {
+      only_guest: true,
+    },
   },
   {
-    path: "login",
-    import: () => import("@/views/Auth/Login"),
+    path: "*",
+    component: () => import("@/views/404"),
+    meta: {
+      require_auth: true,
+    },
   },
 ];
 

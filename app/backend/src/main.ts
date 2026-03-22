@@ -3,9 +3,11 @@ import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { BadRequestException, ValidationPipe } from "@nestjs/common";
 import { ValidationError } from "class-validator";
+import cookieParser from "cookie-parser";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
 
   const config = new DocumentBuilder()
     .setTitle("Api's List")
@@ -32,6 +34,11 @@ async function bootstrap() {
       },
     })
   );
+
+  app.enableCors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  });
 
   await app.listen(process.env.PORT ?? 8000);
 }

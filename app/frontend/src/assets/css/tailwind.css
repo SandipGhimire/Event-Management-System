@@ -1,11 +1,84 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #E9BA29;
-  --color-secondary: #1E1E1B;
-  --color-bg-dark: #24282A;
-  --color-accent: #B01B1E;
+  --color-primary: #1E3A8A; /* deep royal blue */
+  --color-primary-light: #3B82F6; /* lighter accent */
+  --color-primary-dark: #1E40AF; /* for hover / active states */
 
-  --color-primary-hover: #D1A624;
-  --color-accent-hover: #961619;
+  --color-secondary: #FBBF24; /* bright gold */
+  --color-secondary-light: #FCD34D;
+  --color-secondary-dark: #B45309;
+
+  --color-background: #F9FAFB; /* soft light gray / off-white */
+  --color-surface: #FFFFFF; /* pure white for cards, panels */
+  --color-surface-alt: #F3F4F6; /* subtle contrast for alt surfaces */
+
+  --color-text-primary: #111827; /* dark gray/black for main text */
+  --color-text-secondary: #4B5563; /* muted gray for subtext */
+  --color-text-inverse: #FFFFFF; /* for text on primary/secondary */
+
+  /* Feedback / status */
+  --color-success: #16A34A;
+  --color-error: #DC2626;
+  --color-warning: #F59E0B;
+  --color-info: #2563EB;
+
+  /* Border / divider */
+  --color-border: #E5E7EB;
+  --color-border-alt: #D1D5DB;
+  --color-border-foreground: #D1D5DB;
+
+  /* Input-specific */
+  --color-input-focus: #3B82F6;
+
+  /* Secondary foreground (for disabled states) */
+  --color-secondary-foreground: #6B7280;
+
+  /* Dark background (for auth pages etc.) */
+  --color-bg-dark: #0F172A;
+
+  /* Radius tokens */
+  --radius-default: 4px;
+
+  /* Custom Animations */
+  --animate-float: float 3s ease-in-out infinite;
+  --animate-fade-in-up: fade-in-up 0.6s ease-out forwards;
+  --animate-shine: shine 3s linear infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shine {
+    from { background-position: 200% center; }
+    to { background-position: -200% center; }
+  }
+}
+
+@layer utilities {
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+}
+
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-border, currentColor);
+    }
 }

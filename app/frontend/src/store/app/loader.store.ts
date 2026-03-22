@@ -4,8 +4,8 @@ interface LoaderState {
   loader: Record<string, boolean>;
 
   isLoading: (key: string) => boolean;
-  start: (key: string) => void;
-  stop: (key: string) => void;
+  startLoader: (key: string) => void;
+  stopLoader: (key: string) => void;
 }
 
 export const useLoaderStore = create<LoaderState>((set, get) => ({
@@ -15,7 +15,7 @@ export const useLoaderStore = create<LoaderState>((set, get) => ({
     return !!get().loader[key];
   },
 
-  start: (key: string) => {
+  startLoader: (key: string) => {
     set((state) => ({
       loader: {
         ...state.loader,
@@ -24,7 +24,7 @@ export const useLoaderStore = create<LoaderState>((set, get) => ({
     }));
   },
 
-  stop: (key: string) => {
+  stopLoader: (key: string) => {
     set((state) => ({
       loader: {
         ...state.loader,

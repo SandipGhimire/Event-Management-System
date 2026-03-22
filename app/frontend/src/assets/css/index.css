@@ -1,4 +1,5 @@
 @import "./tailwind.css";
+@import "./font.css";
 
 @import "./components/btn.css";
 @import "./components/input.css";

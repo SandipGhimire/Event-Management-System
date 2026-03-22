@@ -1,0 +1,32 @@
+model SystemLog {
+  id         String        @id @default(cuid())
+  type       LogType
+  action     ActionType?
+  userId     String?
+  level      LogLevel?
+  message    String
+  metadata   Json?
+  createdAt  DateTime      @default(now())
+}
+
+enum LogType {
+  SYSTEM
+  USER
+}
+
+enum ActionType {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  OTHER
+}
+
+enum LogLevel {
+  INFO
+  WARN
+  ERROR
+  DEBUG
+  CRITICAL
+}

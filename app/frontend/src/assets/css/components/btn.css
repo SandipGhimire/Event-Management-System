@@ -1,41 +1,315 @@
+/* -----------------------------------------------------------------------------
+   BASE BUTTON STYLES
+   ----------------------------------------------------------------------------- */
+
 .btn {
-  @apply inline-flex items-center justify-center font-semibold transition-all duration-200 rounded-lg active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center font-medium rounded-[2px] transition-all duration-200 ease-in-out cursor-pointer;
+    @apply focus:outline-none;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed!;
+    @apply select-none whitespace-nowrap;
+    @apply border border-transparent;
+    @apply text-[14px];
+    @apply h-[31px];
+    @apply px-3 py-[3.5px];
 }
-
-/* Sizes */
-.btn-sm { @apply px-3 py-1.5 text-sm; }
-.btn-md { @apply px-5 py-2.5 text-base; }
-.btn-lg { @apply px-8 py-3.5 text-lg; }
-
-/* Variants */
+/* -----------------------------------------------------------------------------
+   PRIMARY VARIANTS
+   ----------------------------------------------------------------------------- */
 .btn-primary {
-  @apply bg-primary text-secondary hover:bg-primary-hover shadow-lg shadow-primary/20;
+    @apply bg-primary text-white border-primary;
+    @apply hover:bg-primary/90 hover:border-primary/90;
+    @apply active:bg-primary/95 active:border-primary/95;
 }
 
 .btn-secondary {
-  @apply bg-secondary text-white hover:bg-black border border-gray-700;
+    @apply bg-secondary text-secondary-dark border-secondary;
+    @apply hover:bg-secondary-light hover:border-secondary-light;
+    @apply active:bg-secondary-dark active:border-secondary-dark active:text-white;
 }
 
-.btn-accent {
-  @apply bg-accent text-white hover:bg-accent-hover shadow-lg shadow-accent/20;
+.btn-success {
+    @apply bg-green-600 text-white border-green-600;
+    @apply hover:bg-green-700 hover:border-green-700;
+    @apply active:bg-green-800 active:border-green-800;
 }
 
-.btn-outline {
-  @apply bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-secondary;
+.btn-warning {
+    @apply bg-yellow-500 text-yellow-900 border-yellow-500;
+    @apply hover:bg-yellow-400 hover:border-yellow-400;
+    @apply active:bg-yellow-600 active:border-yellow-600;
 }
 
-.btn-ghost {
-  @apply bg-transparent text-gray-400 hover:text-white hover:bg-white/10;
+.btn-danger {
+    @apply bg-red-600 text-white border-red-600;
+    @apply hover:bg-red-700 hover:border-red-700;
+    @apply active:bg-red-800 active:border-red-800;
 }
 
-/* Special States */
-.btn-loader {
-  @apply relative !text-transparent;
+.btn-info {
+    @apply bg-cyan-600 text-white border-cyan-600;
+    @apply hover:bg-cyan-700 hover:border-cyan-700;
+    @apply active:bg-cyan-800 active:border-cyan-800;
 }
 
-.btn-loader::after {
-  content: "";
-  @apply absolute w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin;
-  left: calc(50% - 10px);
-  top: calc(50% - 10px);
+.btn-dark {
+    @apply bg-gray-900 text-white border-gray-900;
+    @apply hover:bg-black hover:border-black;
+    @apply active:bg-gray-800 active:border-gray-800;
+}
+
+.btn-purple {
+    @apply bg-[#9C27B0] text-white border-[#9C27B0];
+    @apply hover:bg-[#9C27B0]/85 hover:border-[#9C27B0]/85;
+    @apply active:bg-[#9C27B0]/95 active:border-[#9C27B0]/95;
+}
+
+/* -----------------------------------------------------------------------------
+   OUTLINE VARIANTS
+   ----------------------------------------------------------------------------- */
+.btn-outline-primary {
+    @apply bg-transparent border border-primary text-primary;
+    @apply hover:bg-primary hover:text-white;
+    @apply active:bg-primary/95 active:border-primary;
+}
+
+.btn-outline-secondary {
+    @apply bg-transparent border border-secondary text-secondary-dark;
+    @apply hover:bg-secondary hover:text-secondary-dark;
+    @apply active:bg-secondary-dark active:border-secondary-dark active:text-white;
+}
+
+.btn-outline-success {
+    @apply bg-transparent border border-green-600 text-green-600;
+    @apply hover:bg-green-600 hover:text-white;
+    @apply active:bg-green-700 active:border-green-700;
+}
+
+.btn-outline-warning {
+    @apply bg-transparent border border-yellow-500 text-yellow-600;
+    @apply hover:bg-yellow-500 hover:text-yellow-900;
+    @apply active:bg-yellow-600 active:border-yellow-600;
+}
+
+.btn-outline-danger {
+    @apply bg-transparent border border-red-600 text-red-600;
+    @apply hover:bg-red-600 hover:text-white;
+    @apply active:bg-red-700 active:border-red-700;
+}
+
+.btn-outline-info {
+    @apply bg-transparent border border-cyan-600 text-cyan-600;
+    @apply hover:bg-cyan-600 hover:text-white;
+    @apply active:bg-cyan-700 active:border-cyan-700;
+}
+
+.btn-outline-dark {
+    @apply bg-transparent border border-gray-900 text-gray-900;
+    @apply hover:bg-gray-900 hover:text-white;
+    @apply active:bg-black active:border-black active:text-white;
+}
+
+.btn-outline-purple {
+    @apply bg-transparent border border-[#9C27B0] text-[#9C27B0];
+    @apply hover:bg-[#9C27B0] hover:text-white;
+    @apply active:bg-[#9C27B0]/95 active:border-[#9C27B0]/95 active:text-white;
+}
+
+/* -----------------------------------------------------------------------------
+   GHOST/TEXT VARIANTS
+   ----------------------------------------------------------------------------- */
+.btn-ghost-primary {
+    @apply bg-transparent border-transparent text-primary;
+    @apply hover:bg-primary/10 hover:text-primary;
+    @apply active:bg-primary/15;
+}
+
+.btn-ghost-secondary {
+    @apply bg-transparent border-transparent text-secondary-dark;
+    @apply hover:bg-secondary/15 hover:text-secondary-dark;
+    @apply active:bg-secondary/25;
+}
+
+.btn-ghost-success {
+    @apply bg-transparent border-transparent text-green-600;
+    @apply hover:bg-green-600/10 hover:text-green-700;
+    @apply active:bg-green-600/15;
+}
+
+.btn-ghost-warning {
+    @apply bg-transparent border-transparent text-yellow-600;
+    @apply hover:bg-yellow-600/10 hover:text-yellow-700;
+    @apply active:bg-yellow-600/15;
+}
+
+.btn-ghost-danger {
+    @apply bg-transparent border-transparent text-red-600;
+    @apply hover:bg-red-600/10 hover:text-red-700;
+    @apply active:bg-red-600/15;
+}
+
+.btn-ghost-info {
+    @apply bg-transparent border-transparent text-cyan-600;
+    @apply hover:bg-cyan-600/10 hover:text-cyan-700;
+    @apply active:bg-cyan-600/15;
+}
+
+.btn-ghost-purple {
+    @apply bg-transparent border-transparent text-[#9C27B0];
+    @apply hover:bg-[#9C27B0]/10 hover:text-[#9C27B0];
+    @apply active:bg-[#9C27B0]/15;
+}
+
+/* -----------------------------------------------------------------------------
+   LOADING STATE
+   ----------------------------------------------------------------------------- */
+.btn-loading {
+    @apply relative text-transparent pointer-events-none;
+}
+.btn-loading::after {
+    content: "";
+    @apply absolute inset-0 flex items-center justify-center;
+    @apply w-4 h-4 border-2 border-current border-t-transparent rounded-full;
+    animation: spin 1s linear infinite;
+    margin: auto;
+}
+
+/* Loading spinner color variants */
+.btn-loading.btn-primary::after {
+    @apply border-white border-t-transparent;
+}
+.btn-loading.btn-secondary::after {
+    @apply border-secondary-dark border-t-transparent;
+}
+
+.btn-loading.btn-success::after {
+    @apply border-white border-t-transparent;
+}
+
+.btn-loading.btn-warning::after {
+    @apply border-yellow-900 border-t-transparent;
+}
+
+.btn-loading.btn-danger::after {
+    @apply border-white border-t-transparent;
+}
+
+.btn-loading.btn-info::after {
+    @apply border-white border-t-transparent;
+}
+
+.btn-loading.btn-dark::after {
+    @apply border-white border-t-transparent;
+}
+
+.btn-loading.btn-purple::after {
+    @apply border-white border-t-transparent;
+}
+
+/* Outline variant loading spinners */
+.btn-loading.btn-outline-primary::after {
+    @apply border-blue-600 border-t-transparent;
+}
+
+.btn-loading.btn-outline-secondary::after {
+    @apply border-secondary-dark border-t-transparent;
+}
+
+.btn-loading.btn-outline-success::after {
+    @apply border-green-600 border-t-transparent;
+}
+
+.btn-loading.btn-outline-warning::after {
+    @apply border-yellow-600 border-t-transparent;
+}
+
+.btn-loading.btn-outline-danger::after {
+    @apply border-red-600 border-t-transparent;
+}
+
+.btn-loading.btn-outline-info::after {
+    @apply border-cyan-600 border-t-transparent;
+}
+
+.btn-loading.btn-outline-dark::after {
+    @apply border-gray-900 border-t-transparent;
+}
+
+.btn-loading.btn-outline-purple::after {
+    @apply border-[#9C27B0] border-t-transparent;
+}
+
+/* Ghost variant loading spinners */
+.btn-loading.btn-ghost-primary::after {
+    @apply border-blue-600 border-t-transparent;
+}
+
+.btn-loading.btn-ghost-secondary::after {
+    @apply border-secondary-dark border-t-transparent;
+}
+
+.btn-loading.btn-ghost-success::after {
+    @apply border-green-600 border-t-transparent;
+}
+
+.btn-loading.btn-ghost-warning::after {
+    @apply border-yellow-600 border-t-transparent;
+}
+
+.btn-loading.btn-ghost-danger::after {
+    @apply border-red-600 border-t-transparent;
+}
+
+.btn-loading.btn-ghost-info::after {
+    @apply border-cyan-600 border-t-transparent;
+}
+
+.btn-loading.btn-ghost-purple::after {
+    @apply border-[#9C27B0] border-t-transparent;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   SIZE VARIANTS
+   ----------------------------------------------------------------------------- */
+.btn-lg {
+    @apply h-[40px] px-5 py-2 text-[16px];
+}
+
+.btn-sm {
+    @apply h-[26px] px-2 py-[2px] text-[12px];
+}
+
+/* -----------------------------------------------------------------------------
+   ICON BUTTONS
+   ----------------------------------------------------------------------------- */
+.btn.btn-icon {
+    @apply w-[31px]! p-0!;
+}
+
+/* -----------------------------------------------------------------------------
+   BUTTON GROUPS
+   ----------------------------------------------------------------------------- */
+.btn-group {
+    @apply inline-flex;
+}
+
+.btn-group .btn:not(:first-child) {
+    @apply rounded-l-none border-l-0;
+}
+
+.btn-group .btn:not(:last-child) {
+    @apply rounded-r-none;
+}
+
+.btn-group .btn:focus {
+    @apply relative z-10;
+}
+
+.btn-action {
+    @apply max-h-[30px] min-h-[30px] h-[30px] bg-[#EAEAEA] hover:bg-[#E6E5E5] active:border-[#949494] border text-white border-[#EAEAEA] px-2 py-[3.5px] cursor-pointer hover:bg-[#E6E5E5] hover:border-[#E6E5E5] duration-300 rounded-[2px] focus:bg-[#E6E5E5] w-[40px];
 }

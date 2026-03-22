@@ -1,23 +1,22 @@
 import { redirect } from "react-router";
 import type { RouteMeta } from "../types/app/router.type";
+import { useAuthStore } from "@/store/auth/auth.store";
 
 export async function beforeRoute(meta?: RouteMeta) {
   if (!meta) return null;
 
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  if (meta.require_auth || meta.only_guest) {
+    const { getUser } = useAuthStore.getState();
+    await getUser();
 
-  if (meta.require_auth && !token) {
-    throw redirect("/login");
-  }
+    const { isAuthenticated } = useAuthStore.getState();
 
-  if (meta.permissions) {
-    const required = Array.isArray(meta.permissions) ? meta.permissions : [meta.permissions];
+    if (meta.require_auth && !isAuthenticated) {
+      return redirect("/login");
+    }
 
-    const hasPermission = required.some((p) => user?.permissions?.includes(p));
-
-    if (!hasPermission) {
-      throw redirect("/dashboard");
+    if (meta.only_guest && isAuthenticated) {
+      return redirect("/dashboard");
     }
   }
 
