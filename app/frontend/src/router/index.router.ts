@@ -11,6 +11,19 @@ const routes: RouterConfig[] = [
     },
   },
   {
+    path: "",
+    component: () => import("@/layout/AuthLayout"),
+    meta: {
+      require_auth: true,
+    },
+    children: [
+      {
+        path: "dashboard",
+        component: () => import("@/views/Dashboard"),
+      },
+    ],
+  },
+  {
     path: "*",
     component: () => import("@/views/404"),
     meta: {
