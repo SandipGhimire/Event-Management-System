@@ -9,7 +9,7 @@ export default function Sidebar() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const location = useLocation();
 
-  const { isSidebarOpen } = useCoreStore();
+  const { isSidebarOpen, toggleSidebar } = useCoreStore();
 
   useEffect(() => {
     items.forEach((item) => {
@@ -52,7 +52,7 @@ export default function Sidebar() {
                   key={index}
                   className={`
                     flex items-center gap-2 py-2 px-2 mb-1 rounded-sm cursor-pointer transition-all
-                    ${isActive(item.to) ? "bg-primary/10 text-primary" : "hover:bg-primary/10 text-text-secondary"}
+                    ${isActive(item.to) ? "bg-primary/10 text-primary font-bold" : "hover:bg-primary/10 text-text-secondary"}
                   `}
                 >
                   <div>{item.icon ? <DynamicIcon name={item.icon} size={20} /> : ""}</div>
@@ -98,7 +98,9 @@ export default function Sidebar() {
                           <Link
                             to={child.to}
                             key={index}
-                            className="block text-text-secondary py-1.5 px-2 mb-0.5 rounded-sm cursor-pointer transition-all hover:bg-primary/10"
+                            className={`block text-text-secondary py-2.5 px-2 mb-0.5 rounded-sm cursor-pointer transition-all hover:bg-primary/10
+                              ${isActive(child.to) ? "bg-primary/10 text-primary font-bold" : "hover:bg-primary/10 text-text-secondary"}
+                            `}
                           >
                             {child.label}
                           </Link>
@@ -114,6 +116,7 @@ export default function Sidebar() {
       </div>
       <div
         className={`fixed top-16 z-0 bg-black/50 w-full h-dvh md:hidden transition-all duration-300 ease-in-out ${isSidebarOpen ? "block" : "hidden"}`}
+        onClick={toggleSidebar}
       ></div>
     </div>
   );

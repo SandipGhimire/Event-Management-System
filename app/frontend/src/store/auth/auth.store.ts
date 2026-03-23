@@ -5,13 +5,12 @@ import api from "@/core/app/api";
 import jwtServices from "@/core/app/jwt";
 import { isDevelopment } from "@/core/utils/common.utils";
 import endpoints from "@/core/app/endpoints";
+import type { UserDetail } from "shared-types";
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
   isAuthenticated: false,
-  loginDetail: {
-    email: "",
-    password: "",
-  },
+  loginDetail: {} as LoginDetail,
+  user: {} as UserDetail,
 
   //Setters
   setIsAuthenticated: (isAuthenticated: boolean) => {
@@ -34,7 +33,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           jwtServices.setToken(accessToken);
           jwtServices.setRefreshToken(refreshToken);
         }
-        set({ isAuthenticated: true });
+        set({ isAuthenticated: true, loginDetail: {} as LoginDetail });
         successCallback?.();
       })
       .catch((err) => {
@@ -45,13 +44,29 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       });
   },
 
+  logout: async (successCallback?: () => void) => {
+    await api
+      .post(endpoints.auth.logout)
+      .then(() => {
+        set({ isAuthenticated: false });
+        if (isDevelopment()) {
+          jwtServices.destroyToken();
+        }
+        successCallback?.();
+      })
+      .catch(() => {
+        set({ isAuthenticated: false });
+        if (isDevelopment()) {
+          jwtServices.destroyToken();
+        }
+      });
+  },
+
   getUser: async () => {
     await api
       .get(endpoints.user.self)
       .then((res) => {
-        console.log(res.data);
-        set({ isAuthenticated: true });
-        console.log(get().isAuthenticated);
+        set({ isAuthenticated: true, user: res.data });
       })
       .catch(() => {
         set({ isAuthenticated: false });
