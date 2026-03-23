@@ -36,7 +36,17 @@ export class CookieService {
   }
 
   clearAuthCookies(res: Response) {
-    res.clearCookie("access_token", { path: "/" });
-    res.clearCookie("refresh_token", { path: "/auth/refresh" });
+    res.clearCookie("access_token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      path: "/",
+    });
+    res.clearCookie("refresh_token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      path: "/auth/refresh",
+    });
   }
 }

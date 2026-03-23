@@ -49,16 +49,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       .post(endpoints.auth.logout)
       .then(() => {
         set({ isAuthenticated: false });
-        if (isDevelopment()) {
-          jwtServices.destroyToken();
-        }
+        jwtServices.destroyToken();
         successCallback?.();
       })
       .catch(() => {
         set({ isAuthenticated: false });
-        if (isDevelopment()) {
-          jwtServices.destroyToken();
-        }
+        jwtServices.destroyToken();
+        successCallback?.();
       });
   },
 

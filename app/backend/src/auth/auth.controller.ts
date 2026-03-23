@@ -46,11 +46,10 @@ export class AuthController {
   @Post("logout")
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const user = req.user as UserRequestDto;
-    const authResult = await this.authService.logout(user.userUUID, user.sessionId);
-
     if (!this.cookieService.isDev()) {
       this.cookieService.clearAuthCookies(res);
     }
+    const authResult = await this.authService.logout(user.userUUID, user.sessionId);
 
     return authResult;
   }
