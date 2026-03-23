@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-dvh bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* Background Accents */}
       <div className="absolute top-0 left-0 w-full h-1 bg-primary/20" />
       <div className="absolute bottom-0 left-0 w-full h-1 bg-secondary/20" />
