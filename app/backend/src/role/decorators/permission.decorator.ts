@@ -9,6 +9,5 @@ export interface PermissionMetadata {
 
 export const Permission = (permissions: (string | string[])[], requireAll: boolean = true) => {
   const flatPermissions = permissions.flat();
-  console.log("called");
   return SetMetadata(PERMISSIONS_KEY, { permissions: flatPermissions, requireAll });
 };

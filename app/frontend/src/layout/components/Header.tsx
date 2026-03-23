@@ -19,7 +19,7 @@ export default function Header() {
             ></span>
           </div>
         </div>
-        <div className="px-4 flex items-center w-[calc(100%-16rem)]">
+        <div className={`px-4 flex items-center justify-between w-[calc(100%-${isSidebarOpen ? "16rem" : "5rem"})]`}>
           <button className="btn btn-icon btn-outline-secondary" onClick={toggleSidebar}>
             {isSidebarOpen ? (
               <DynamicIcon name="panel-left-close" size={24} />
@@ -27,6 +27,10 @@ export default function Header() {
               <DynamicIcon name="panel-right-close" size={24} />
             )}
           </button>
+          <div className="flex items-center gap-2 border rounded-sm px-2 py-1">
+            <DynamicIcon name="user" size={18} strokeWidth={2.5} />
+            <div>Username</div>
+          </div>
         </div>
       </div>
     </>

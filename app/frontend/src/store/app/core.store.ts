@@ -7,7 +7,7 @@ interface CoreState {
 }
 
 export const useCoreStore = create<CoreState>((set) => ({
-  isSidebarOpen: true,
+  isSidebarOpen: window.innerWidth > 768 ? true : false,
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
   closeSidebar: () => set({ isSidebarOpen: false }),
 }));

@@ -18,7 +18,6 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, "jwt-refresh"
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {
-          console.log(ExtractJwt.fromAuthHeaderAsBearerToken()(req));
           if (this.cookieService.isDev()) {
             return ExtractJwt.fromAuthHeaderAsBearerToken()(req);
           }
