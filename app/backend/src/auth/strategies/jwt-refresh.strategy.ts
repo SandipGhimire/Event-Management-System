@@ -4,21 +4,25 @@ import { ExtractJwt, Strategy, StrategyOptionsWithRequest } from "passport-jwt";
 import { ConfigService } from "@nestjs/config";
 import { JwtPayload } from "./jwt.strategy";
 import type { Request } from "express";
+import { CookieService } from "../helpers/cookie.helper";
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, "jwt-refresh") {
-  constructor(config: ConfigService) {
+  constructor(
+    config: ConfigService,
+    private cookieService: CookieService
+  ) {
     const secret = config.get<string>("JWT_REFRESH_SECRET");
     if (!secret) throw new Error("JWT_REFRESH_SECRET is not set");
 
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {
-          let token: string | null = null;
-          if (req && req.cookies) {
-            token = req.cookies["refresh_token"] as string;
+          console.log(ExtractJwt.fromAuthHeaderAsBearerToken()(req));
+          if (this.cookieService.isDev()) {
+            return ExtractJwt.fromAuthHeaderAsBearerToken()(req);
           }
-          return token || (ExtractJwt.fromAuthHeaderAsBearerToken()(req) as string);
+          return req?.cookies?.["refresh_token"] as string;
         },
       ]),
       secretOrKey: secret,
@@ -27,8 +31,9 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, "jwt-refresh"
   }
 
   validate(req: Request, payload: JwtPayload) {
-    const refreshToken =
-      (req.cookies?.["refresh_token"] as string) || (req.get("Authorization")?.replace("Bearer", "").trim() as string);
+    const refreshToken = this.cookieService.isDev()
+      ? (ExtractJwt.fromAuthHeaderAsBearerToken()(req) as string)
+      : (req.cookies?.["refresh_token"] as string);
     return { ...payload, refreshToken };
   }
 }

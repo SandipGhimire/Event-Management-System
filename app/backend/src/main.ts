@@ -6,7 +6,9 @@ import { ValidationError } from "class-validator";
 import cookieParser from "cookie-parser";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ["log", "error", "warn", "debug", "verbose"],
+  });
   app.use(cookieParser());
 
   const config = new DocumentBuilder()
@@ -35,8 +37,10 @@ async function bootstrap() {
     })
   );
 
+  const allowedOrigins = process.env.ALLOWED_ORIGIN?.split(",") || [];
+
   app.enableCors({
-    origin: "http://localhost:5173",
+    origin: allowedOrigins,
     credentials: true,
   });
 

@@ -15,8 +15,46 @@ const sidebarItems = (): SidebarItem[] => {
     //multiple child item
     {
       label: "Stock Verification",
-      icon: "block",
+      icon: "blocks",
       children: [
+        {
+          label: "Opening Stock",
+          to: "/stock-verification/opening-stock/",
+        },
+        {
+          label: "Closing Stock",
+          to: "/stock-verification/closing-stock/",
+        },
+      ],
+    },
+    {
+      label: "Stock",
+      icon: "blocks",
+      children: [
+        {
+          label: "Opening Stock",
+          to: "/stock-verification/opening-stock/",
+        },
+        {
+          label: "Closing Stock",
+          to: "/stock-verification/closing-stock/",
+        },
+        {
+          label: "Opening Stock",
+          to: "/stock-verification/opening-stock/",
+        },
+        {
+          label: "Closing Stock",
+          to: "/stock-verification/closing-stock/",
+        },
+        {
+          label: "Opening Stock",
+          to: "/stock-verification/opening-stock/",
+        },
+        {
+          label: "Closing Stock",
+          to: "/stock-verification/closing-stock/",
+        },
         {
           label: "Opening Stock",
           to: "/stock-verification/opening-stock/",

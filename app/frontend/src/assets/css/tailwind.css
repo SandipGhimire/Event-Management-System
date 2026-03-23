@@ -1,41 +1,41 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #1E3A8A; /* deep royal blue */
-  --color-primary-light: #3B82F6; /* lighter accent */
-  --color-primary-dark: #1E40AF; /* for hover / active states */
+  --color-primary: #1e3a8a; /* deep royal blue */
+  --color-primary-light: #3b82f6; /* lighter accent */
+  --color-primary-dark: #1e40af; /* for hover / active states */
 
-  --color-secondary: #FBBF24; /* bright gold */
-  --color-secondary-light: #FCD34D;
-  --color-secondary-dark: #B45309;
+  --color-secondary: #6b7280; /* base gray */
+  --color-secondary-light: #dee0e3; /* lighter gray */
+  --color-secondary-dark: #374151; /* darker gray */
 
-  --color-background: #F9FAFB; /* soft light gray / off-white */
-  --color-surface: #FFFFFF; /* pure white for cards, panels */
-  --color-surface-alt: #F3F4F6; /* subtle contrast for alt surfaces */
+  --color-background: #f9fafb; /* soft light gray / off-white */
+  --color-surface: #ffffff; /* pure white for cards, panels */
+  --color-surface-alt: #f3f4f6; /* subtle contrast for alt surfaces */
 
   --color-text-primary: #111827; /* dark gray/black for main text */
-  --color-text-secondary: #4B5563; /* muted gray for subtext */
-  --color-text-inverse: #FFFFFF; /* for text on primary/secondary */
+  --color-text-secondary: #4b5563; /* muted gray for subtext */
+  --color-text-inverse: #ffffff; /* for text on primary/secondary */
 
   /* Feedback / status */
-  --color-success: #16A34A;
-  --color-error: #DC2626;
-  --color-warning: #F59E0B;
-  --color-info: #2563EB;
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+  --color-warning: #f59e0b;
+  --color-info: #2563eb;
 
   /* Border / divider */
-  --color-border: #E5E7EB;
-  --color-border-alt: #D1D5DB;
-  --color-border-foreground: #D1D5DB;
+  --color-border: #e5e7eb;
+  --color-border-alt: #d1d5db;
+  --color-border-foreground: #d1d5db;
 
   /* Input-specific */
-  --color-input-focus: #3B82F6;
+  --color-input-focus: #3b82f6;
 
   /* Secondary foreground (for disabled states) */
-  --color-secondary-foreground: #6B7280;
+  --color-secondary-foreground: #6b7280;
 
   /* Dark background (for auth pages etc.) */
-  --color-bg-dark: #0F172A;
+  --color-bg-dark: #0f172a;
 
   /* Radius tokens */
   --radius-default: 4px;
@@ -46,8 +46,13 @@
   --animate-shine: shine 3s linear infinite;
 
   @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
   }
 
   @keyframes fade-in-up {
@@ -62,15 +67,25 @@
   }
 
   @keyframes shine {
-    from { background-position: 200% center; }
-    to { background-position: -200% center; }
+    from {
+      background-position: 200% center;
+    }
+    to {
+      background-position: -200% center;
+    }
   }
 }
 
 @layer utilities {
-  .delay-100 { animation-delay: 100ms; }
-  .delay-200 { animation-delay: 200ms; }
-  .delay-300 { animation-delay: 300ms; }
+  .delay-100 {
+    animation-delay: 100ms;
+  }
+  .delay-200 {
+    animation-delay: 200ms;
+  }
+  .delay-300 {
+    animation-delay: 300ms;
+  }
 
   /* Accordion Transition Utility */
   .grid-row-transition {
@@ -87,11 +102,11 @@
 }
 
 @layer base {
-    *,
-    ::after,
-    ::before,
-    ::backdrop,
-    ::file-selector-button {
-        border-color: var(--color-border, currentColor);
-    }
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border, currentColor);
+  }
 }

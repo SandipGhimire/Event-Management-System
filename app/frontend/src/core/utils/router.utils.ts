@@ -39,7 +39,7 @@ export function buildRoutes(config: RouterConfig[], parentMeta?: RouteMeta): any
 
         return {
           Component: mod.default,
-          loader: effectiveMeta ? () => beforeRoute(effectiveMeta) : undefined,
+          loader: effectiveMeta && !r.children ? () => beforeRoute(r.path || "", effectiveMeta) : undefined,
         };
       },
     };

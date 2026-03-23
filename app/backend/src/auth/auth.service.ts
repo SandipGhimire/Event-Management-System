@@ -4,7 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import * as bcrypt from "bcrypt";
 import { UAParser } from "ua-parser-js";
 import { PrismaService } from "../prisma/prisma.service";
-import { SignUpDto, LoginDTO, RefreshTokenRequestDto } from "./dto/auth.dto";
+import { SignUpDto, LoginDTO } from "./dto/auth.dto";
 import { JwtPayload } from "./strategies/jwt.strategy";
 
 interface DeviceInfo {
@@ -185,21 +185,10 @@ export class AuthService {
     return { message: "Logged out from other devices" };
   }
 
-  async refreshTokens(userUUID: string, refreshToken: string) {
-    // Decode the refresh token to get session ID
-    let decoded: RefreshTokenRequestDto;
-    try {
-      decoded = this.jwtService.verify(refreshToken, {
-        secret: this.config.get("JWT_REFRESH_SECRET"),
-      });
-    } catch {
-      throw new ForbiddenException("Invalid refresh token");
-    }
-
-    const sessionId = decoded.sessionId;
-
+  async refreshTokens(userUUID: string, sessionId: string, refreshToken: string) {
     const storedToken = await this.prisma.refreshToken.findUnique({
       where: { id: sessionId },
+      include: { user: true },
     });
 
     if (!storedToken || storedToken.userUUID !== userUUID) {
@@ -218,7 +207,7 @@ export class AuthService {
     }
 
     // Generate new tokens with the same session ID
-    const tokens = await this.getTokens(userUUID, decoded.email, sessionId);
+    const tokens = await this.getTokens(userUUID, storedToken.user.email, sessionId);
 
     // Update the stored refresh token and last used time
     const hashedToken = await bcrypt.hash(tokens.refreshToken, 10);

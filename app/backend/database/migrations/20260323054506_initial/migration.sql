@@ -25,16 +25,16 @@ CREATE TABLE "attendees" (
 );
 
 -- CreateTable
-CREATE TABLE "Event" (
+CREATE TABLE "event" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
 
-    CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "event_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "AttendeeEvent" (
+CREATE TABLE "attendee_event_logs" (
     "id" SERIAL NOT NULL,
     "attendeeId" INTEGER NOT NULL,
     "eventId" INTEGER NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE "AttendeeEvent" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "AttendeeEvent_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "attendee_event_logs_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -153,10 +153,10 @@ CREATE INDEX "attendees_email_idx" ON "attendees"("email");
 CREATE INDEX "attendees_phoneNumber_idx" ON "attendees"("phoneNumber");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Event_name_key" ON "Event"("name");
+CREATE UNIQUE INDEX "event_name_key" ON "event"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "AttendeeEvent_attendeeId_eventId_key" ON "AttendeeEvent"("attendeeId", "eventId");
+CREATE UNIQUE INDEX "attendee_event_logs_attendeeId_eventId_key" ON "attendee_event_logs"("attendeeId", "eventId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "roles_name_key" ON "roles"("name");
@@ -213,10 +213,10 @@ CREATE INDEX "refresh_tokens_expiresAt_idx" ON "refresh_tokens"("expiresAt");
 CREATE INDEX "refresh_tokens_token_idx" ON "refresh_tokens"("token");
 
 -- AddForeignKey
-ALTER TABLE "AttendeeEvent" ADD CONSTRAINT "AttendeeEvent_attendeeId_fkey" FOREIGN KEY ("attendeeId") REFERENCES "attendees"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "attendee_event_logs" ADD CONSTRAINT "attendee_event_logs_attendeeId_fkey" FOREIGN KEY ("attendeeId") REFERENCES "attendees"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AttendeeEvent" ADD CONSTRAINT "AttendeeEvent_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "attendee_event_logs" ADD CONSTRAINT "attendee_event_logs_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "pivot_user_roles" ADD CONSTRAINT "pivot_user_roles_userUUID_fkey" FOREIGN KEY ("userUUID") REFERENCES "users"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;

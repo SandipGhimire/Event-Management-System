@@ -1,18 +1,18 @@
 model Attendees {
-  id           Int        @id @default(autoincrement())
-  email        String     @unique
+  id           Int     @id @default(autoincrement())
+  email        String  @unique
   name         String
-  phoneNumber  String?    @unique
+  phoneNumber  String? @unique
   isVeg        Int?
   profilePic   String?
   paymentSlip  String?
   clubName     String?
-  membershipID Int?       @unique
+  membershipID Int?    @unique
 
-  attendeeEvents AttendeeEvent[]
+  attendeeEvents AttendeeEventLogs[]
 
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([id])
   @@index([email])
@@ -21,24 +21,27 @@ model Attendees {
 }
 
 model Event {
-  id          Int             @id @default(autoincrement())
-  name        String          @unique
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
   description String?
 
-  attendeeEvents AttendeeEvent[]
+  attendeeEvents AttendeeEventLogs[]
+
+  @@map("event")
 }
 
-model AttendeeEvent {
+model AttendeeEventLogs {
   id         Int       @id @default(autoincrement())
   attendee   Attendees @relation(fields: [attendeeId], references: [id])
   attendeeId Int
   event      Event     @relation(fields: [eventId], references: [id])
   eventId    Int
 
-  completed  Boolean   @default(false)
+  completed Boolean @default(false)
 
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([attendeeId, eventId])
+  @@map("attendee_event_logs")
 }

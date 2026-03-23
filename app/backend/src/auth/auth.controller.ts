@@ -77,8 +77,9 @@ export class AuthController {
   @UseGuards(JwtRefreshAuthGuard)
   @Post("refresh")
   async refreshTokens(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    console.log("asd");
     const user = req.user as RefreshTokenRequestDto;
-    const authResult = await this.authService.refreshTokens(user.sub, user.refreshToken);
+    const authResult = await this.authService.refreshTokens(user.sub, user.sessionId, user.refreshToken);
 
     if (!this.cookieService.isDev()) {
       this.cookieService.setAuthCookies(res, authResult.accessToken, authResult.refreshToken);
