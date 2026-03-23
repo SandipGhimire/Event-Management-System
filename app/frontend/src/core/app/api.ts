@@ -19,7 +19,7 @@ api.interceptors.request.use(
     if (isDevelopment()) {
       const token = jwtServices.getToken();
       if (token) {
-        config.headers["Authorization"] = `Bearer ${token}`;
+        if (!config.headers["Authorization"]) config.headers["Authorization"] = `Bearer ${token}`;
       }
     }
     return config;
@@ -55,14 +55,22 @@ api.interceptors.response.use(
           if (!refreshToken) throw new Error("No refresh token");
           data = { refresh: refreshToken };
         }
-        await api.post(endpoints.auth.refresh, data).then((response) => {
-          if (isDevelopment()) {
-            const token = response.data.access;
-            jwtServices.setToken(token);
-            originalRequest.headers["Authorization"] = `Bearer ${token}`;
-          }
-          setIsAuthenticated(true);
-        });
+        await api
+          .post(endpoints.auth.refresh, data, {
+            headers: {
+              Authorization: `Bearer ${jwtServices.getRefreshToken()}`,
+            },
+          })
+          .then((response) => {
+            if (isDevelopment()) {
+              const token = response.data.accessToken;
+              jwtServices.setToken(token);
+              const refreshToken = response.data.refreshToken;
+              jwtServices.setRefreshToken(refreshToken);
+              originalRequest.headers["Authorization"] = `Bearer ${token}`;
+            }
+            setIsAuthenticated(true);
+          });
         return await axios(originalRequest);
       } catch (e) {
         console.error("Token refresh failed", e);

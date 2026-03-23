@@ -1,164 +1,120 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router";
-// import { DynamicIcon } from "lucide-react/dynamic";
 import sidebarItems from "@/core/app/sidebarItems";
+import { useCoreStore } from "@/store/app/core.store";
+import { DynamicIcon } from "lucide-react/dynamic";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router";
 
-interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const location = useLocation();
-  const items = sidebarItems();
+const items = sidebarItems();
+export default function Sidebar() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const location = useLocation();
 
-  // Auto-open dropdown if child is active on load
+  const { isSidebarOpen } = useCoreStore();
+
   useEffect(() => {
     items.forEach((item) => {
       if (item.children) {
-        const isChildActive = item.children.some((child) => location.pathname === child.to);
-        if (isChildActive) {
-          setOpenDropdown(item.label);
-        }
+        item.children.forEach((child) => {
+          if (child.to === location.pathname) {
+            setOpenDropdown(item.label);
+          }
+        });
       }
     });
   }, [location.pathname]);
-
-  const toggleDropdown = (label: string) => {
-    setOpenDropdown(openDropdown === label ? null : label);
-  };
 
   const isActive = (to?: string) => {
     if (!to) return false;
     return location.pathname === to;
   };
 
+  const hasItemActive = (children?: { to?: string }[]) => {
+    if (!children) return false;
+    return children.some((child) => isActive(child.to));
+  };
   return (
-    <>
-      {/* Mobile Overlay */}
+    <div className={`"}`}>
       <div
-        className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300 ${
-          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
-        }`}
-        onClick={onClose}
-      />
-
-      {/* Sidebar Container */}
-      <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-surface border-r border-border z-50 transition-transform duration-300 lg:translate-x-0 lg:static ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 z-1 mt-16 left-0 h-dvh w-64 bg-white border-r select-none transition-all duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        <div className="flex flex-col h-full">
-          {/* Sidebar Header (Logo/Title) */}
-          <div className="h-16 flex items-center px-6 border-b border-border">
-            <span className="text-xl font-bold text-primary tracking-tight">Attendees</span>
-            <span className="ml-1 text-xs font-medium text-secondary bg-secondary/10 px-1.5 py-0.5 rounded">AMS</span>
-          </div>
-
-          {/* Navigation Items */}
-          <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-            {items.map((item, index) => {
-              const isHeader = !item.to && !item.children;
-              const hasChildren = !!item.children;
-
-              if (isHeader) {
-                return (
+        <div className="px-4">
+          {items.map((item, index) => {
+            if (!item.to && !item.children)
+              return (
+                <div key={index} className="font-bold text-text-secondary uppercase text-xs mb-1 mt-2">
+                  {item.label}
+                </div>
+              );
+            else if (item.to && !item.children)
+              return (
+                <Link
+                  to={item.to}
+                  key={index}
+                  className={`
+                    flex items-center gap-2 py-2 px-2 mb-1 rounded-sm cursor-pointer transition-all
+                    ${isActive(item.to) ? "bg-primary/10 text-primary" : "hover:bg-primary/10 text-text-secondary"}
+                  `}
+                >
+                  <div>{item.icon ? <DynamicIcon name={item.icon} size={20} /> : ""}</div>
+                  <div>{item.label}</div>
+                </Link>
+              );
+            else if (!item.to && item.children) {
+              return (
+                <div className="relative mb-1" key={index}>
                   <div
-                    key={index}
-                    className="pt-4 pb-1 px-3 text-[10px] font-bold text-text-secondary uppercase tracking-wider"
+                    onClick={() => setOpenDropdown(openDropdown === item.label ? null : item.label)}
+                    className={`
+                      flex items-center gap-2 py-2 px-2 rounded-sm cursor-pointer transition-all
+                      ${
+                        hasItemActive(item.children) && openDropdown !== item.label
+                          ? "bg-primary/10 text-primary"
+                          : openDropdown == item.label
+                            ? "bg-primary/10 text-text-secondary"
+                            : "hover:bg-primary/10 text-text-secondary"
+                      }
+                    `}
                   >
-                    {item.label}
-                  </div>
-                );
-              }
-
-              if (hasChildren) {
-                const isOpen = openDropdown === item.label;
-                return (
-                  <div key={index} className="space-y-1">
-                    <button
-                      onClick={() => toggleDropdown(item.label)}
-                      className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-sm transition-colors ${
-                        isOpen
-                          ? "bg-primary/5 text-primary"
-                          : "text-text-secondary hover:bg-surface-alt hover:text-text-primary"
-                      }`}
+                    <div>
+                      <div>{item.icon ? <DynamicIcon name={item.icon} size={20} /> : ""}</div>
+                    </div>
+                    <div>{item.label}</div>
+                    <div
+                      className={`absolute right-2 transition-transform duration-300 ${openDropdown === item.label ? "-rotate-180" : ""}`}
                     >
-                      <div className="flex items-center gap-3">
-                        {/* {item.icon && <DynamicIcon name={item.icon as any} size={18} strokeWidth={2} />} */}
-                        <span>{item.label}</span>
-                      </div>
-                      <svg
-                        className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    <div className={`grid-row-transition ${isOpen ? "open" : ""}`}>
-                      <div className="space-y-1 pl-9">
-                        {item.children?.map((child, idx) => (
+                      <DynamicIcon name="chevron-down" size={14} />
+                    </div>
+                  </div>
+
+                  <div
+                    className={`
+                      pl-4 border-l-2 border-primary/10 ml-4 pt-1 grid transition-all duration-300 ease-in-out
+                      ${openDropdown === item.label ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}
+                    `}
+                  >
+                    <div className="overflow-hidden">
+                      {item.children.map((child, index) => {
+                        return (
                           <Link
-                            key={idx}
                             to={child.to}
-                            onClick={() => {
-                              if (window.innerWidth < 1024) onClose();
-                            }}
-                            className={`block px-3 py-2 text-sm font-medium rounded-sm transition-colors ${
-                              isActive(child.to)
-                                ? "text-primary bg-primary/5"
-                                : "text-text-secondary hover:text-text-primary hover:bg-surface-alt"
-                            }`}
+                            key={index}
+                            className="block text-text-secondary py-1.5 px-2 mb-0.5 rounded-sm cursor-pointer transition-all hover:bg-primary/10"
                           >
                             {child.label}
                           </Link>
-                        ))}
-                      </div>
+                        );
+                      })}
                     </div>
                   </div>
-                );
-              }
-
-              return (
-                <Link
-                  key={index}
-                  to={item.to || "#"}
-                  onClick={() => {
-                    if (window.innerWidth < 1024) onClose();
-                  }}
-                  className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-sm transition-colors ${
-                    isActive(item.to)
-                      ? "bg-primary text-white shadow-sm shadow-primary/20"
-                      : "text-text-secondary hover:bg-surface-alt hover:text-text-primary"
-                  }`}
-                >
-                  {/* {item.icon && <DynamicIcon name={item.icon as any} size={18} strokeWidth={2} />} */}
-                  <span>{item.label}</span>
-                </Link>
+                </div>
               );
-            })}
-          </nav>
-
-          {/* User Profile Summary (Optional, but makes it "fully packed") */}
-          <div className="p-4 border-t border-border mt-auto">
-            <div className="flex items-center gap-3 px-2">
-              <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
-                JD
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-text-primary truncate">John Doe</p>
-                <p className="text-xs text-text-secondary truncate italic">Senior Volunteer</p>
-              </div>
-            </div>
-          </div>
+            }
+          })}
         </div>
-      </aside>
-    </>
+      </div>
+      <div
+        className={`fixed top-16 z-0 bg-black/50 w-full h-dvh md:hidden transition-all duration-300 ease-in-out ${isSidebarOpen ? "block" : "hidden"}`}
+      ></div>
+    </div>
   );
-};
-
-export default Sidebar;
+}

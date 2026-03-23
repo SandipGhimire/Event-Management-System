@@ -1,42 +1,34 @@
-import React from "react";
+import { useCoreStore } from "@/store/app/core.store";
+import { DynamicIcon } from "lucide-react/dynamic";
 
-interface HeaderProps {
-  onMenuClick: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
+export default function Header() {
+  const { isSidebarOpen, toggleSidebar } = useCoreStore();
   return (
-    <header className="h-16 bg-surface border-b border-border sticky top-0 z-30 px-4 flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <button
-          onClick={onMenuClick}
-          className="p-2 lg:hidden text-text-secondary hover:bg-surface-alt rounded-sm transition-colors"
-          aria-label="Toggle menu"
+    <>
+      <div className="fixed top-0 left-0 right-0 h-16 bg-white border-b flex items-center">
+        <div
+          className={`${isSidebarOpen ? "w-64" : "w-20"} border-r transition-all duration-300 ease-in-out h-full flex items-cente`}
         >
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-        <div className="flex flex-col h-full lg:hidden">
-          <span className="text-lg font-bold text-primary tracking-tight">Attendees</span>
+          <div className="flex items-center gap-2 w-full justify-center">
+            <span
+              className={`block h-1 rounded-full bg-primary transition-all duration-300 ease-in-out ${isSidebarOpen ? "w-14" : "w-0"}`}
+            ></span>
+            <span className="block rounded-sm px-2 py-1 bg-secondary text-white font-bold">AMS</span>
+            <span
+              className={`block h-1 rounded-full bg-primary transition-all duration-300 ease-in-out ${isSidebarOpen ? "w-14" : "w-0"}`}
+            ></span>
+          </div>
+        </div>
+        <div className="px-4 flex items-center w-[calc(100%-16rem)]">
+          <button className="btn btn-icon btn-outline-secondary" onClick={toggleSidebar}>
+            {isSidebarOpen ? (
+              <DynamicIcon name="panel-left-close" size={24} />
+            ) : (
+              <DynamicIcon name="panel-right-close" size={24} />
+            )}
+          </button>
         </div>
       </div>
-
-      <div className="flex items-center gap-3">
-        {/* Placeholder for notifications or search */}
-        <button className="p-2 text-text-secondary hover:bg-surface-alt rounded-sm transition-colors">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-            />
-          </svg>
-        </button>
-      </div>
-    </header>
+    </>
   );
-};
-
-export default Header;
+}

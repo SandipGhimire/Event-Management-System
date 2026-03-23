@@ -11,12 +11,12 @@ export default function Login() {
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     await login(() => {
-      navigate("/dashboard");
+      navigate("/");
     });
   };
 
   return (
-    <div className="min-h-[100dvh] bg-background flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-surface rounded-lg shadow-lg border border-border p-6 sm:p-8">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -69,7 +69,7 @@ export default function Login() {
           <span className="block w-2 h-2 rounded-full bg-secondary"></span>
           <span className="block w-12 h-[2px] bg-border"></span>
         </div>
-        <div className="text-center mt-4 text-xs">
+        <div className="text-center mt-4 text-xs text-text-secondary">
           Made with passion by{" "}
           <a href="https://github.com/SandipGhimire" className="text-primary hover:underline">
             Sandip Ghimire
