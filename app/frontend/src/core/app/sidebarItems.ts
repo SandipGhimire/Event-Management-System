@@ -9,61 +9,8 @@ const sidebarItems = (): SidebarItem[] => {
     // single item
     {
       label: "Dashboard",
-      icon: "home",
+      icon: "layout-dashboard",
       to: "/",
-    },
-    //multiple child item
-    {
-      label: "Stock Verification",
-      icon: "blocks",
-      children: [
-        {
-          label: "Opening Stock",
-          to: "/stock-verification/opening-stock/",
-        },
-        {
-          label: "Closing Stock",
-          to: "/stock-verification/closing-stock/",
-        },
-      ],
-    },
-    {
-      label: "Stock",
-      icon: "blocks",
-      children: [
-        {
-          label: "Opening Stock",
-          to: "/stock-verification/opening-stock/",
-        },
-        {
-          label: "Closing Stock",
-          to: "/stock-verification/closing-stock/",
-        },
-        {
-          label: "Opening Stock",
-          to: "/stock-verification/opening-stock/",
-        },
-        {
-          label: "Closing Stock",
-          to: "/stock-verification/closing-stock/",
-        },
-        {
-          label: "Opening Stock",
-          to: "/stock-verification/opening-stock/",
-        },
-        {
-          label: "Closing Stock",
-          to: "/stock-verification/closing-stock/",
-        },
-        {
-          label: "Opening Stock",
-          to: "/stock-verification/opening-stock/",
-        },
-        {
-          label: "Closing Stock",
-          to: "/stock-verification/closing-stock/",
-        },
-      ],
     },
   ];
 };

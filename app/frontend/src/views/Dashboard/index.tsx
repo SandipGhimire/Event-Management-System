@@ -1,3 +1,3 @@
 export default function Dashboard() {
-  return <div>Dashboard</div>;
+  return <button className="btn btn-primary w-full">Dashboard</button>;
 }
