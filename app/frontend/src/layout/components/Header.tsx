@@ -71,39 +71,38 @@ export default function Header() {
                 {user.fullName}
               </div>
             </div>
-
-            <div
-              className={`absolute right-0 bg-white border rounded-sm shadow-md mt-2 w-64 z-50
-                          transition-all duration-300 ease-in-out transform
-                          ${
-                            isUserDropdownOpen
-                              ? "opacity-100 scale-100 visible pointer-events-auto"
-                              : "opacity-0 scale-95 invisible pointer-events-none"
-                          }
-                        `}
-            >
-              <div>
-                <div className="flex items-center gap-2 p-3">
-                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center text-2xl shrink-0">
-                    {user.fullName.split(" ")[0][0]}
-                  </div>
-                  <div className="overflow-hidden">
-                    <div className="font-bold text-primary truncate">{user.fullName}</div>
-                    <div className="text-xs text-secondary truncate">{user.email}</div>
-                  </div>
-                </div>
-                <hr />
-                <div className="px-2 py-1">
-                  <button
-                    onClick={logoutUser}
-                    className="px-2 py-2 w-full text-left text-red-500 hover:bg-red-500/10 rounded-sm cursor-pointer transition flex items-center gap-2"
-                  >
-                    <DynamicIcon name="log-out" size={16} />
-                    Logout
-                  </button>
-                </div>
-              </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className={`fixed right-4 bg-white border rounded-sm shadow-md mt-2 w-64 z-51 top-12
+          transition-all duration-300 ease-in-out transform
+          ${
+            isUserDropdownOpen
+              ? "opacity-100 scale-100 visible pointer-events-auto"
+              : "opacity-0 scale-95 invisible pointer-events-none"
+          }
+        `}
+      >
+        <div>
+          <div className="flex items-center gap-2 p-3">
+            <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center text-2xl shrink-0">
+              {user.fullName.split(" ")[0][0]}
             </div>
+            <div className="overflow-hidden">
+              <div className="font-bold text-primary truncate">{user.fullName}</div>
+              <div className="text-xs text-secondary truncate">{user.email}</div>
+            </div>
+          </div>
+          <hr />
+          <div className="px-2 py-1">
+            <button
+              onClick={logoutUser}
+              className="px-2 py-2 w-full text-left text-red-500 hover:bg-red-500/10 rounded-sm cursor-pointer transition flex items-center gap-2"
+            >
+              <DynamicIcon name="log-out" size={16} />
+              Logout
+            </button>
           </div>
         </div>
       </div>
