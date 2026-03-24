@@ -1,47 +1,47 @@
-model Attendees {
+model Attendee {
   id           Int     @id @default(autoincrement())
   email        String  @unique
   name         String
   phoneNumber  String? @unique
-  isVeg        Int?
   profilePic   String?
-  paymentSlip  String?
   clubName     String?
-  membershipID Int?    @unique
+  membershipID String? @unique
 
-  attendeeEvents AttendeeEventLogs[]
+  isVeg        Boolean?
+  qrCode       String   @unique
+  badgePrinted Boolean  @default(false)
+
+  logs AttendeeTaskLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([id])
-  @@index([email])
-  @@index([phoneNumber])
-  @@map("attendees")
 }
 
-model Event {
+model Task {
   id          Int     @id @default(autoincrement())
-  name        String  @unique
+  name        String
   description String?
 
-  attendeeEvents AttendeeEventLogs[]
+  isActive Boolean @default(true)
+  order    Int?
+  slug     String  @unique
 
-  @@map("event")
-}
-
-model AttendeeEventLogs {
-  id         Int       @id @default(autoincrement())
-  attendee   Attendees @relation(fields: [attendeeId], references: [id])
-  attendeeId Int
-  event      Event     @relation(fields: [eventId], references: [id])
-  eventId    Int
-
-  completed Boolean @default(false)
+  logs AttendeeTaskLog[]
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+}
 
-  @@unique([attendeeId, eventId])
-  @@map("attendee_event_logs")
+model AttendeeTaskLog {
+  id Int @id @default(autoincrement())
+
+  attendee   Attendee @relation(fields: [attendeeId], references: [id])
+  attendeeId Int
+
+  task   Task @relation(fields: [taskId], references: [id])
+  taskId Int
+
+  scannedBy String?
+  createdAt DateTime @default(now())
+
+  @@unique([attendeeId, taskId])
 }

@@ -21,6 +21,28 @@ const routes: RouterConfig[] = [
         path: "/",
         component: () => import("@/views/Dashboard"),
       },
+      {
+        path: "event",
+        children: [
+          {
+            path: "scanner",
+            component: () => import("@/views/Event/Scanner"),
+          },
+        ],
+      },
+      {
+        path: "settings",
+        children: [
+          {
+            path: "users",
+            component: () => import("@/views/Settings/User"),
+          },
+          {
+            path: "roles",
+            component: () => import("@/views/Settings/User"),
+          },
+        ],
+      },
     ],
   },
   {

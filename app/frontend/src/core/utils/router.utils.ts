@@ -1,5 +1,8 @@
+import React from "react";
 import { beforeRoute } from "../setup/router.setup";
 import type { RouteMeta, RouterConfig } from "../types/app/router.type";
+import { Outlet } from "react-router";
+const OutletWrapper: React.FC = () => React.createElement(Outlet);
 
 /**
  * Merge parent meta with child meta.
@@ -35,10 +38,10 @@ export function buildRoutes(config: RouterConfig[], parentMeta?: RouteMeta): any
       index: r.index,
 
       lazy: async () => {
-        const mod = await r.component();
+        const mod = r.component ? await r.component() : { default: OutletWrapper };
 
         return {
-          Component: mod.default,
+          Component: mod?.default,
           loader: effectiveMeta && !r.children ? () => beforeRoute(r.path || "", effectiveMeta) : undefined,
         };
       },
