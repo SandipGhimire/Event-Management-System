@@ -6,6 +6,7 @@ const auth = {
 
 const user = {
   self: "/user/self/",
+  list: "/user/list/",
 };
 
 const endpoints = {

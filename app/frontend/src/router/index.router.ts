@@ -43,6 +43,15 @@ const routes: RouterConfig[] = [
           },
         ],
       },
+      {
+        path: "demo",
+        children: [
+          {
+            path: "static",
+            component: () => import("@/views/Demo/StaticList"),
+          },
+        ],
+      },
     ],
   },
   {

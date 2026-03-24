@@ -44,6 +44,14 @@ const sidebarItems = (): SidebarItem[] => {
       icon: "user-lock",
       to: "/settings/users",
     },
+    {
+      label: "Demo",
+    },
+    {
+      label: "Infrastructure",
+      icon: "database",
+      to: "/demo/static",
+    },
   ];
 };
 

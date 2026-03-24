@@ -3,7 +3,7 @@ import type { ContentLayoutProps } from "@/core/types/component/contentLayout.ty
 export default function ContentLayout({ header, buttons = [], children }: ContentLayoutProps) {
   return (
     <>
-      <div className="bg-white border rounded-sm mb-12">
+      <div className="bg-white border rounded-sm mb-12 relative">
         <div className="p-4 border-b flex justify-between items-center">
           <div className="font-bold text-xl text-primary">{header}</div>
           <div className="flex gap-1">

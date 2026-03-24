@@ -5,6 +5,8 @@ import { useAuthStore } from "@/store/auth/auth.store";
 export async function beforeRoute(path: string, meta?: RouteMeta) {
   if (!meta) return null;
 
+  console.log(path);
+
   if (meta.require_auth || meta.only_guest) {
     const { getUser } = useAuthStore.getState();
     await getUser();
