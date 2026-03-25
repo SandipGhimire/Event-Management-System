@@ -4,7 +4,6 @@ import type { ColumnConfig, TableAction } from "@/core/types/component/dataTable
 import api from "@/core/app/api";
 import endpoints from "@/core/app/endpoints";
 import type { UserDetail } from "shared-types";
-import { Edit, Trash2, UserX } from "lucide-react";
 import { useMemo, useCallback } from "react";
 
 export default function UserList() {
@@ -48,18 +47,18 @@ export default function UserList() {
     () => [
       {
         label: "Edit Profile",
-        icon: <Edit size={14} />,
+        icon: "edit",
         onClick: (row) => console.log("Edit user", row.uuid),
       },
       {
         label: "Deactivate",
-        icon: <UserX size={14} />,
+        icon: "user-x",
         onClick: (row) => alert(`Deactivating ${row.username}`),
         className: "text-error",
       },
       {
         label: "Delete Permanently",
-        icon: <Trash2 size={14} />,
+        icon: "trash-2",
         onClick: (row) => alert(`Deleting ${row.username}`),
         className: "text-error font-bold",
       },
@@ -87,7 +86,14 @@ export default function UserList() {
       ]}
     >
       <div className="p-1">
-        <DataTable mode="api" columns={columns} onFetch={handleFetch} actions={actions} initialPageSize={10} />
+        <DataTable
+          mode="api"
+          columns={columns}
+          onFetch={handleFetch}
+          actions={actions}
+          initialPageSize={10}
+          heightOffset={15.5}
+        />
       </div>
     </ContentLayout>
   );

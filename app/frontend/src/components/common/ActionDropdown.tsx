@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MoreVertical } from "lucide-react";
 import type { TableAction } from "@/core/types/component/dataTable.type";
+import { DynamicIcon } from "lucide-react/dynamic";
 
 interface ActionDropdownProps<T> {
   actions: TableAction<T>[];
@@ -25,18 +25,15 @@ export const ActionDropdown = <T,>({ actions, row, instanceId }: ActionDropdownP
     };
 
     const handleScroll = () => {
-      // Close dropdown if any scrollable parent is scrolled
       if (isOpen) setIsOpen(false);
     };
 
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
 
-      // Specifically listen to the table body scroll
       const tableBody = document.querySelector(`[data-instance-id="${instanceId}"] .dt-body`);
       if (tableBody) tableBody.addEventListener("scroll", handleScroll);
 
-      // Also global scroll just in case
       window.addEventListener("scroll", handleScroll, true);
     }
 
@@ -49,17 +46,17 @@ export const ActionDropdown = <T,>({ actions, row, instanceId }: ActionDropdownP
   }, [isOpen, instanceId]);
 
   return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
+    <div className="relative inline-block text-middle" ref={dropdownRef}>
       <button
         onClick={toggleDropdown}
-        className="p-1 rounded-sm hover:bg-surface-alt transition-colors duration-200 border border-transparent active:border-border"
+        className="p-1 bg-primary text-white rounded-sm hover:bg-primary-light cursor-pointer transition-colors duration-200 border border-transparent px-2"
       >
-        <MoreVertical className="w-4 h-4 text-text-secondary" />
+        <DynamicIcon name="more-horizontal" className="w-6 h-6" />
       </button>
 
       {isOpen && (
         <div
-          className="absolute right-0 mt-1 w-48 rounded-sm shadow-lg bg-white border border-border z-5 animate-in fade-in zoom-in-95 duration-100"
+          className="absolute right-0 mt-0 w-48 rounded-sm shadow-lg bg-white border border-border z-5 animate-in fade-in zoom-in-95 duration-100"
           style={{ transformOrigin: "top right" }}
         >
           <div className="py-1" role="menu">
@@ -77,7 +74,9 @@ export const ActionDropdown = <T,>({ actions, row, instanceId }: ActionDropdownP
                   role="menuitem"
                 >
                   {action.icon && (
-                    <span className="mr-3 w-4 h-4 flex items-center justify-center opacity-70">{action.icon}</span>
+                    <span className="mr-3 w-4 h-4 flex items-center justify-center opacity-70">
+                      <DynamicIcon name={action.icon} />
+                    </span>
                   )}
                   {action.label}
                 </button>

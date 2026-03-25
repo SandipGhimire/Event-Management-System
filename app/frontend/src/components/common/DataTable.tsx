@@ -16,8 +16,8 @@ export default function DataTable<T>({
   onFetch,
   actions,
   initialPageSize = 10,
-  refreshTrigger = 0,
   emptyMessage = "No data available",
+  heightOffset,
 }: DataTableProps<T>) {
   const instanceId = crypto.randomUUID();
   const [data, setData] = useState<T[]>([]);
@@ -79,7 +79,7 @@ export default function DataTable<T>({
       setTotal(filtered.length);
       setData(filtered.slice(start, start + pageSize));
     }
-  }, [mode, onFetch, localData, page, pageSize, filters, sortBy, sortOrder, refreshTrigger]);
+  }, [mode, onFetch, localData, page, pageSize, filters, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchData();
@@ -100,7 +100,11 @@ export default function DataTable<T>({
   };
 
   return (
-    <div className="dt-container" data-instance-id={instanceId}>
+    <div
+      className="dt-container"
+      data-instance-id={instanceId}
+      style={{ maxHeight: `calc(100dvh - ${heightOffset}rem)`, minHeight: `calc(100dvh - ${heightOffset}rem)` }}
+    >
       {/* Table Content Area - Scrollable Y axis */}
       <div className="dt-body-wrapper">
         {loading && (
@@ -170,7 +174,11 @@ export default function DataTable<T>({
                   )}
                 </th>
               ))}
-              {actions && <th className="dt-th dt-td-action" style={{ width: '80px' }}>Actions</th>}
+              {actions && (
+                <th className="dt-th dt-td-action" style={{ width: "80px" }}>
+                  Actions
+                </th>
+              )}
             </tr>
           </thead>
 
@@ -237,11 +245,7 @@ export default function DataTable<T>({
 
           {/* Navigation Controls */}
           <div className="dt-pagination-wrapper">
-            <button
-              disabled={page === 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="dt-page-btn"
-            >
+            <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="dt-page-btn">
               <ChevronLeft className="dt-page-btn-icon" />
             </button>
             <div className="dt-page-info">
