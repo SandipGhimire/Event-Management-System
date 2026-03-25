@@ -1,7 +1,11 @@
 model Sponsor {
-    id           Int     @id @default(autoincrement())
-    name         String  @unique
-    logo         String?
+    id   Int    @id @default(autoincrement())
+    name String @unique
+
+    email       String?
+    phoneNumber String?
+    logo        String?
+
     description  String?
     contribution String?
 
@@ -12,6 +16,8 @@ model Sponsor {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@map("sponsors")
 }
 
 model SponsorLink {
@@ -23,4 +29,6 @@ model SponsorLink {
     url   String
 
     createdAt DateTime @default(now())
+
+    @@map("sponsors_link")
 }

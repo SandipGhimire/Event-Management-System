@@ -1,9 +1,9 @@
 import { Controller, Get, Query } from "@nestjs/common";
-import { SponsorService } from "./sponsor.service";
+import { AttendeesService } from "./attendees.service";
 
-@Controller("sponsor")
-export class SponsorController {
-  constructor(private readonly sponserService: SponsorService) {}
+@Controller("attendees")
+export class AttendeesController {
+  constructor(private readonly attendeesService: AttendeesService) {}
 
   @Get("list")
   async listSponsors(@Query() query: Record<string, any>) {
@@ -22,7 +22,7 @@ export class SponsorController {
       filters:
         typeof parsedFilters === "object" && parsedFilters !== null ? (parsedFilters as Record<string, unknown>) : {},
     };
-    const result = await this.sponserService.getAllSponsors(params);
+    const result = await this.attendeesService.getAllAttendees(params);
     return {
       success: true,
       message: "Sponsors fetched successfully",

@@ -131,10 +131,10 @@ export default function DataTable<T>({
                   key={col.key as string}
                   className={`dt-th ${col.sortable ? "dt-th-sortable" : ""}`}
                   style={{ width: col.width, textAlign: col.align || "left" }}
+                  onClick={() => col.sortable && handleSort(col.key as string)}
                 >
                   <div
                     className={`dt-th-sort-wrapper ${col.align === "center" ? "center" : col.align === "right" ? "right" : ""}`}
-                    onClick={() => col.sortable && handleSort(col.key as string)}
                   >
                     {col.header}
                     {col.sortable && (
@@ -191,7 +191,7 @@ export default function DataTable<T>({
             </tr>
           </thead>
 
-          <tbody className="dt-tbody">
+          <tbody className={`dt-tbody ${data.length > 0 ? "" : "border-b-0!"}`}>
             {data.length > 0
               ? data.map((row: any, idx) => (
                   <tr key={idx} className="dt-tr-body">
@@ -208,7 +208,7 @@ export default function DataTable<T>({
                   </tr>
                 ))
               : !loading && (
-                  <tr>
+                  <tr className="border-b-0! absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <td colSpan={columns.length + (actions ? 1 : 0)} className="dt-empty-td">
                       <div className="dt-empty-content">
                         <div className="dt-empty-icon-wrapper">

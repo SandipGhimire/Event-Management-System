@@ -59,7 +59,7 @@ export default function Header() {
               <DynamicIcon name="panel-right-close" size={24} />
             )}
           </button>
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative">
             <div
               className="flex items-center gap-1 cursor-pointer select-none"
               onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
@@ -75,6 +75,7 @@ export default function Header() {
         </div>
       </div>
       <div
+        ref={dropdownRef}
         className={`fixed right-4 bg-white border rounded-sm shadow-md mt-2 w-64 z-51 top-12
           transition-all duration-300 ease-in-out transform
           ${

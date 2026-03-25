@@ -2,42 +2,30 @@ import ContentLayout from "@/components/common/ContentLayout";
 import DataTable from "@/components/common/DataTable";
 import type { ColumnConfig } from "@/core/types/component/dataTable.type";
 import endpoints from "@/core/app/endpoints";
-import type { UserDetail } from "shared-types";
+import type { RoleDetail } from "shared-types";
 import { useCallback, useMemo, useState } from "react";
 
 export default function UserList() {
   const [count, setCount] = useState(0);
-  const columns: ColumnConfig<UserDetail>[] = useMemo(
+  const columns: ColumnConfig<RoleDetail>[] = useMemo(
     () => [
       {
-        key: "username",
-        header: "Username",
-        sortable: true,
-        searchable: true,
-        searchType: "text",
-        render: (row) => (
-          <div className="flex flex-col">
-            <span className="font-bold text-text-primary">{row.username}</span>
-            <span className="text-[11px] text-text-secondary opacity-70">{row.uuid}</span>
-          </div>
-        ),
-      },
-      {
-        key: "email",
-        header: "Email Address",
+        key: "name",
+        header: "Name",
         sortable: true,
         searchable: true,
         searchType: "text",
       },
       {
-        key: "firstName",
-        header: "Full Name",
+        key: "description",
+        header: "Description",
         sortable: true,
-        render: (row) => `${row.firstName} ${row.lastName}`,
+        searchable: true,
+        searchType: "text",
       },
       {
-        key: "phoneNumber",
-        header: "Phone",
+        key: "createdBy",
+        header: "Create By",
       },
     ],
     []
@@ -49,7 +37,7 @@ export default function UserList() {
 
   return (
     <ContentLayout
-      header={{ label: "Users", count }}
+      header={{ label: "Roles", count }}
       buttons={[
         {
           label: "Create User",
@@ -61,7 +49,7 @@ export default function UserList() {
       <div className="p-1">
         <DataTable
           mode="api"
-          apiUrl={endpoints.user.list}
+          apiUrl={endpoints.role.list}
           fetchCallback={onFetch}
           columns={columns}
           initialPageSize={10}

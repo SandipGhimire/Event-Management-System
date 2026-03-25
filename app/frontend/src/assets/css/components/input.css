@@ -13,7 +13,7 @@
 
 input,
 textarea {
-  @apply border outline-none transition focus:border-input-focus! hover:border-input-focus! bg-white! border-border-foreground! text-black! rounded-default h-[31px] max-h-[31px] min-h-[31px] px-1 disabled:bg-secondary-foreground/2! disabled:border-secondary-foreground/20 disabled:cursor-not-allowed disabled:text-secondary-foreground/70 placeholder:text-gray-500;
+  @apply border outline-none transition focus:border-input-focus! hover:border-input-focus! bg-white! border-border-foreground! text-black! rounded-default h-[35px] max-h-[35px] min-h-[35px] px-1 disabled:bg-secondary-foreground/2! disabled:border-secondary-foreground/20 disabled:cursor-not-allowed disabled:text-secondary-foreground/70 placeholder:text-gray-500;
 }
 
 /* Textarea specific height override */

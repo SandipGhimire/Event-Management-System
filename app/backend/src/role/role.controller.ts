@@ -1,12 +1,12 @@
 import { Controller, Get, Query } from "@nestjs/common";
-import { SponsorService } from "./sponsor.service";
+import { RoleService } from "./role.service";
 
-@Controller("sponsor")
-export class SponsorController {
-  constructor(private readonly sponserService: SponsorService) {}
+@Controller("role")
+export class RoleController {
+  constructor(private readonly roleService: RoleService) {}
 
   @Get("list")
-  async listSponsors(@Query() query: Record<string, any>) {
+  async roleList(@Query() query: Record<string, any>) {
     let parsedFilters: unknown;
     if (typeof query.filters === "string") {
       parsedFilters = JSON.parse(query.filters);
@@ -22,7 +22,7 @@ export class SponsorController {
       filters:
         typeof parsedFilters === "object" && parsedFilters !== null ? (parsedFilters as Record<string, unknown>) : {},
     };
-    const result = await this.sponserService.getAllSponsors(params);
+    const result = await this.roleService.getAllRoles(params);
     return {
       success: true,
       message: "Sponsors fetched successfully",

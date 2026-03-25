@@ -12,18 +12,20 @@ interface ServerStatus {
   region: string;
 }
 
+function randomValues() {
+  return Math.floor(Math.random() * 100);
+}
+
 export default function StaticList() {
-  const dummyData: ServerStatus[] = useMemo(
-    () =>
-      Array.from({ length: 45 }).map((_, i) => ({
-        id: i + 1,
-        name: `Node-Server-0${i + 1}`,
-        status: i % 5 === 0 ? "Offline" : i % 8 === 0 ? "Maintenance" : "Online",
-        usage: Math.floor(Math.random() * 100),
-        region: ["US-East", "EU-West", "AP-South", "US-West"][i % 4],
-      })),
-    []
-  );
+  const dummyData: ServerStatus[] = useMemo(() => {
+    return Array.from({ length: 45 }).map((_, i) => ({
+      id: i + 1,
+      name: `Node-Server-0${i + 1}`,
+      status: i % 5 === 0 ? "Offline" : i % 8 === 0 ? "Maintenance" : "Online",
+      usage: randomValues(),
+      region: ["US-East", "EU-West", "AP-South", "US-West"][i % 4],
+    }));
+  }, []);
 
   const columns: ColumnConfig<ServerStatus>[] = useMemo(
     () => [
@@ -97,7 +99,11 @@ export default function StaticList() {
   );
 
   return (
-    <ContentLayout header="Infrastructure Monitor">
+    <ContentLayout
+      header={{
+        label: "Infrastructure Monitor",
+      }}
+    >
       <div className="space-y-8">
         <div className="bg-surface-alt p-4 rounded-sm border border-border flex items-center gap-4">
           <Cpu className="text-primary" />
