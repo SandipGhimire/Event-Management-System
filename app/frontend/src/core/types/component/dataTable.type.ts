@@ -1,3 +1,4 @@
+import type { IconName } from "lucide-react/dynamic";
 import React from "react";
 import type { PaginatedData, FetchParams, ApiResponse } from "shared-types";
 
@@ -15,7 +16,7 @@ export interface ColumnConfig<T> {
 
 export interface TableAction<T> {
   label: string;
-  icon?: React.ReactNode;
+  icon?: IconName;
   onClick: (row: T) => void;
   className?: string; // e.g. 'text-error' for delete
   hidden?: (row: T) => boolean;
@@ -45,6 +46,9 @@ export interface DataTableProps<T> {
 
   /** Empty state message */
   emptyMessage?: string;
+
+  /** Height offset for the table */
+  heightOffset?: number;
 }
 
 export interface PaginationState {

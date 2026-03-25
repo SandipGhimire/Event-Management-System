@@ -113,6 +113,7 @@ export default function StaticList() {
           columns={columns}
           initialPageSize={5}
           emptyMessage="No servers found in this cluster"
+          heightOffset={22}
         />
       </div>
     </ContentLayout>

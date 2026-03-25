@@ -1,147 +1,149 @@
-@layer components {
-  .dt-container {
-    @apply flex flex-col rounded-sm bg-white overflow-hidden h-full max-h-[calc(100dvh-12rem)];
-  }
+.dt-container {
+  @apply flex flex-col rounded-sm bg-white overflow-hidden h-full;
+}
 
-  .dt-toolbar {
-    @apply flex justify-end mb-1 items-center bg-surface gap-4;
-  }
+.dt-toolbar {
+  @apply flex justify-end mb-1 items-center bg-surface gap-4;
+}
 
-  .dt-body-wrapper {
-    @apply border relative flex-1 overflow-auto min-h-[300px];
-  }
+.dt-body-wrapper {
+  @apply border relative flex-1 overflow-auto min-h-[300px];
+}
 
-  .dt-loading-overlay {
-    @apply absolute inset-0 bg-white/40 backdrop-blur-[1px] z-30 flex items-center justify-center;
-  }
+.dt-loading-overlay {
+  @apply absolute inset-0 bg-white/40 backdrop-blur-[1px] z-30 flex items-center justify-center;
+}
 
-  .dt-loading-icon {
-    @apply w-8 h-8 text-primary animate-spin;
-  }
+.dt-loading-icon {
+  @apply w-8 h-8 text-primary animate-spin;
+}
 
-  .dt-table {
-    @apply w-full text-left border-collapse table-auto min-w-[600px];
-  }
+.dt-table {
+  @apply w-full text-left border-collapse table-auto min-w-[600px];
+}
 
-  .dt-thead {
-    @apply sticky top-0 z-20 bg-surface border-b border-border shadow-[0_1px_2px_rgba(0,0,0,0.05)];
-  }
+.dt-thead {
+  @apply sticky top-0 z-20 bg-surface border-b shadow-[0_1px_2px_rgba(0,0,0,0.05)];
+}
 
-  .dt-th {
-    @apply px-4 py-3 text-[11px] font-black text-text-secondary uppercase tracking-widest select-none bg-surface;
-  }
+.dt-th {
+  @apply px-4 py-3 text-[11px] font-black text-text-secondary uppercase tracking-widest select-none bg-surface;
+}
 
-  .dt-th-sortable {
-    @apply cursor-pointer hover:bg-surface-alt transition-colors group/th;
-  }
+.dt-th-sortable {
+  @apply cursor-pointer hover:bg-surface-alt transition-colors;
+}
 
-  .dt-th-sort-wrapper {
-    @apply flex items-center gap-2;
-  }
-  .dt-th-sort-wrapper.center {
-    @apply justify-center;
-  }
-  .dt-th-sort-wrapper.right {
-    @apply justify-end;
-  }
+.dt-th-sort-wrapper {
+  @apply flex items-center gap-2;
+}
+.dt-th-sort-wrapper.center {
+  @apply justify-center;
+}
+.dt-th-sort-wrapper.right {
+  @apply justify-end;
+}
 
-  .dt-sort-icon-container {
-    @apply transition-all duration-200;
-  }
-  .dt-sort-icon-active {
-    @apply w-3 h-3 text-primary;
-  }
-  .dt-sort-icon-inactive {
-    @apply w-3 h-3 opacity-0 group-hover/th:opacity-40 transition-opacity;
-  }
+.dt-sort-icon-container {
+  @apply transition-all duration-200;
+}
+.dt-sort-icon-active {
+  @apply w-3 h-3 text-primary;
+}
+.dt-sort-icon-inactive {
+  @apply w-3 h-3 opacity-0 group-hover/th:opacity-40 transition-opacity;
+}
 
-  .dt-filter-wrapper {
-    @apply mt-2;
-  }
+.dt-filter-wrapper {
+  @apply mt-2;
+}
 
-  .dt-filter-input {
-    @apply w-full mt-1 text-xs font-normal normal-case border border-border rounded-sm focus:outline-none focus:border-primary bg-white text-text-primary h-[31px] px-2;
-  }
+.dt-filter-input {
+  @apply w-full mt-1 text-xs font-normal normal-case border rounded-sm focus:outline-none focus:border-primary bg-white text-text-primary h-[31px] px-2;
+}
 
-  .dt-tbody {
-    @apply divide-y divide-border/50 text-sm;
-  }
+.dt-tbody {
+  @apply divide-y text-sm;
+}
 
-  .dt-tr-body {
-    @apply hover:bg-background/40 transition-colors duration-150;
-  }
+.dt-tbody:last-child {
+  @apply border-b;
+}
 
-  .dt-td {
-    @apply px-4 py-3.5 text-text-primary whitespace-nowrap;
-  }
+.dt-tr-body {
+  @apply hover:bg-primary/10 transition-colors duration-150;
+}
 
-  .dt-td-action {
-    @apply text-right;
-  }
+.dt-td {
+  @apply px-4 py-3.5 text-text-primary whitespace-nowrap;
+}
 
-  .dt-empty-td {
-    @apply py-24 text-center;
-  }
-  .dt-empty-content {
-    @apply flex flex-col items-center justify-center text-text-secondary;
-  }
-  .dt-empty-icon-wrapper {
-    @apply w-16 h-16 bg-surface-alt rounded-full flex items-center justify-center mb-4;
-  }
-  .dt-empty-icon {
-    @apply w-8 h-8 opacity-20;
-  }
-  .dt-empty-title {
-    @apply font-medium text-sm;
-  }
-  .dt-empty-subtitle {
-    @apply text-xs opacity-50 mt-1;
-  }
+.dt-td-action {
+  @apply text-right;
+}
 
-  .dt-footer {
-    @apply p-4 bg-surface border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4 z-10 shadow-[0_-1px_3px_rgba(0,0,0,0.02)] shrink-0;
-  }
+.dt-empty-td {
+  @apply py-24 text-center;
+}
+.dt-empty-content {
+  @apply flex flex-col items-center justify-center text-text-secondary;
+}
+.dt-empty-icon-wrapper {
+  @apply w-16 h-16 bg-surface-alt rounded-full flex items-center justify-center mb-4;
+}
+.dt-empty-icon {
+  @apply w-8 h-8 opacity-20;
+}
+.dt-empty-title {
+  @apply font-medium text-sm;
+}
+.dt-empty-subtitle {
+  @apply text-xs opacity-50 mt-1;
+}
 
-  .dt-footer-stats {
-    @apply text-[12px] text-text-secondary font-medium order-2 sm:order-1;
-  }
-  .dt-footer-stats-highlight {
-    @apply text-text-primary font-bold;
-  }
+.dt-footer {
+  @apply p-4 bg-surface border-t border flex flex-col sm:flex-row justify-between items-center gap-4 z-10 shadow-[0_-1px_3px_rgba(0,0,0,0.02)] shrink-0;
+}
 
-  .dt-footer-controls {
-    @apply flex items-center gap-4 sm:gap-8 order-1 sm:order-2 w-full sm:w-auto justify-between sm:justify-end;
-  }
+.dt-footer-stats {
+  @apply text-[12px] text-text-secondary font-medium order-2 sm:order-1;
+}
+.dt-footer-stats-highlight {
+  @apply text-text-primary font-bold;
+}
 
-  .dt-page-size-wrapper {
-    @apply flex items-center gap-2 text-[12px] font-semibold;
-  }
-  .dt-page-size-label {
-    @apply text-text-secondary uppercase;
-  }
-  .dt-page-size-select {
-    @apply bg-background border border-border rounded-sm py-1 px-1.5 focus:border-primary outline-none cursor-pointer text-text-primary transition-colors text-[11px];
-  }
+.dt-footer-controls {
+  @apply flex items-center gap-4 sm:gap-8 order-1 sm:order-2 w-full sm:w-auto justify-between sm:justify-end;
+}
 
-  .dt-pagination-wrapper {
-    @apply flex items-center gap-2;
-  }
-  .dt-page-btn {
-    @apply w-8 h-8 flex items-center justify-center rounded-sm border border-border bg-white hover:bg-surface-alt disabled:opacity-20 transition-all hover:border-primary/30;
-  }
-  .dt-page-btn-icon {
-    @apply w-4 h-4 text-text-primary;
-  }
-  .dt-page-info {
-    @apply flex items-center px-4 h-8 bg-surface-alt rounded-sm border border-border;
-  }
-  .dt-page-current {
-    @apply text-[12px] font-black text-primary;
-  }
-  .dt-page-separator {
-    @apply text-[10px] text-text-secondary mx-2;
-  }
-  .dt-page-total {
-    @apply text-[12px] font-black text-text-secondary;
-  }
+.dt-page-size-wrapper {
+  @apply flex items-center gap-2 text-[12px] font-semibold;
+}
+.dt-page-size-label {
+  @apply text-text-secondary uppercase;
+}
+.dt-page-size-select {
+  @apply bg-background border rounded-sm py-1 px-1.5 focus:border-primary outline-none cursor-pointer text-text-primary transition-colors text-[11px];
+}
+
+.dt-pagination-wrapper {
+  @apply flex items-center gap-2;
+}
+.dt-page-btn {
+  @apply w-8 h-8 flex items-center justify-center rounded-sm border bg-white hover:bg-surface-alt disabled:opacity-20 transition-all hover:border-primary/30;
+}
+.dt-page-btn-icon {
+  @apply w-4 h-4 text-text-primary;
+}
+.dt-page-info {
+  @apply flex items-center px-4 h-8 bg-surface-alt rounded-sm border;
+}
+.dt-page-current {
+  @apply text-[12px] font-black text-primary;
+}
+.dt-page-separator {
+  @apply text-[10px] text-text-secondary mx-2;
+}
+.dt-page-total {
+  @apply text-[12px] font-black text-text-secondary;
 }
