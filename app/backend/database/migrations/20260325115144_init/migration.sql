@@ -8,7 +8,7 @@ CREATE TYPE "ActionType" AS ENUM ('CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT
 CREATE TYPE "LogLevel" AS ENUM ('INFO', 'WARN', 'ERROR', 'DEBUG', 'CRITICAL');
 
 -- CreateTable
-CREATE TABLE "Attendee" (
+CREATE TABLE "attendee" (
     "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -18,15 +18,14 @@ CREATE TABLE "Attendee" (
     "membershipID" TEXT,
     "isVeg" BOOLEAN,
     "qrCode" TEXT NOT NULL,
-    "badgePrinted" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Attendee_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "attendee_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Task" (
+CREATE TABLE "task" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
@@ -35,18 +34,18 @@ CREATE TABLE "Task" (
     "slug" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "task_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "AttendeeTaskLog" (
+CREATE TABLE "attendee_task_log" (
     "id" SERIAL NOT NULL,
     "attendeeId" INTEGER NOT NULL,
     "taskId" INTEGER NOT NULL,
     "scannedBy" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "AttendeeTaskLog_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "attendee_task_log_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -91,9 +90,11 @@ CREATE TABLE "pivot_role_permissions" (
 );
 
 -- CreateTable
-CREATE TABLE "Sponsor" (
+CREATE TABLE "sponsors" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "email" TEXT,
+    "phoneNumber" TEXT,
     "logo" TEXT,
     "description" TEXT,
     "contribution" TEXT,
@@ -102,18 +103,18 @@ CREATE TABLE "Sponsor" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Sponsor_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "sponsors_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "SponsorLink" (
+CREATE TABLE "sponsors_link" (
     "id" SERIAL NOT NULL,
     "sponsorId" INTEGER NOT NULL,
     "label" TEXT NOT NULL,
     "url" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "SponsorLink_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "sponsors_link_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -166,22 +167,22 @@ CREATE TABLE "refresh_tokens" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Attendee_email_key" ON "Attendee"("email");
+CREATE UNIQUE INDEX "attendee_email_key" ON "attendee"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Attendee_phoneNumber_key" ON "Attendee"("phoneNumber");
+CREATE UNIQUE INDEX "attendee_phoneNumber_key" ON "attendee"("phoneNumber");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Attendee_membershipID_key" ON "Attendee"("membershipID");
+CREATE UNIQUE INDEX "attendee_membershipID_key" ON "attendee"("membershipID");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Attendee_qrCode_key" ON "Attendee"("qrCode");
+CREATE UNIQUE INDEX "attendee_qrCode_key" ON "attendee"("qrCode");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Task_slug_key" ON "Task"("slug");
+CREATE UNIQUE INDEX "task_slug_key" ON "task"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "AttendeeTaskLog_attendeeId_taskId_key" ON "AttendeeTaskLog"("attendeeId", "taskId");
+CREATE UNIQUE INDEX "attendee_task_log_attendeeId_taskId_key" ON "attendee_task_log"("attendeeId", "taskId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "roles_name_key" ON "roles"("name");
@@ -205,7 +206,7 @@ CREATE INDEX "pivot_user_roles_roleId_idx" ON "pivot_user_roles"("roleId");
 CREATE INDEX "pivot_role_permissions_permissionId_idx" ON "pivot_role_permissions"("permissionId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Sponsor_name_key" ON "Sponsor"("name");
+CREATE UNIQUE INDEX "sponsors_name_key" ON "sponsors"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_uuid_key" ON "users"("uuid");
@@ -244,10 +245,10 @@ CREATE INDEX "refresh_tokens_expiresAt_idx" ON "refresh_tokens"("expiresAt");
 CREATE INDEX "refresh_tokens_token_idx" ON "refresh_tokens"("token");
 
 -- AddForeignKey
-ALTER TABLE "AttendeeTaskLog" ADD CONSTRAINT "AttendeeTaskLog_attendeeId_fkey" FOREIGN KEY ("attendeeId") REFERENCES "Attendee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "attendee_task_log" ADD CONSTRAINT "attendee_task_log_attendeeId_fkey" FOREIGN KEY ("attendeeId") REFERENCES "attendee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AttendeeTaskLog" ADD CONSTRAINT "AttendeeTaskLog_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "Task"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "attendee_task_log" ADD CONSTRAINT "attendee_task_log_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "task"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "pivot_user_roles" ADD CONSTRAINT "pivot_user_roles_userUUID_fkey" FOREIGN KEY ("userUUID") REFERENCES "users"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -262,7 +263,7 @@ ALTER TABLE "pivot_role_permissions" ADD CONSTRAINT "pivot_role_permissions_role
 ALTER TABLE "pivot_role_permissions" ADD CONSTRAINT "pivot_role_permissions_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "permissions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SponsorLink" ADD CONSTRAINT "SponsorLink_sponsorId_fkey" FOREIGN KEY ("sponsorId") REFERENCES "Sponsor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "sponsors_link" ADD CONSTRAINT "sponsors_link_sponsorId_fkey" FOREIGN KEY ("sponsorId") REFERENCES "sponsors"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_userUUID_fkey" FOREIGN KEY ("userUUID") REFERENCES "users"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
