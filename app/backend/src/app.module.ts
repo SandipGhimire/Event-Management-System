@@ -9,7 +9,8 @@ import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
 import { UserModule } from "./user/user.module";
 import { RoleModule } from "./role/role.module";
-import { SponsorController } from './sponsor/sponsor.controller';
+import { SponsorModule } from "./sponsor/sponsor.module";
+import { AttendeesModule } from "./attendees/attendees.module";
 
 @Module({
   imports: [
@@ -21,8 +22,10 @@ import { SponsorController } from './sponsor/sponsor.controller';
     AuthModule,
     UserModule,
     RoleModule,
+    SponsorModule,
+    AttendeesModule,
   ],
-  controllers: [AppController, SponsorController],
+  controllers: [AppController],
   providers: [
     AppService,
     {

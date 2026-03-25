@@ -25,20 +25,28 @@ const routes: RouterConfig[] = [
         path: "event",
         children: [
           {
+            path: "attendees",
+            component: () => import("@/views/Event/Attendees"),
+          },
+          {
             path: "scanner",
             component: () => import("@/views/Event/Scanner"),
           },
         ],
       },
       {
+        path: "/sponsors",
+        component: () => import("@/views/Sponsors"),
+      },
+      {
         path: "settings",
         children: [
           {
-            path: "users",
-            component: () => import("@/views/Settings/User"),
+            path: "roles",
+            component: () => import("@/views/Settings/Role"),
           },
           {
-            path: "roles",
+            path: "users",
             component: () => import("@/views/Settings/User"),
           },
         ],

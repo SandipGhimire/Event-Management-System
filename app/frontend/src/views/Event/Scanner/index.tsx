@@ -79,7 +79,9 @@ export default function Scanner() {
 
   return (
     <ContentLayout
-      header="QR Registry Gateway"
+      header={{
+        label: "QR Registry Gateway",
+      }}
       buttons={[
         {
           label: isScanning ? "Disable Scanner" : "Scan QR",

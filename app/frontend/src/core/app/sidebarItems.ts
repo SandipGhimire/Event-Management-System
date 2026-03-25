@@ -16,7 +16,7 @@ const sidebarItems = (): SidebarItem[] => {
     {
       label: "Attendees",
       icon: "users",
-      to: "/attendees",
+      to: "/event/attendees",
     },
     {
       label: "Scanner",

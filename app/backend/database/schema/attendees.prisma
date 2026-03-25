@@ -7,9 +7,8 @@ model Attendee {
   clubName     String?
   membershipID String? @unique
 
-  isVeg        Boolean?
-  qrCode       String   @unique
-  badgePrinted Boolean  @default(false)
+  isVeg  Boolean?
+  qrCode String   @unique
 
   logs AttendeeTaskLog[]
 

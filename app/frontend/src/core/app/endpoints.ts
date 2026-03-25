@@ -9,9 +9,23 @@ const user = {
   list: "/user/list/",
 };
 
+const role = {
+  list: "/role/list/",
+};
+
+const sponsor = {
+  list: "/sponsor/list/",
+};
+const attendees = {
+  list: "/attendees/list/",
+};
+
 const endpoints = {
   auth,
   user,
+  role,
+  sponsor,
+  attendees,
 };
 
 export default endpoints;

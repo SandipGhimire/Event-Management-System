@@ -70,6 +70,30 @@ export class UserService {
       prismaFilters.phoneNumber = { contains: String(filters.phoneNumber), mode: "insensitive" };
     }
 
-    return await paginate(this.db.user, { ...params, filters: prismaFilters });
+    return await paginate(this.db.user, params, prismaFilters, {
+      select: {
+        id: true,
+        uuid: true,
+        email: true,
+        username: true,
+        firstName: true,
+        middleName: true,
+        lastName: true,
+        phoneNumber: true,
+        isActive: true,
+        lastLogin: true,
+        createdAt: true,
+        updatedAt: true,
+        roles: {
+          include: {
+            role: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 }
