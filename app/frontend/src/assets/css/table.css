@@ -7,7 +7,7 @@
 }
 
 .dt-body-wrapper {
-  @apply border relative flex-1 overflow-auto min-h-[300px] rounded-t-sm;
+  @apply border relative flex-1 overflow-auto rounded-t-sm;
 }
 
 .dt-loading-overlay {

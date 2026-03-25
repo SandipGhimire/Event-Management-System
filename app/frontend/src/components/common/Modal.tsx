@@ -1,6 +1,6 @@
-import type { ContentLayoutProps } from "@/core/types/component/contentLayout.type";
+import type { ModalProps } from "@/core/types/component/modal";
 
-export default function ContentLayout({ header, buttons = [], children }: ContentLayoutProps) {
+export default function Modal({ header, buttons = [], children }: ModalProps) {
   return (
     <>
       <div className="bg-white border rounded-sm mb-12 relative">
