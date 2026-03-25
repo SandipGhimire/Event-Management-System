@@ -2,13 +2,13 @@ import ContentLayout from "@/components/common/ContentLayout";
 import DataTable from "@/components/common/DataTable";
 import type { ColumnConfig } from "@/core/types/component/dataTable.type";
 import endpoints from "@/core/app/endpoints";
-import type { SponsorDetail } from "shared-types";
+import type { TaskDetail } from "shared-types";
 import { useCallback, useMemo, useState } from "react";
 import { DynamicIcon } from "lucide-react/dynamic";
 
-export default function Sponsors() {
+export default function Attendees() {
   const [count, setCount] = useState(0);
-  const columns: ColumnConfig<SponsorDetail>[] = useMemo(
+  const columns: ColumnConfig<TaskDetail>[] = useMemo(
     () => [
       {
         key: "name",
@@ -16,23 +16,15 @@ export default function Sponsors() {
         searchable: true,
       },
       {
-        key: "email",
-        header: "Email Address",
+        key: "description",
+        header: "Description",
         searchable: true,
         sortable: true,
       },
       {
-        key: "phoneNumber",
-        header: "Phone Number",
+        key: "slug",
+        header: "Slug",
         searchable: true,
-      },
-      {
-        key: "description",
-        header: "Description",
-      },
-      {
-        key: "contribution",
-        header: "Contribution",
       },
       {
         key: "isActive",
@@ -55,10 +47,10 @@ export default function Sponsors() {
 
   return (
     <ContentLayout
-      header={{ label: "Sponsors", count }}
+      header={{ label: "Task", count }}
       buttons={[
         {
-          label: "Create Sponsor",
+          label: "Create Task",
           onClick: () => alert("Open Create Modal"),
           className: "btn-primary",
         },
@@ -67,7 +59,7 @@ export default function Sponsors() {
       <div className="p-1">
         <DataTable
           mode="api"
-          apiUrl={endpoints.sponsor.list}
+          apiUrl={endpoints.task.list}
           fetchCallback={onFetch}
           columns={columns}
           initialPageSize={10}

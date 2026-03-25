@@ -11,6 +11,7 @@ import { UserModule } from "./user/user.module";
 import { RoleModule } from "./role/role.module";
 import { SponsorModule } from "./sponsor/sponsor.module";
 import { AttendeesModule } from "./attendees/attendees.module";
+import { TaskModule } from "./task/task.module";
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AttendeesModule } from "./attendees/attendees.module";
     RoleModule,
     SponsorModule,
     AttendeesModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [

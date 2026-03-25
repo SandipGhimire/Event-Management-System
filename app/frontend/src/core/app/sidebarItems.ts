@@ -24,6 +24,11 @@ const sidebarItems = (): SidebarItem[] => {
       to: "/event/scanner",
     },
     {
+      label: "Tasks",
+      icon: "clipboard-list",
+      to: "/event/tasks",
+    },
+    {
       label: "Sponsors",
     },
     {

@@ -32,6 +32,10 @@ const routes: RouterConfig[] = [
             path: "scanner",
             component: () => import("@/views/Event/Scanner"),
           },
+          {
+            path: "tasks",
+            component: () => import("@/views/Event/Task"),
+          },
         ],
       },
       {

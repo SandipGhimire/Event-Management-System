@@ -7,10 +7,9 @@ export default function ContentLayout({ header, buttons = [], children }: Conten
         <div className="p-4 border-b flex justify-between items-center">
           <div className="font-bold text-xl text-primary">
             {header.label}
-            {(header.count && header.count != undefined) ||
-              (header.count === 0 && (
-                <span className="ml-1 font-bold text-[14px] text-secondary">({header.count})</span>
-              ))}
+            <span className="ml-1 font-bold! text-[14px]! text-secondary!">
+              {header.count || header.count == 0 ? `(${header.count})` : ""}
+            </span>
           </div>
           <div className="flex gap-1">
             {buttons.map((button, index) => (

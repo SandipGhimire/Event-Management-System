@@ -48,3 +48,13 @@ export interface RoleDetail {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface TaskDetail {
+  id: number;
+  name: string;
+  description: string;
+  isActive: boolean;
+  order: number;
+  slug: string;
+  createdAt: string; // ISO date string
+}
