@@ -112,10 +112,13 @@ export default function DataTable<T>({
     <div
       className="dt-container"
       data-instance-id={instanceId}
-      style={{ maxHeight: `calc(100dvh - ${heightOffset}rem)`, minHeight: `calc(100dvh - ${heightOffset}rem)` }}
+      style={{
+        maxHeight: `calc(100dvh - ${heightOffset}rem)`,
+        minHeight: `calc(100dvh - ${heightOffset}rem)`,
+      }}
     >
       {/* Table Content Area - Scrollable Y axis */}
-      <div className="dt-body-wrapper">
+      <div className={`dt-body-wrapper ${data.length > 0 ? "overflow-hidden" : "overflow-auto"}`}>
         {loading && (
           <div className="dt-loading-overlay">
             <Loader2 className="dt-loading-icon" />
