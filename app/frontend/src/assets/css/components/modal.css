@@ -19,7 +19,7 @@
    MODAL PANEL
    ----------------------------------------------------------------------------- */
 .modal-panel {
-  @apply bg-white rounded-sm shadow-xl border border-border mt-[5vh] w-full flex flex-col;
+  @apply bg-white rounded-sm shadow-xl border border-border mt-[5vh] mx-5 mb-5 w-full flex flex-col;
   max-height: 85vh;
 }
 
