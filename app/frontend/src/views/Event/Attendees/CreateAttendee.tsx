@@ -34,9 +34,9 @@ export default function CreateAttendee({ onSuccess }: CreateAttendeeProps) {
       }
     >
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4">
+        <div className="flex flex-col md:grid md:grid-cols-2 gap-2">
           {/* Name */}
-          <div className="form-field field-required md:col-span-2">
+          <div className="form-field field-required">
             <label htmlFor="createAttendee-name">Name</label>
             <input
               id="createAttendee-name"
