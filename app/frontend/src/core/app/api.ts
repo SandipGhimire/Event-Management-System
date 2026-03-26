@@ -41,43 +41,40 @@ api.interceptors.response.use(
     const { setIsAuthenticated } = useAuthStore.getState();
 
     if (status === 401 && originalRequest.url === endpoints.auth.refresh) {
-      jwtServices.destroyToken();
       setIsAuthenticated(false);
       return Promise.reject(error);
     }
 
     if (status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      try {
-        let data = {};
-        if (isDevelopment()) {
-          const refreshToken = jwtServices.getRefreshToken();
-          if (!refreshToken) throw new Error("No refresh token");
-          data = { refresh: refreshToken };
-        }
-        await api
-          .post(endpoints.auth.refresh, data, {
-            headers: {
-              Authorization: `Bearer ${jwtServices.getRefreshToken()}`,
-            },
-          })
-          .then((response) => {
-            if (isDevelopment()) {
-              const token = response.data.accessToken;
-              jwtServices.setToken(token);
-              const refreshToken = response.data.refreshToken;
-              jwtServices.setRefreshToken(refreshToken);
-              originalRequest.headers["Authorization"] = `Bearer ${token}`;
-            }
-            setIsAuthenticated(true);
-          });
-        return await axios(originalRequest);
-      } catch (e) {
-        console.error("Token refresh failed", e);
-        setIsAuthenticated(false);
-        jwtServices.destroyToken();
-        throw e;
+      let data = {};
+      if (isDevelopment()) {
+        const refreshToken = jwtServices.getRefreshToken();
+        if (!refreshToken) throw new Error("No refresh token");
+        data = { refresh: refreshToken };
       }
+      await api
+        .post(endpoints.auth.refresh, data, {
+          headers: {
+            Authorization: `Bearer ${jwtServices.getRefreshToken()}`,
+          },
+        })
+        .then((response) => {
+          if (isDevelopment()) {
+            const token = response.data.accessToken;
+            jwtServices.setToken(token);
+            const refreshToken = response.data.refreshToken;
+            jwtServices.setRefreshToken(refreshToken);
+            originalRequest.headers["Authorization"] = `Bearer ${token}`;
+          }
+          setIsAuthenticated(true);
+        })
+        .catch((e) => {
+          console.error("Token refresh failed", e);
+          setIsAuthenticated(false);
+          throw e;
+        });
+      return await axios(originalRequest);
     }
     return Promise.reject(error);
   }

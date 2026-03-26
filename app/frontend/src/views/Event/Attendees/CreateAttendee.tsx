@@ -1,20 +1,53 @@
 import Modal from "@/components/common/Modal";
 import { useAttendeeStore } from "@/store/app/attendee.store";
 import { useLoaderStore } from "@/store/app/loader.store";
+import { useState, useEffect } from "react"; // Added useState and useEffect
 
 interface CreateAttendeeProps {
   onSuccess?: () => void;
 }
 
 export default function CreateAttendee({ onSuccess }: CreateAttendeeProps) {
-  const { isCreateModalOpen, closeCreateModal, createForm, setCreateFormField, createAttendee, errors } =
-    useAttendeeStore();
+  const {
+    isCreateModalOpen,
+    closeCreateModal,
+    createForm,
+    setCreateFormField,
+    createAttendee,
+    errors,
+    resetCreateForm,
+  } = useAttendeeStore(); // Added resetCreateForm
   const isLoading = useLoaderStore((s) => s.isLoading("createAttendee"));
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // Added previewUrl state
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     createAttendee(onSuccess);
   };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCreateFormField("profilePicture", file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  useEffect(() => {
+    if (!isCreateModalOpen) {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      setPreviewUrl(null);
+      resetCreateForm();
+    }
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [isCreateModalOpen, resetCreateForm, previewUrl]); // Added previewUrl to dependencies for cleanup
 
   return (
     <Modal
@@ -27,7 +60,12 @@ export default function CreateAttendee({ onSuccess }: CreateAttendeeProps) {
           <button type="button" className="btn btn-outline-danger" onClick={closeCreateModal} disabled={isLoading}>
             Cancel
           </button>
-          <button type="button" className={`btn btn-primary ${isLoading ? "btn-loading" : ""}`} onClick={handleSubmit}>
+          <button
+            type="button"
+            className={`btn btn-primary ${isLoading ? "btn-loading" : ""}`}
+            onClick={handleSubmit}
+            // Removed the disabled condition checking multiple form fields
+          >
             Create Attendee
           </button>
         </>
@@ -35,6 +73,34 @@ export default function CreateAttendee({ onSuccess }: CreateAttendeeProps) {
     >
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col md:grid md:grid-cols-2 gap-2">
+          {/* Profile Picture */}
+          <div className="form-field md:col-span-2">
+            <label htmlFor="createAttendee-profilePicture">Profile Picture</label>
+            <div className="flex items-center gap-4">
+              <input
+                id="createAttendee-profilePicture"
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+              <label htmlFor="createAttendee-profilePicture" className="btn btn-outline-primary cursor-pointer mb-0">
+                Choose Image
+              </label>
+              {previewUrl && (
+                <div className="relative w-12 h-12 rounded-full overflow-hidden border border-border">
+                  <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                </div>
+              )}
+              {createForm.profilePicture && (
+                <span className="text-xs text-muted-foreground truncate max-w-[150px]">
+                  {(createForm.profilePicture as File).name}
+                </span>
+              )}
+            </div>
+            {errors?.profilePicture?.[0] && <span className="field-error">{errors.profilePicture?.[0]}</span>}
+          </div>
+
           {/* Name */}
           <div className="form-field field-required">
             <label htmlFor="createAttendee-name">Name</label>
@@ -120,7 +186,7 @@ export default function CreateAttendee({ onSuccess }: CreateAttendeeProps) {
           </div>
 
           {/* Is Veg */}
-          <div className="form-field flex-row! my-auto field-required">
+          <div className="form-field flex-row! my-auto">
             <input
               id="createAttendee-isVeg"
               type="checkbox"

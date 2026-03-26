@@ -7,6 +7,7 @@ import { useCallback, useMemo, useState, useRef } from "react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useAttendeeStore } from "@/store/app/attendee.store";
 import CreateAttendee from "./CreateAttendee";
+import { getBackendFile } from "@/core/utils/common.utils";
 
 export default function Attendees() {
   const [count, setCount] = useState(0);
@@ -15,6 +16,20 @@ export default function Attendees() {
 
   const columns: ColumnConfig<AttendeesDetail>[] = useMemo(
     () => [
+      {
+        key: "profilePic",
+        header: "",
+        width: "50px",
+        render: (row) => (
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-border bg-muted flex items-center justify-center cursor-pointer">
+            {row.profilePic ? (
+              <img src={getBackendFile(row.profilePic)} alt={row.name} className="w-full h-full object-cover" />
+            ) : (
+              <DynamicIcon name="user" size={20} className="text-muted-foreground" />
+            )}
+          </div>
+        ),
+      },
       {
         key: "name",
         header: "Name",

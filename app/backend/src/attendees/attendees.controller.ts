@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { AttendeesService } from "./attendees.service";
 import { parseQuery } from "../prisma/prisma.utils";
 import { AttendeeCreateDto } from "./attendees.dto";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("attendees")
 export class AttendeesController {
@@ -12,15 +13,16 @@ export class AttendeesController {
     const result = await this.attendeesService.getAllAttendees(parseQuery(query));
     return {
       success: true,
-      message: "Sponsors fetched successfully",
+      message: "Attendees fetched successfully",
       status: 200,
       data: result,
     };
   }
 
   @Post("create")
-  async createAttendee(@Body() body: AttendeeCreateDto) {
-    const result = await this.attendeesService.createAttendee(body);
+  @UseInterceptors(FileInterceptor("profilePicture"))
+  async createAttendee(@Body() body: AttendeeCreateDto, @UploadedFile() file?: Express.Multer.File) {
+    const result = await this.attendeesService.createAttendee(body, file);
     return {
       success: true,
       message: "Attendee created successfully",

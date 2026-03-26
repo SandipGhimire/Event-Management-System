@@ -1,9 +1,10 @@
 export interface CreateAttendeePayload {
   name: string;
   email: string;
-  phoneNumber: number;
+  phoneNumber: string;
   clubName: string;
   membershipID?: number;
   isVeg: boolean;
   position: string;
+  profilePicture?: any;
 }

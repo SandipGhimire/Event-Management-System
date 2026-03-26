@@ -3,6 +3,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateAttendeePayload, FetchParams, PaginatedData } from "shared-types";
 import { paginate } from "../prisma/prisma.utils";
 import { Attendee } from "../../database/generated/client";
+import { saveFile } from "../common/utils/file-upload.utils";
 
 @Injectable()
 export class AttendeesService {
@@ -31,7 +32,7 @@ export class AttendeesService {
     return await paginate(this.db.attendee, { ...params, filters: prismaFilters });
   }
 
-  async createAttendee(body: CreateAttendeePayload) {
+  async createAttendee(body: CreateAttendeePayload, file?: Express.Multer.File) {
     const generateRandomQRCode = async (length: number = 30): Promise<string> => {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       let result = "";
@@ -50,6 +51,12 @@ export class AttendeesService {
       return result;
     };
 
+    let profilePicPath: string | null = null;
+    if (file) {
+      const fileName = body.name.replace(/\s+/g, "-").toLowerCase();
+      profilePicPath = saveFile(file, "attendees", fileName);
+    }
+
     const qrCode = await generateRandomQRCode();
 
     return await this.db.attendee.create({
@@ -58,8 +65,9 @@ export class AttendeesService {
         email: body.email,
         phoneNumber: String(body.phoneNumber),
         clubName: body.clubName,
-        membershipID: String(body.membershipID),
+        membershipID: body.membershipID ? String(body.membershipID) : null,
         isVeg: body.isVeg,
+        profilePic: profilePicPath,
         qrCode,
       },
     });

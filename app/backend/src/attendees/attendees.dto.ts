@@ -1,5 +1,7 @@
 import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, Matches } from "class-validator";
 import { CreateAttendeePayload } from "shared-types";
+import { Transform } from "class-transformer";
+import { IsUnique } from "../prisma/validator/UniqueValidator.decorator";
 
 export class AttendeeCreateDto implements CreateAttendeePayload {
   @IsString()
@@ -8,6 +10,7 @@ export class AttendeeCreateDto implements CreateAttendeePayload {
 
   @IsEmail()
   @IsNotEmpty({ message: "Email is required" })
+  @IsUnique("attendee", "email", { message: "Email already exists" })
   email: string;
 
   @IsString()
@@ -20,9 +23,11 @@ export class AttendeeCreateDto implements CreateAttendeePayload {
   clubName: string;
 
   @IsOptional()
+  @Transform(({ value }) => (value ? Number(value) : undefined))
   @IsNumber()
   membershipID?: number;
 
+  @Transform(({ value }) => value === "true" || value === true)
   @IsBoolean()
   isVeg: boolean;
 

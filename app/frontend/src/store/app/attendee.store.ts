@@ -40,8 +40,19 @@ export const useAttendeeStore = create<AttendeeState>((set, get) => ({
 
     startLoader("createAttendee");
 
+    const formData = new FormData();
+    Object.entries(createForm).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        formData.append(key, value instanceof File ? value : String(value));
+      }
+    });
+
     await api
-      .post(endpoints.attendees.create, { ...createForm })
+      .post(endpoints.attendees.create, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
       .then(() => {
         get().closeCreateModal();
         successCallback?.();

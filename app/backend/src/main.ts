@@ -2,7 +2,7 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { BadRequestException, ValidationPipe } from "@nestjs/common";
-import { ValidationError } from "class-validator";
+import { useContainer, ValidationError } from "class-validator";
 import cookieParser from "cookie-parser";
 
 async function bootstrap() {
@@ -22,8 +22,12 @@ async function bootstrap() {
 
   SwaggerModule.setup("swagger", app, documentFactory);
 
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+
   app.useGlobalPipes(
     new ValidationPipe({
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
         const errors = validationErrors.reduce((accumulator, error) => {
           const message = Object.values(error.constraints ?? {});
