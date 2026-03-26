@@ -39,8 +39,14 @@ async function main() {
 
       if (module) {
         if (typeof module.run == "function") {
-          console.log(`Running specific seeder: ${specific}.seeder.ts`);
+          console.log("----------------------------------------");
+          console.log(`Seeding File: ${specific}.seeder.ts`);
+          const start = process.hrtime.bigint();
           await module.run(prisma);
+          const end = process.hrtime.bigint();
+          const durationMs = Number(end - start) / 1_000_000;
+          console.log(`Execution Time: ${durationMs.toFixed(2)} ms`);
+          console.log("----------------------------------------");
         } else {
           console.log(`Seeder ${specific}.seeder doesn't export run() function!`);
         }
