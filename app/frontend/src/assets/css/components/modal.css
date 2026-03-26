@@ -1,0 +1,123 @@
+/* -----------------------------------------------------------------------------
+   MODAL OVERLAY (BACKDROP)
+   ----------------------------------------------------------------------------- */
+.modal-overlay {
+  @apply fixed inset-0 z-50 flex items-start justify-center;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.modal-overlay.modal-entering {
+  animation: modal-fade-in 0.3s ease-out forwards;
+}
+
+.modal-overlay.modal-exiting {
+  animation: modal-fade-out 0.25s ease-in forwards;
+}
+
+/* -----------------------------------------------------------------------------
+   MODAL PANEL
+   ----------------------------------------------------------------------------- */
+.modal-panel {
+  @apply bg-white rounded-sm shadow-xl border border-border mt-[5vh] w-full flex flex-col;
+  max-height: 85vh;
+}
+
+.modal-panel.modal-entering {
+  animation: modal-slide-down 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-panel.modal-exiting {
+  animation: modal-slide-up 0.25s ease-in forwards;
+}
+
+/* -----------------------------------------------------------------------------
+   SIZE VARIANTS
+   ----------------------------------------------------------------------------- */
+.modal-sm {
+  @apply max-w-md;
+}
+
+.modal-md {
+  @apply max-w-xl;
+}
+
+.modal-lg {
+  @apply max-w-3xl;
+}
+
+.modal-xl {
+  @apply max-w-5xl;
+}
+
+/* -----------------------------------------------------------------------------
+   MODAL HEADER
+   ----------------------------------------------------------------------------- */
+.modal-header {
+  @apply flex items-center justify-between px-5 py-4 border-b shrink-0;
+}
+
+.modal-header-title {
+  @apply font-bold text-lg text-primary;
+}
+
+.modal-header-close {
+  @apply p-1 rounded-sm text-text-secondary hover:text-text-primary hover:bg-surface-alt transition-all duration-150 cursor-pointer;
+}
+
+/* -----------------------------------------------------------------------------
+   MODAL BODY
+   ----------------------------------------------------------------------------- */
+.modal-body {
+  @apply px-5 py-5 overflow-y-auto flex-1;
+}
+
+/* -----------------------------------------------------------------------------
+   MODAL FOOTER
+   ----------------------------------------------------------------------------- */
+.modal-footer {
+  @apply flex items-center justify-end gap-2 px-5 py-3 border-t bg-surface-alt/50 shrink-0;
+}
+
+/* -----------------------------------------------------------------------------
+   KEYFRAMES
+   ----------------------------------------------------------------------------- */
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modal-slide-up {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}

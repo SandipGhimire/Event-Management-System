@@ -4,9 +4,13 @@ import type { ColumnConfig } from "@/core/types/component/dataTable.type";
 import endpoints from "@/core/app/endpoints";
 import type { UserDetail } from "shared-types";
 import { useCallback, useMemo, useState } from "react";
+import { useUserStore } from "@/store/app/user.store";
+import CreateUser from "./CreateUser";
 
 export default function UserList() {
   const [count, setCount] = useState(0);
+  const openCreateModal = useUserStore((s) => s.openCreateModal);
+
   const columns: ColumnConfig<UserDetail>[] = useMemo(
     () => [
       {
@@ -53,7 +57,7 @@ export default function UserList() {
       buttons={[
         {
           label: "Create User",
-          onClick: () => alert("Open Create Modal"),
+          onClick: openCreateModal,
           className: "btn-primary",
         },
       ]}
@@ -68,6 +72,8 @@ export default function UserList() {
           heightOffset={15.5}
         />
       </div>
+
+      <CreateUser />
     </ContentLayout>
   );
 }

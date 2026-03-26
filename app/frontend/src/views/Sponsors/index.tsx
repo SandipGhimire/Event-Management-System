@@ -5,9 +5,13 @@ import endpoints from "@/core/app/endpoints";
 import type { SponsorDetail } from "shared-types";
 import { useCallback, useMemo, useState } from "react";
 import { DynamicIcon } from "lucide-react/dynamic";
+import { useSponsorStore } from "@/store/app/sponsor.store";
+import CreateSponsor from "./CreateSponsor";
 
 export default function Sponsors() {
   const [count, setCount] = useState(0);
+  const openCreateModal = useSponsorStore((s) => s.openCreateModal);
+
   const columns: ColumnConfig<SponsorDetail>[] = useMemo(
     () => [
       {
@@ -59,7 +63,7 @@ export default function Sponsors() {
       buttons={[
         {
           label: "Create Sponsor",
-          onClick: () => alert("Open Create Modal"),
+          onClick: openCreateModal,
           className: "btn-primary",
         },
       ]}
@@ -74,6 +78,8 @@ export default function Sponsors() {
           heightOffset={15.5}
         />
       </div>
+
+      <CreateSponsor />
     </ContentLayout>
   );
 }

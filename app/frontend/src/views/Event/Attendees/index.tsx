@@ -5,9 +5,13 @@ import endpoints from "@/core/app/endpoints";
 import type { AttendeesDetail } from "shared-types";
 import { useCallback, useMemo, useState } from "react";
 import { DynamicIcon } from "lucide-react/dynamic";
+import { useAttendeeStore } from "@/store/app/attendee.store";
+import CreateAttendee from "./CreateAttendee";
 
 export default function Attendees() {
   const [count, setCount] = useState(0);
+  const openCreateModal = useAttendeeStore((s) => s.openCreateModal);
+
   const columns: ColumnConfig<AttendeesDetail>[] = useMemo(
     () => [
       {
@@ -55,8 +59,8 @@ export default function Attendees() {
       header={{ label: "Attendees", count }}
       buttons={[
         {
-          label: "Create User",
-          onClick: () => alert("Open Create Modal"),
+          label: "Create Attendee",
+          onClick: openCreateModal,
           className: "btn-primary",
         },
       ]}
@@ -71,6 +75,8 @@ export default function Attendees() {
           heightOffset={15.5}
         />
       </div>
+
+      <CreateAttendee />
     </ContentLayout>
   );
 }

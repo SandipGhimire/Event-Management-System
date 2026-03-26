@@ -7,6 +7,7 @@ const auth = {
 const user = {
   self: "/user/self/",
   list: "/user/list/",
+  create: "/user/create/",
 };
 
 const role = {
@@ -15,14 +16,17 @@ const role = {
 
 const attendees = {
   list: "/attendees/list/",
+  create: "/attendees/create/",
 };
 
 const sponsor = {
   list: "/sponsor/list/",
+  create: "/sponsor/create/",
 };
 
 const task = {
   list: "/task/list/",
+  create: "/task/create/",
 };
 const endpoints = {
   auth,

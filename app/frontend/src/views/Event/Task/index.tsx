@@ -5,9 +5,13 @@ import endpoints from "@/core/app/endpoints";
 import type { TaskDetail } from "shared-types";
 import { useCallback, useMemo, useState } from "react";
 import { DynamicIcon } from "lucide-react/dynamic";
+import { useTaskStore } from "@/store/app/task.store";
+import CreateTask from "./CreateTask";
 
 export default function Attendees() {
   const [count, setCount] = useState(0);
+  const openCreateModal = useTaskStore((s) => s.openCreateModal);
+
   const columns: ColumnConfig<TaskDetail>[] = useMemo(
     () => [
       {
@@ -51,7 +55,7 @@ export default function Attendees() {
       buttons={[
         {
           label: "Create Task",
-          onClick: () => alert("Open Create Modal"),
+          onClick: openCreateModal,
           className: "btn-primary",
         },
       ]}
@@ -66,6 +70,8 @@ export default function Attendees() {
           heightOffset={15.5}
         />
       </div>
+
+      <CreateTask />
     </ContentLayout>
   );
 }
