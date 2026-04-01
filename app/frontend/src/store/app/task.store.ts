@@ -14,6 +14,7 @@ interface CreateTaskForm {
 }
 
 const defaultForm: CreateTaskForm = {
+  id: undefined,
   name: "",
   description: "",
   slug: "",
@@ -86,6 +87,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     startLoader("updateTask");
     try {
       await api.post(`${endpoints.task.update}${selectedTask.id}`, {
+        id: createForm.id,
         name: createForm.name,
         description: createForm.description || undefined,
         slug: createForm.slug,

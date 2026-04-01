@@ -26,6 +26,14 @@ export class SponsorController {
   async getSponsorById(@Param("id") id: string) {
     const numericId = parseInt(id, 10);
     const result = await this.sponserService.getSponsorById(numericId);
+    if (!result) {
+      return {
+        success: false,
+        message: "Sponsor not found",
+        status: 200,
+        data: null,
+      };
+    }
     return {
       success: true,
       message: "Sponsor fetched successfully",
@@ -57,6 +65,14 @@ export class SponsorController {
   ) {
     const numericId = parseInt(id, 10);
     const result = await this.sponserService.updateSponsor(numericId, body, file);
+    if (!result) {
+      return {
+        success: false,
+        message: "Sponsor not found for update",
+        status: 200,
+        data: null,
+      };
+    }
     return {
       success: true,
       message: "Sponsor updated successfully",

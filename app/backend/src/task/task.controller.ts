@@ -24,6 +24,14 @@ export class TaskController {
   @Permission(["task.view"])
   async getTaskById(@Param("id") id: string) {
     const result = await this.taskService.getTaskById(Number(id));
+    if (!result) {
+      return {
+        success: false,
+        message: "Task not found",
+        status: 200,
+        data: null,
+      };
+    }
     return {
       success: true,
       message: "Task fetched successfully",
@@ -48,6 +56,14 @@ export class TaskController {
   @Permission(["task.update"])
   async updateTask(@Param("id") id: string, @Body() body: TaskUpdateDto) {
     const result = await this.taskService.updateTask(Number(id), body);
+    if (!result) {
+      return {
+        success: false,
+        message: "Task not found for update",
+        status: 200,
+        data: null,
+      };
+    }
     return {
       success: true,
       message: "Task updated successfully",
@@ -60,6 +76,14 @@ export class TaskController {
   @Permission(["task.delete"])
   async deleteTask(@Param("id") id: string) {
     const result = await this.taskService.deleteTask(Number(id));
+    if (!result) {
+      return {
+        success: false,
+        message: "Task not found for deletion",
+        status: 200,
+        data: null,
+      };
+    }
     return {
       success: true,
       message: "Task deleted successfully",

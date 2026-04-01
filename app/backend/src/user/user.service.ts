@@ -84,7 +84,7 @@ export class UserService {
 
     const user = await this.db.user.findUnique({ where: { id }, select: { uuid: true } });
     if (!user) {
-      throw new Error("User not found");
+      return null;
     }
 
     if (password) {

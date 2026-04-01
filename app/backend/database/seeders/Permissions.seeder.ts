@@ -13,6 +13,8 @@ const run = async (prisma: PrismaClient) => {
       { name: "Update Attendee", key: "attendee.update", description: "Update an existing attendee" },
       { name: "Delete Attendee", key: "attendee.delete", description: "Delete an attendee" },
       { name: "Scan Attendee", key: "attendee.scan", description: "Scan attendee QR codes" },
+      { name: "Toggle Attendee QR Task", key: "attendee.qr_task_toggle", description: "Toggle tasks from Scanner" },
+      { name: "Toggle Attendee Task", key: "attendee.task_toggle", description: "Toggle tasks from List" },
 
       // Sponsors
       { name: "List Sponsors", key: "sponsor.list", description: "View the list of sponsors" },

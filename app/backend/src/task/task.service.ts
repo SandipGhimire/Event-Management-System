@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { FetchParams, PaginatedData } from "shared-types";
 import { paginate } from "../prisma/prisma.utils";
@@ -26,7 +26,6 @@ export class TaskService {
     const task = await this.db.task.findUnique({
       where: { id },
     });
-    if (!task) throw new NotFoundException("Task not found");
     return task;
   }
 
@@ -43,7 +42,8 @@ export class TaskService {
   }
 
   async updateTask(id: number, data: TaskUpdateDto) {
-    await this.getTaskById(id);
+    const task = await this.getTaskById(id);
+    if (!task) return null;
     return await this.db.task.update({
       where: { id },
       data: {
@@ -57,7 +57,8 @@ export class TaskService {
   }
 
   async deleteTask(id: number) {
-    await this.getTaskById(id);
+    const task = await this.getTaskById(id);
+    if (!task) return null;
     return await this.db.task.delete({
       where: { id },
     });

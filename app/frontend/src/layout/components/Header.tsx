@@ -37,7 +37,7 @@ export default function Header() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 h-16 bg-white border-b flex items-center">
+      <div className="fixed top-0 left-0 right-0 h-16 bg-white border-b flex items-center z-50">
         <div
           className={`${isSidebarOpen ? "w-64 min-w-64 max-w-64" : "w-20 min-w-20 max-w-20"} border-r transition-all duration-300 ease-in-out h-full flex items-cente`}
         >
@@ -53,11 +53,7 @@ export default function Header() {
         </div>
         <div className={`px-4 flex items-center justify-between w-full`}>
           <button className="btn btn-icon btn-outline-secondary" onClick={toggleSidebar}>
-            {isSidebarOpen ? (
-              <PanelLeftClose size={24} />
-            ) : (
-              <PanelRightClose size={24} />
-            )}
+            {isSidebarOpen ? <PanelLeftClose size={24} /> : <PanelRightClose size={24} />}
           </button>
           <div className="relative">
             <div
