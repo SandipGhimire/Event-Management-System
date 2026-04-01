@@ -2,28 +2,21 @@ import { useEffect, useState, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import ContentLayout from "@/components/common/ContentLayout";
 import { Camera, X, CheckCircle2 } from "lucide-react";
-
-interface UserData {
-  name: string;
-  position: string;
-  phoneno: string;
-  club: string;
-}
+import api from "@/core/app/api";
+import { useHasPermission } from "@/core/utils/permission.utils";
+import TaskToggleList from "../Attendees/TaskToggleList";
+import type { AttendeesDetail, TaskDetail } from "shared-types";
+import { toast } from "react-toastify";
 
 export default function Scanner() {
-  const [scannedData, setScannedData] = useState<UserData | null>(null);
+  const [scannedData, setScannedData] = useState<AttendeesDetail | null>(null);
+  const [tasks, setTasks] = useState<TaskDetail[]>([]);
   const [isScanning, setIsScanning] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isFetchingAttendee, setIsFetchingAttendee] = useState(false);
   const qrScannerRef = useRef<Html5Qrcode | null>(null);
 
-  // Mock user data
-  const generateMockUser = (): UserData => ({
-    name: "John Doe",
-    position: "President",
-    phoneno: "TCKT-12345",
-    club: "Leo Club of Kathmandu Atal Pingalasthan",
-  });
+  const canToggleTask = useHasPermission("attendee.qr_task_toggle");
 
   const startScanner = async () => {
     if (isStarting) return;
@@ -31,7 +24,6 @@ export default function Scanner() {
     try {
       setScannedData(null);
       setIsStarting(true);
-      setError(null);
 
       const html5QrCode = new Html5Qrcode("reader");
       qrScannerRef.current = html5QrCode;
@@ -41,10 +33,22 @@ export default function Scanner() {
       await html5QrCode.start(
         { facingMode: "environment" },
         config,
-        (decodedText) => {
-          console.log(decodedText);
+        async (decodedText) => {
           stopScanner();
-          setScannedData(generateMockUser());
+          setIsFetchingAttendee(true);
+          try {
+            const { data: res } = await api.get(`/attendees/qr/${decodedText}`);
+            if (res.success && res.data) {
+              setScannedData(res.data);
+              toast.success("Attendee matched!");
+            } else {
+              toast.error(res.message || "Attendee not found for this QR code.");
+            }
+          } catch (err: any) {
+            toast.error(err.response?.data?.message || err.response?.data?.error || "Failed to fetch attendee details");
+          } finally {
+            setIsFetchingAttendee(false);
+          }
         },
         () => {}
       );
@@ -53,7 +57,7 @@ export default function Scanner() {
       setIsStarting(false);
     } catch (err: any) {
       console.error("Scanner error:", err);
-      setError(`Failed to start camera: ${err.message || "Unknown error"}`);
+      toast.error(`Failed to start camera: ${err.message || "Unknown error"}`);
       setIsStarting(false);
     }
   };
@@ -71,6 +75,12 @@ export default function Scanner() {
   };
 
   useEffect(() => {
+    // Fetch active tasks for toggling
+    api
+      .get("/task/list", { params: { pageSize: 100 } })
+      .then((res) => setTasks(res.data.data.data || []))
+      .catch((err) => console.error("Failed to load tasks", err));
+
     // Cleanup scanner on unmount
     return () => {
       stopScanner();
@@ -99,7 +109,7 @@ export default function Scanner() {
             <div className="relative bg-background rounded-lg border border-border-alt overflow-hidden shadow-sm flex flex-col min-h-[300px] sm:min-h-[400px]">
               <div id="reader" className="w-full h-full object-cover"></div>
 
-              {!isScanning && !scannedData && (
+              {!isScanning && !scannedData && !isFetchingAttendee && (
                 <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6">
                   <div className="w-20 h-20 bg-primary/5 rounded-full flex items-center justify-center text-primary/40">
                     <Camera className="w-10 h-10" />
@@ -111,20 +121,22 @@ export default function Scanner() {
                 </div>
               )}
 
+              {isFetchingAttendee && (
+                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6">
+                  <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <div className="max-w-xs">
+                    <h3 className="text-text-primary font-bold text-lg">Verifying QR Code...</h3>
+                    <p className="text-sm text-text-secondary mt-2">Please wait while we resolve attendee data.</p>
+                  </div>
+                </div>
+              )}
+
               {isScanning && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="line" />
                 </div>
               )}
             </div>
-          </div>
-        )}
-
-        {/* Error message */}
-        {error && !scannedData && (
-          <div className="mb-6 p-4 bg-error/5 border border-error/10 text-error rounded text-center text-xs font-semibold flex items-center justify-center gap-2">
-            <X className="w-4 h-4" />
-            {error}
           </div>
         )}
 
@@ -144,24 +156,52 @@ export default function Scanner() {
                 </div>
               </div>
 
-              <div className="bg-secondary/5 p-5 rounded border border-border break-all font-mono text-sm text-primary-dark space-y-2">
+              <div className="bg-secondary/5 p-5 rounded border border-border break-all text-sm text-primary-dark space-y-2 mb-6">
                 <div>
-                  <strong>Name:</strong> {scannedData.name}
+                  <strong>Name:</strong> <span className="font-mono">{scannedData.name}</span>
                 </div>
                 <div>
-                  <strong>Position:</strong> {scannedData.position}
+                  <strong>Position:</strong> <span className="font-mono">{scannedData.position || "N/A"}</span>
                 </div>
                 <div>
-                  <strong>Club:</strong> {scannedData.club}
+                  <strong>Club:</strong> <span className="font-mono">{scannedData.clubName}</span>
                 </div>
                 <div>
-                  <strong>Phone:</strong> {scannedData.phoneno}
+                  <strong>Phone:</strong> <span className="font-mono">{scannedData.phoneNumber}</span>
                 </div>
+                {scannedData.membershipID && (
+                  <div>
+                    <strong>Membership ID:</strong> <span className="font-mono">{scannedData.membershipID}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="mb-6">
+                <h4 className="font-bold text-text-primary mb-3">Tasks Action</h4>
+                <TaskToggleList
+                  attendee={scannedData}
+                  tasks={tasks}
+                  apiPathPrefix={`qr/${scannedData.qrCode}`}
+                  canToggle={canToggleTask}
+                  onUpdated={(updated) => setScannedData(updated)}
+                />
               </div>
 
               {/* Action buttons */}
               <div className="flex flex-col sm:flex-row gap-3 mt-8">
-                <button onClick={() => setScannedData(null)} className="btn btn-outline-secondary btn-lg flex-1 gap-2">
+                <button
+                  onClick={() => {
+                    setScannedData(null);
+                    startScanner();
+                  }}
+                  className="btn btn-outline-secondary btn-lg flex-1 gap-2"
+                >
+                  <Camera className="w-4 h-4" /> Scan Next
+                </button>
+                <button
+                  onClick={() => setScannedData(null)}
+                  className="btn btn-outline-danger btn-lg flex-1 gap-2 text-danger hover:bg-danger/10"
+                >
                   <X className="w-4 h-4" /> Cancel
                 </button>
               </div>

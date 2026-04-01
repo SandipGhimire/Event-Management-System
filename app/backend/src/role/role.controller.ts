@@ -31,6 +31,14 @@ export class RoleController {
   ) {
     const userId = req.user.userId;
     const result = await this.roleService.updateRole(id, data, userId);
+    if (!result) {
+      return {
+        success: false,
+        message: "Role not found for update",
+        status: 200,
+        data: null,
+      };
+    }
     return {
       success: true,
       message: "Role updated successfully",
@@ -42,6 +50,14 @@ export class RoleController {
   @Delete(":id")
   @Permission(["role.delete"])
   async deleteRole(@Param("id", ParseIntPipe) id: number) {
+    const exists = await this.roleService.getRoleById(id);
+    if (!exists) {
+      return {
+        success: false,
+        message: "Role not found for deletion",
+        status: 200,
+      };
+    }
     await this.roleService.deleteRole(id);
     return {
       success: true,
@@ -66,6 +82,14 @@ export class RoleController {
   @Permission(["role.view"])
   async getRoleById(@Param("id", ParseIntPipe) id: number) {
     const result = await this.roleService.getRoleById(id);
+    if (!result) {
+      return {
+        success: false,
+        message: "Role not found",
+        status: 200,
+        data: null,
+      };
+    }
     return {
       success: true,
       message: "Role fetched successfully",

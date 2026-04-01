@@ -36,7 +36,6 @@ export class AttendeesService {
     const attendee = await this.db.attendee.findUnique({
       where: { id },
     });
-    if (!attendee) throw new Error("Attendee not found");
     return attendee;
   }
 
@@ -105,7 +104,7 @@ export class AttendeesService {
     });
 
     if (!existingAttendee) {
-      throw new Error("Attendee not found");
+      return null;
     }
 
     let profilePicPath = existingAttendee.profilePic;
@@ -133,6 +132,50 @@ export class AttendeesService {
         profilePic: profilePicPath,
         paymentSlip: paymentSlipPath,
       },
+    });
+  }
+
+  async getAttendeeByQrCode(qrCode: string) {
+    const attendee = await this.db.attendee.findUnique({
+      where: { qrCode },
+      include: { logs: true },
+    });
+    if (!attendee) return null;
+    return attendee;
+  }
+
+  async toggleTask(attendeeId: number, taskId: number, updatedBy: string) {
+    const attendee = await this.db.attendee.findUnique({ where: { id: attendeeId } });
+    if (!attendee) return null;
+
+    const log = await this.db.attendeeTaskLog.findUnique({
+      where: {
+        attendeeId_taskId: {
+          attendeeId,
+          taskId,
+        },
+      },
+    });
+
+    if (log) {
+      // Revert task
+      await this.db.attendeeTaskLog.delete({
+        where: { id: log.id },
+      });
+    } else {
+      // Complete task
+      await this.db.attendeeTaskLog.create({
+        data: {
+          attendeeId,
+          taskId,
+          scannedBy: updatedBy,
+        },
+      });
+    }
+
+    return this.db.attendee.findUnique({
+      where: { id: attendeeId },
+      include: { logs: true },
     });
   }
 }

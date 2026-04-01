@@ -3,6 +3,7 @@ import endpoints from "@/core/app/endpoints";
 import { isDevelopment } from "@/core/utils/common.utils";
 import jwtServices from "@/core/app/jwt";
 import { useAuthStore } from "@/store/auth/auth.store";
+import { toast } from "react-toastify";
 
 const apiURL: string = import.meta.env.VITE_API_BASE_URL;
 
@@ -34,11 +35,21 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     if (!error.response) {
+      toast.error("Network Error: Unable to connect to server.");
       return Promise.reject(error);
     }
 
     const status = error.response.status;
     const { setIsAuthenticated } = useAuthStore.getState();
+
+    // Prevent spamming toast for 401 unauthenticated unless it's a login failure
+    if (status !== 401 && status !== 403) {
+      toast.error(error.response?.data?.message || error.response?.data?.error || "An unexpected error occurred.");
+    }
+    
+    if (status === 403) {
+      toast.error("You do not have permission to perform this action.");
+    }
 
     if (status === 401 && originalRequest.url === endpoints.auth.refresh) {
       setIsAuthenticated(false);

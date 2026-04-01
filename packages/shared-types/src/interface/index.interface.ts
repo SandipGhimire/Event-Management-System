@@ -24,11 +24,21 @@ export interface AttendeesDetail {
   profilePic: string;
   paymentSlip: string;
   clubName: string;
+  position?: string;
   membershipID: string;
   isVeg: boolean;
   qrCode: string;
   createdAt: string;
   updatedAt: string;
+  logs?: AttendeeTaskLogDetail[];
+}
+
+export interface AttendeeTaskLogDetail {
+  id: number;
+  attendeeId: number;
+  taskId: number;
+  scannedBy: string;
+  createdAt: string;
 }
 
 export interface SponsorLinkDetail {

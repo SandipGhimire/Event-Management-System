@@ -6,12 +6,12 @@ import { IsUnique } from "../prisma/validator/UniqueValidator.decorator";
 export class TaskCreateDto implements CreateTaskPayload {
   @IsString()
   @IsNotEmpty({ message: "Name is required" })
-  @IsUnique("task", "name", { message: "Name already exists" })
+  @IsUnique("task", "name", { message: "Name already exists", excludeIdField: "id" })
   name: string;
 
   @IsString()
   @IsNotEmpty({ message: "Slug is required" })
-  @IsUnique("task", "slug", { message: "Slug already exists" })
+  @IsUnique("task", "slug", { message: "Slug already exists", excludeIdField: "id" })
   slug: string;
 
   @IsOptional()

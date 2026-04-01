@@ -18,12 +18,14 @@ export class RoleService {
         createdBy: user?.username || "system",
         permissions: permissionKeys
           ? {
-              create: await Promise.all(
-                permissionKeys.map(async (key) => {
-                  const perm = await this.db.permission.findUnique({ where: { key } });
-                  return { permissionId: perm!.id };
-                })
-              ),
+              create: (
+                await Promise.all(
+                  permissionKeys.map(async (key) => {
+                    const perm = await this.db.permission.findUnique({ where: { key } });
+                    return perm ? { permissionId: perm.id } : null;
+                  })
+                )
+              ).filter((p): p is { permissionId: number } => p !== null),
             }
           : undefined,
       },
@@ -31,6 +33,9 @@ export class RoleService {
   }
 
   async updateRole(id: number, data: UpdateRoleDto, userId: number) {
+    const existingRole = await this.db.role.findUnique({ where: { id } });
+    if (!existingRole) return null;
+
     const { permissionKeys, ...rest } = data;
     const user = await this.db.user.findUnique({ where: { id: userId }, select: { username: true } });
     const updateData: UpdateRoleDto & { permissions?: { create: { permissionId: number }[] }; updatedBy: string } = {
@@ -41,12 +46,14 @@ export class RoleService {
     if (permissionKeys) {
       await this.db.rolePermission.deleteMany({ where: { roleId: id } });
       updateData.permissions = {
-        create: await Promise.all(
-          permissionKeys.map(async (key) => {
-            const perm = await this.db.permission.findUnique({ where: { key } });
-            return { permissionId: perm!.id };
-          })
-        ),
+        create: (
+          await Promise.all(
+            permissionKeys.map(async (key) => {
+              const perm = await this.db.permission.findUnique({ where: { key } });
+              return perm ? { permissionId: perm.id } : null;
+            })
+          )
+        ).filter((p): p is { permissionId: number } => p !== null),
       };
     }
 

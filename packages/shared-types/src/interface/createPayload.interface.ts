@@ -13,7 +13,7 @@ export interface CreateSponsorPayload {
   name: string;
   email: string;
   phoneNumber: string;
-  logo: string;
+  logo?: string;
   description?: string;
   contribution?: string;
   isActive: boolean;

@@ -20,6 +20,7 @@ import { join } from "path";
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), "public"),
+      serveRoot: "/public",
     }),
     ConfigModule.forRoot({
       isGlobal: true,

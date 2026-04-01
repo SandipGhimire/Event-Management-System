@@ -30,6 +30,14 @@ export class UserController {
   @Permission(["user.update"])
   async updateUser(@Param("id", ParseIntPipe) id: number, @Body() data: UpdateUserDto) {
     const result = await this.userService.updateUser(id, data);
+    if (!result) {
+      return {
+        success: false,
+        message: "User not found for update",
+        status: 200,
+        data: null,
+      };
+    }
     return {
       success: true,
       message: "User updated successfully",
@@ -65,6 +73,14 @@ export class UserController {
   @Permission(["user.view"])
   async getUserById(@Param("id", ParseIntPipe) id: number) {
     const result = await this.userService.getUserById(id);
+    if (!result) {
+      return {
+        success: false,
+        message: "User not found",
+        status: 200,
+        data: null,
+      };
+    }
     return {
       success: true,
       message: "User fetched successfully",

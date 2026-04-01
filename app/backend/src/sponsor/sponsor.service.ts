@@ -68,7 +68,7 @@ export class SponsorService {
     });
 
     if (!existingSponsor) {
-      throw new Error("Sponsor not found");
+      return null;
     }
 
     const logoPath = this.getLogoPath(file, data.name, existingSponsor.logo || (data.logo as string));

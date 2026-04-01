@@ -4,18 +4,20 @@ import type { ColumnConfig, DataTableHandle } from "@/core/types/component/dataT
 import endpoints from "@/core/app/endpoints";
 import type { AttendeesDetail } from "shared-types";
 import { useCallback, useMemo, useState, useRef } from "react";
-import { User, Check, X, Image, FileText, Pencil } from "lucide-react";
+import { User, Check, X, Image, FileText, Pencil, CheckSquare } from "lucide-react";
 import { useAttendeeStore } from "@/store/app/attendee.store";
 import CreateAttendee from "./CreateAttendee";
 import { getBackendFile } from "@/core/utils/common.utils";
 import ImageViewer from "@/components/common/ImageViewer";
 import { useHasPermission } from "@/core/utils/permission.utils";
+import TaskToggleModal from "./TaskToggleModal";
 
 export default function Attendees() {
   const [count, setCount] = useState(0);
   const openCreateModal = useAttendeeStore((s) => s.openCreateModal);
   const setSelectedAttendee = useAttendeeStore((s) => s.setSelectedAttendee);
   const tableRef = useRef<DataTableHandle>(null);
+  const [taskModalAttendee, setTaskModalAttendee] = useState<AttendeesDetail | null>(null);
 
   const [viewerConfig, setViewerConfig] = useState<{ isOpen: boolean; src: string; title: string }>({
     isOpen: false,
@@ -98,6 +100,7 @@ export default function Attendees() {
 
   const canCreate = useHasPermission("attendee.create");
   const canUpdate = useHasPermission("attendee.update");
+  const canToggleTaskList = useHasPermission("attendee.task_toggle");
 
   return (
     <ContentLayout
@@ -138,6 +141,12 @@ export default function Attendees() {
               onClick: (row) => setSelectedAttendee(row.id),
               hidden: () => !canUpdate,
             },
+            {
+              label: "Show Task List",
+              icon: CheckSquare,
+              onClick: (row) => setTaskModalAttendee(row),
+              hidden: () => !canToggleTaskList,
+            },
           ]}
           initialPageSize={10}
           heightOffset={15.5}
@@ -145,6 +154,12 @@ export default function Attendees() {
       </div>
 
       <CreateAttendee onSuccess={() => tableRef.current?.refresh()} />
+      <TaskToggleModal
+        attendee={taskModalAttendee}
+        isOpen={!!taskModalAttendee}
+        onClose={() => setTaskModalAttendee(null)}
+        canToggle={canToggleTaskList}
+      />
       <ImageViewer
         isOpen={viewerConfig.isOpen}
         onClose={closeViewer}
