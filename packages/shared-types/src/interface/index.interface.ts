@@ -25,6 +25,7 @@ export interface AttendeesDetail {
   phoneNumber: string;
   profilePic: string;
   paymentSlip: string;
+  idCard: string;
   clubName: string;
   position?: string;
   membershipID: string;
