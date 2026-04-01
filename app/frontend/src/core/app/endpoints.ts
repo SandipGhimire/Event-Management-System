@@ -31,6 +31,9 @@ const sponsor = {
 const task = {
   list: "/task/list/",
   create: "/task/create/",
+  update: "/task/update/",
+  detail: "/task/detail/",
+  delete: "/task/delete/",
 };
 const endpoints = {
   auth,

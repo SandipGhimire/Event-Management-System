@@ -6,7 +6,7 @@ import { IsUnique } from "../prisma/validator/UniqueValidator.decorator";
 export class SponsorCreateDto implements CreateSponsorPayload {
   @IsString()
   @IsNotEmpty({ message: "Name is required" })
-  @IsUnique("sponsor", "name", { message: "Name already exists" })
+  @IsUnique("sponsor", "name", { message: "Name already exists", excludeIdField: "id" })
   name: string;
 
   @IsEmail()
@@ -19,9 +19,9 @@ export class SponsorCreateDto implements CreateSponsorPayload {
   @IsUnique("sponsor", "phoneNumber", { message: "Phone number already exists", excludeIdField: "id" })
   phoneNumber: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty({ message: "Logo is required" })
-  logo: string;
+  logo?: string;
 
   @IsOptional()
   @IsString()

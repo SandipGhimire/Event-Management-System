@@ -20,3 +20,14 @@ export interface CreateSponsorPayload {
   order?: number;
   links: { label: string; url: string }[];
 }
+export interface CreateTaskPayload {
+  name: string;
+  slug: string;
+  description?: string;
+  isActive: boolean;
+  order?: number;
+}
+
+export interface UpdateTaskPayload extends Partial<CreateTaskPayload> {
+  id: number;
+}

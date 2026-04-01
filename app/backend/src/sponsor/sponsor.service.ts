@@ -51,7 +51,7 @@ export class SponsorService {
         phoneNumber: String(data.phoneNumber),
         description: data.description,
         contribution: data.contribution,
-        logo: logoPath ?? data.logo,
+        logo: logoPath ?? (data.logo as string),
         order: data.order ? Number(data.order) : undefined,
         isActive: data.isActive,
         links: {
@@ -71,7 +71,7 @@ export class SponsorService {
       throw new Error("Sponsor not found");
     }
 
-    const logoPath = this.getLogoPath(file, data.name, existingSponsor.logo || data.logo);
+    const logoPath = this.getLogoPath(file, data.name, existingSponsor.logo || (data.logo as string));
 
     return await this.db.$transaction(async (tx) => {
       await tx.sponsorLink.deleteMany({

@@ -71,19 +71,7 @@ export default function CreateSponsor({ onSuccess }: CreateSponsorProps) {
           <button type="button" className="btn btn-outline-secondary" onClick={closeCreateModal} disabled={isLoading}>
             Cancel
           </button>
-          <button
-            type="button"
-            className={`btn btn-primary ${isLoading ? "btn-loading" : ""}`}
-            onClick={handleSubmit}
-            disabled={
-              isLoading ||
-              isFetching ||
-              !createForm.name ||
-              !createForm.email ||
-              !createForm.phoneNumber ||
-              !createForm.logo
-            }
-          >
+          <button type="button" className={`btn btn-primary ${isLoading ? "btn-loading" : ""}`} onClick={handleSubmit}>
             {isEdit ? "Update Sponsor" : "Create Sponsor"}
           </button>
         </>
@@ -156,9 +144,7 @@ export default function CreateSponsor({ onSuccess }: CreateSponsorProps) {
                 {(previewUrl || createForm.logo) && (
                   <div className="relative w-16 h-16 rounded-md overflow-hidden border border-border bg-muted/20">
                     <img
-                      src={
-                        previewUrl || (typeof createForm.logo === "string" ? getBackendFile(createForm.logo) : "")
-                      }
+                      src={previewUrl || (typeof createForm.logo === "string" ? getBackendFile(createForm.logo) : "")}
                       alt="Logo Preview"
                       className="w-full h-full object-contain"
                     />
@@ -211,7 +197,10 @@ export default function CreateSponsor({ onSuccess }: CreateSponsorProps) {
 
               <div className="space-y-3">
                 {createForm.links.map((link, index) => (
-                  <div key={index} className="sponsor-link-row animate-fade-in border border-border rounded p-2 flex items-center gap-3">
+                  <div
+                    key={index}
+                    className="sponsor-link-row animate-fade-in border border-border rounded p-2 flex items-center gap-3"
+                  >
                     <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="form-field mb-0">
                         <input
