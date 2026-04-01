@@ -140,6 +140,7 @@ export class UserService {
     const user = {
       ...userDetail,
       fullName: generateFullName(userDetail.firstName, userDetail.middleName, userDetail.lastName),
+      roleIds: userDetail.roles.map((r) => r.roleId),
     } as UserDetail;
 
     return user;

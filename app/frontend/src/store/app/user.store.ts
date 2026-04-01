@@ -13,6 +13,7 @@ interface UserForm {
   phoneNumber: string;
   password?: string;
   confirmPassword?: string;
+  roleIds: number[];
 }
 
 const defaultForm: UserForm = {
@@ -24,6 +25,7 @@ const defaultForm: UserForm = {
   phoneNumber: "",
   password: "",
   confirmPassword: "",
+  roleIds: [],
 };
 
 interface UserState {
@@ -44,21 +46,34 @@ export const useUserStore = create<UserState>((set, get) => ({
   form: { ...defaultForm },
   mode: "create",
 
-  openModal: (mode, user) => {
+  openModal: async (mode, user) => {
     if (mode === "edit" && user) {
-      set({
-        isModalOpen: true,
-        mode,
-        form: {
-          id: user.id,
-          firstName: user.firstName,
-          middleName: user.middleName || "",
-          lastName: user.lastName,
-          email: user.email,
-          username: user.username,
-          phoneNumber: user.phoneNumber || "",
-        },
-      });
+      const { startLoader, stopLoader } = useLoaderStore.getState();
+      startLoader("saveUser"); // Use same loader for simplicity
+      try {
+        const { data: res } = await api.get(endpoints.user.self.replace("self", String(user.id)));
+        const userDetail = res.data;
+        if (userDetail) {
+          set({
+            isModalOpen: true,
+            mode,
+            form: {
+              id: userDetail.id,
+              firstName: userDetail.firstName,
+              middleName: userDetail.middleName || "",
+              lastName: userDetail.lastName,
+              email: userDetail.email,
+              username: userDetail.username,
+              phoneNumber: userDetail.phoneNumber || "",
+              roleIds: userDetail.roleIds || [],
+            },
+          });
+        }
+      } catch (err) {
+        console.error("Failed to fetch user details", err);
+      } finally {
+        stopLoader("saveUser");
+      }
     } else {
       set({ isModalOpen: true, mode: "create", form: { ...defaultForm } });
     }
@@ -91,6 +106,7 @@ export const useUserStore = create<UserState>((set, get) => ({
           username: form.username,
           phoneNumber: form.phoneNumber || undefined,
           password: form.password,
+          roleIds: form.roleIds.map(String),
         });
       } else {
         await api.patch(endpoints.user.update.replace(":id", String(form.id)), {
@@ -101,6 +117,7 @@ export const useUserStore = create<UserState>((set, get) => ({
           username: form.username,
           phoneNumber: form.phoneNumber || undefined,
           password: form.password || undefined,
+          roleIds: form.roleIds.map(String),
         });
       }
       get().closeModal();

@@ -50,6 +50,22 @@ export default function UserList() {
         key: "phoneNumber",
         header: "Phone",
       },
+      {
+        key: "id",
+        header: "Roles",
+        render: (row) => (
+          <div className="flex flex-wrap gap-1">
+            {row.roles?.map((r, i) => (
+              <span
+                key={i}
+                className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase tracking-wider"
+              >
+                {r.role?.name}
+              </span>
+            )) || <span className="text-text-secondary opacity-50 italic text-[10px]">No Roles</span>}
+          </div>
+        ),
+      },
     ],
     []
   );

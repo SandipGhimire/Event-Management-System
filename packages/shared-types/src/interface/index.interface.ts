@@ -10,10 +10,12 @@ export interface UserDetail {
   phoneNumber: string;
   permissions?: string[];
   roles?: {
+    roleId?: number;
     role?: {
       name?: string;
     };
   }[];
+  roleIds?: number[];
 }
 
 export interface AttendeesDetail {
