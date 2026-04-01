@@ -1,9 +1,9 @@
-import type { IconName } from "lucide-react/dynamic";
+import type { LucideIcon } from "lucide-react";
 
 export type SidebarItem = {
   label: string;
   to?: string;
-  icon?: IconName;
+  icon?: LucideIcon;
   isVisible?: boolean;
   children?: {
     label: string;

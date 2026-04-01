@@ -1,6 +1,6 @@
 import { useCoreStore } from "@/store/app/core.store";
 import { useAuthStore } from "@/store/auth/auth.store";
-import { DynamicIcon } from "lucide-react/dynamic";
+import { PanelLeftClose, PanelRightClose, LogOut } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -54,9 +54,9 @@ export default function Header() {
         <div className={`px-4 flex items-center justify-between w-full`}>
           <button className="btn btn-icon btn-outline-secondary" onClick={toggleSidebar}>
             {isSidebarOpen ? (
-              <DynamicIcon name="panel-left-close" size={24} />
+              <PanelLeftClose size={24} />
             ) : (
-              <DynamicIcon name="panel-right-close" size={24} />
+              <PanelRightClose size={24} />
             )}
           </button>
           <div className="relative">
@@ -101,7 +101,7 @@ export default function Header() {
               onClick={logoutUser}
               className="px-2 py-2 w-full text-left text-red-500 hover:bg-red-500/10 rounded-sm cursor-pointer transition flex items-center gap-2"
             >
-              <DynamicIcon name="log-out" size={16} />
+              <LogOut size={16} />
               Logout
             </button>
           </div>

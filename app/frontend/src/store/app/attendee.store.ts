@@ -13,6 +13,8 @@ const defaultForm: CreateAttendeePayload = {
   membershipID: null as unknown as number,
   isVeg: false,
   position: "",
+  profilePicture: null,
+  paymentSlip: null,
 };
 
 export const useAttendeeStore = create<AttendeeState>((set, get) => ({
@@ -52,6 +54,8 @@ export const useAttendeeStore = create<AttendeeState>((set, get) => ({
               membershipID: attendee.membershipID ? Number(attendee.membershipID) : (null as unknown as number),
               isVeg: attendee.isVeg,
               position: attendee.position || "",
+              profilePicture: attendee.profilePic,
+              paymentSlip: attendee.paymentSlip,
             },
             isCreateModalOpen: true,
           });

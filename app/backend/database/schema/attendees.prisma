@@ -4,6 +4,7 @@ model Attendee {
   name         String
   phoneNumber  String  @unique
   profilePic   String?
+  paymentSlip  String?
   clubName     String
   position     String?
   membershipID String? @unique

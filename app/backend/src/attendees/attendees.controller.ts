@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Param, Post, Query, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { AttendeesService } from "./attendees.service";
 import { parseQuery } from "../prisma/prisma.utils";
 import { AttendeeCreateDto } from "./attendees.dto";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { FileFieldsInterceptor } from "@nestjs/platform-express";
 
 @Controller("attendees")
 export class AttendeesController {
@@ -32,9 +32,19 @@ export class AttendeesController {
   }
 
   @Post("create")
-  @UseInterceptors(FileInterceptor("profilePicture"))
-  async createAttendee(@Body() body: AttendeeCreateDto, @UploadedFile() file?: Express.Multer.File) {
-    const result = await this.attendeesService.createAttendee(body, file);
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: "profilePicture", maxCount: 1 },
+      { name: "paymentSlip", maxCount: 1 },
+    ])
+  )
+  async createAttendee(
+    @Body() body: AttendeeCreateDto,
+    @UploadedFiles() files: { profilePicture?: Express.Multer.File[]; paymentSlip?: Express.Multer.File[] }
+  ) {
+    const profilePicture = files.profilePicture?.[0];
+    const paymentSlip = files.paymentSlip?.[0];
+    const result = await this.attendeesService.createAttendee(body, profilePicture, paymentSlip);
     return {
       success: true,
       message: "Attendee created successfully",
@@ -44,9 +54,19 @@ export class AttendeesController {
   }
 
   @Post("update/:id")
-  @UseInterceptors(FileInterceptor("profilePicture"))
-  async updateAttendee(@Body() body: AttendeeCreateDto, @UploadedFile() file?: Express.Multer.File) {
-    const result = await this.attendeesService.updateAttendee(body, file);
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: "profilePicture", maxCount: 1 },
+      { name: "paymentSlip", maxCount: 1 },
+    ])
+  )
+  async updateAttendee(
+    @Body() body: AttendeeCreateDto,
+    @UploadedFiles() files: { profilePicture?: Express.Multer.File[]; paymentSlip?: Express.Multer.File[] }
+  ) {
+    const profilePicture = files.profilePicture?.[0];
+    const paymentSlip = files.paymentSlip?.[0];
+    const result = await this.attendeesService.updateAttendee(body, profilePicture, paymentSlip);
     return {
       success: true,
       message: "Attendee updated successfully",

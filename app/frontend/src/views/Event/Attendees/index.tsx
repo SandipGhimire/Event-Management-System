@@ -4,16 +4,26 @@ import type { ColumnConfig, DataTableHandle } from "@/core/types/component/dataT
 import endpoints from "@/core/app/endpoints";
 import type { AttendeesDetail } from "shared-types";
 import { useCallback, useMemo, useState, useRef } from "react";
-import { DynamicIcon } from "lucide-react/dynamic";
+import { User, Check, X, Image, FileText, Pencil } from "lucide-react";
 import { useAttendeeStore } from "@/store/app/attendee.store";
 import CreateAttendee from "./CreateAttendee";
 import { getBackendFile } from "@/core/utils/common.utils";
+import ImageViewer from "@/components/common/ImageViewer";
 
 export default function Attendees() {
   const [count, setCount] = useState(0);
   const openCreateModal = useAttendeeStore((s) => s.openCreateModal);
   const setSelectedAttendee = useAttendeeStore((s) => s.setSelectedAttendee);
   const tableRef = useRef<DataTableHandle>(null);
+
+  const [viewerConfig, setViewerConfig] = useState<{ isOpen: boolean; src: string; title: string }>({
+    isOpen: false,
+    src: "",
+    title: "",
+  });
+
+  const closeViewer = () => setViewerConfig((prev) => ({ ...prev, isOpen: false }));
+  const openViewer = (src: string, title: string) => setViewerConfig({ isOpen: true, src, title });
 
   const columns: ColumnConfig<AttendeesDetail>[] = useMemo(
     () => [
@@ -23,11 +33,14 @@ export default function Attendees() {
         searchable: true,
         render: (row) => (
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full overflow-hidden border border-border bg-muted flex items-center justify-center cursor-pointer -my-2">
+            <div
+              className="w-10 h-10 rounded-full overflow-hidden border border-border bg-muted flex items-center justify-center cursor-pointer -my-2"
+              onClick={() => row.profilePic && openViewer(getBackendFile(row.profilePic), `${row.name}'s Photo`)}
+            >
               {row.profilePic ? (
                 <img src={getBackendFile(row.profilePic)} alt={row.name} className="w-full h-full object-cover" />
               ) : (
-                <DynamicIcon name="user" size={20} className="text-muted-foreground" />
+                <User size={20} className="text-muted-foreground" />
               )}
             </div>
             <span className="font-bold">{row.name}</span>
@@ -59,17 +72,25 @@ export default function Attendees() {
         key: "isVeg",
         header: "Is Veg",
         render: (row) => (
-          <DynamicIcon
-            name={row.isVeg ? "check" : "x"}
-            className={`${row.isVeg ? "text-green-500" : "text-red-500"} -my-2`}
-            size={18}
-            strokeWidth={4}
-          />
+          <>{row.isVeg ? (
+            <Check
+              className="text-green-500 -my-2"
+              size={18}
+              strokeWidth={4}
+            />
+          ) : (
+            <X
+              className="text-red-500 -my-2"
+              size={18}
+              strokeWidth={4}
+            />
+          )}</>
         ),
       },
     ],
     []
   );
+
   const onFetch = useCallback((data: any) => {
     setCount(data.meta.total);
   }, []);
@@ -94,8 +115,21 @@ export default function Attendees() {
           columns={columns}
           actions={[
             {
+              label: "View Photo",
+              icon: Image,
+              onClick: (row) => row.profilePic && openViewer(getBackendFile(row.profilePic), `${row.name}'s Photo`),
+              disabled: (row) => !row.profilePic,
+            },
+            {
+              label: "View Payment Slip",
+              icon: FileText,
+              onClick: (row) =>
+                row.paymentSlip && openViewer(getBackendFile(row.paymentSlip), `${row.name}'s Payment Slip`),
+              disabled: (row) => !row.paymentSlip,
+            },
+            {
               label: "Edit",
-              icon: "pencil",
+              icon: Pencil,
               onClick: (row) => setSelectedAttendee(row.id),
             },
           ]}
@@ -105,6 +139,13 @@ export default function Attendees() {
       </div>
 
       <CreateAttendee onSuccess={() => tableRef.current?.refresh()} />
+      <ImageViewer
+        isOpen={viewerConfig.isOpen}
+        onClose={closeViewer}
+        src={viewerConfig.src}
+        title={viewerConfig.title}
+        alt={viewerConfig.title}
+      />
     </ContentLayout>
   );
 }

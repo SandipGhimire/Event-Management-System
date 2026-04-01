@@ -39,4 +39,7 @@ export class AttendeeCreateDto implements CreateAttendeePayload {
   @IsString()
   @IsNotEmpty({ message: "Position is required" })
   position: string;
+
+  @IsOptional()
+  paymentSlip?: any;
 }

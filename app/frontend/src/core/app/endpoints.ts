@@ -24,6 +24,8 @@ const attendees = {
 const sponsor = {
   list: "/sponsor/list/",
   create: "/sponsor/create/",
+  update: "/sponsor/update/",
+  detail: "/sponsor/detail/",
 };
 
 const task = {

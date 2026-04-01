@@ -17,12 +17,19 @@ export interface AttendeesDetail {
   name: string;
   phoneNumber: string;
   profilePic: string;
+  paymentSlip: string;
   clubName: string;
   membershipID: string;
   isVeg: boolean;
   qrCode: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SponsorLinkDetail {
+  id: number;
+  label: string;
+  url: string;
 }
 
 export interface SponsorDetail {
@@ -35,6 +42,7 @@ export interface SponsorDetail {
   contribution: string;
   isActive: boolean;
   order: number;
+  links: SponsorLinkDetail[];
   createdAt: string;
   updatedAt: string;
 }

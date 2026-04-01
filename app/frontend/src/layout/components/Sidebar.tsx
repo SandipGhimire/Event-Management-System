@@ -1,6 +1,6 @@
 import sidebarItems from "@/core/app/sidebarItems";
 import { useCoreStore } from "@/store/app/core.store";
-import { DynamicIcon } from "lucide-react/dynamic";
+import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
 
@@ -55,7 +55,7 @@ export default function Sidebar() {
                     ${isActive(item.to) ? "bg-primary/10 text-primary font-bold" : "hover:bg-primary/10 text-text-secondary"}
                   `}
                 >
-                  <div>{item.icon ? <DynamicIcon name={item.icon} size={20} /> : ""}</div>
+                  <div>{item.icon && <item.icon size={20} />}</div>
                   <div>{item.label}</div>
                 </Link>
               );
@@ -76,13 +76,13 @@ export default function Sidebar() {
                     `}
                   >
                     <div>
-                      <div>{item.icon ? <DynamicIcon name={item.icon} size={20} /> : ""}</div>
+                      <div>{item.icon && <item.icon size={20} />}</div>
                     </div>
                     <div>{item.label}</div>
                     <div
                       className={`absolute right-2 transition-transform duration-300 ${openDropdown === item.label ? "-rotate-180" : ""}`}
                     >
-                      <DynamicIcon name="chevron-down" size={14} />
+                      <ChevronDown size={14} />
                     </div>
                   </div>
 

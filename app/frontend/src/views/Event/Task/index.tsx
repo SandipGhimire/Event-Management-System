@@ -4,7 +4,7 @@ import type { ColumnConfig } from "@/core/types/component/dataTable.type";
 import endpoints from "@/core/app/endpoints";
 import type { TaskDetail } from "shared-types";
 import { useCallback, useMemo, useState } from "react";
-import { DynamicIcon } from "lucide-react/dynamic";
+import { Check, X } from "lucide-react";
 import { useTaskStore } from "@/store/app/task.store";
 import CreateTask from "./CreateTask";
 
@@ -34,12 +34,19 @@ export default function Attendees() {
         key: "isActive",
         header: "Is Active",
         render: (row) => (
-          <DynamicIcon
-            name={row.isActive ? "check" : "x"}
-            className={`${row.isActive ? "text-green-500" : "text-red-500"} -my-2`}
-            size={18}
-            strokeWidth={4}
-          />
+          <>{row.isActive ? (
+            <Check
+              className="text-green-500 -my-2"
+              size={18}
+              strokeWidth={4}
+            />
+          ) : (
+            <X
+              className="text-red-500 -my-2"
+              size={18}
+              strokeWidth={4}
+            />
+          )}</>
         ),
       },
     ],

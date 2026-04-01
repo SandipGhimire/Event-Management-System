@@ -2,9 +2,9 @@ model Sponsor {
     id   Int    @id @default(autoincrement())
     name String @unique
 
-    email       String?
-    phoneNumber String?
-    logo        String?
+    email       String @unique
+    phoneNumber String @unique
+    logo        String
 
     description  String?
     contribution String?

@@ -40,7 +40,11 @@ export class AttendeesService {
     return attendee;
   }
 
-  async createAttendee(body: CreateAttendeePayload, file?: Express.Multer.File) {
+  async createAttendee(
+    body: CreateAttendeePayload,
+    profilePic?: Express.Multer.File,
+    paymentSlip?: Express.Multer.File
+  ) {
     const generateRandomQRCode = async (length: number = 30): Promise<string> => {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       let result = "";
@@ -60,9 +64,15 @@ export class AttendeesService {
     };
 
     let profilePicPath: string | null = null;
-    if (file) {
-      const fileName = body.name.replace(/\s+/g, "-").toLowerCase();
-      profilePicPath = saveFile(file, "attendees", fileName);
+    if (profilePic) {
+      const fileName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-profile`;
+      profilePicPath = saveFile(profilePic, "attendees", fileName);
+    }
+
+    let paymentSlipPath: string | null = null;
+    if (paymentSlip) {
+      const fileName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-payment`;
+      paymentSlipPath = saveFile(paymentSlip, "attendees", fileName);
     }
 
     const qrCode = await generateRandomQRCode();
@@ -76,13 +86,18 @@ export class AttendeesService {
         membershipID: body.membershipID ? String(body.membershipID) : null,
         isVeg: body.isVeg,
         profilePic: profilePicPath,
+        paymentSlip: paymentSlipPath,
         position: body.position,
         qrCode,
       },
     });
   }
 
-  async updateAttendee(body: CreateAttendeePayload & { id?: number }, file?: Express.Multer.File) {
+  async updateAttendee(
+    body: CreateAttendeePayload & { id?: number },
+    profilePic?: Express.Multer.File,
+    paymentSlip?: Express.Multer.File
+  ) {
     if (!body.id) throw new Error("Attendee ID is required for update");
 
     const existingAttendee = await this.db.attendee.findUnique({
@@ -94,9 +109,15 @@ export class AttendeesService {
     }
 
     let profilePicPath = existingAttendee.profilePic;
-    if (file) {
-      const fileName = body.name.replace(/\s+/g, "-").toLowerCase();
-      profilePicPath = saveFile(file, "attendees", fileName);
+    if (profilePic) {
+      const fileName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-profile`;
+      profilePicPath = saveFile(profilePic, "attendees", fileName);
+    }
+
+    let paymentSlipPath = existingAttendee.paymentSlip;
+    if (paymentSlip) {
+      const fileName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-payment`;
+      paymentSlipPath = saveFile(paymentSlip, "attendees", fileName);
     }
 
     return await this.db.attendee.update({
@@ -110,6 +131,7 @@ export class AttendeesService {
         isVeg: body.isVeg,
         position: body.position,
         profilePic: profilePicPath,
+        paymentSlip: paymentSlipPath,
       },
     });
   }

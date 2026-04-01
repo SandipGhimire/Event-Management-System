@@ -19,7 +19,8 @@ export default function CreateAttendee({ onSuccess }: CreateAttendeeProps) {
     errors,
   } = useAttendeeStore(); 
   const isLoading = useLoaderStore((s) => s.isLoading("createAttendee") || s.isLoading("updateAttendee"));
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // Added previewUrl state
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [paymentSlipPreviewUrl, setPaymentSlipPreviewUrl] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,27 +40,42 @@ export default function CreateAttendee({ onSuccess }: CreateAttendeeProps) {
     }
   };
 
-  useEffect(() => {
-    if (!isCreateModalOpen && previewUrl) {
-      URL.revokeObjectURL(previewUrl);
+  const handlePaymentSlipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCreateFormField("paymentSlip", file);
+      const url = URL.createObjectURL(file);
+      setPaymentSlipPreviewUrl(url);
     }
-  }, [isCreateModalOpen, previewUrl]);
+  };
+
+  useEffect(() => {
+    if (!isCreateModalOpen) {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
+      }
+      if (paymentSlipPreviewUrl) {
+        URL.revokeObjectURL(paymentSlipPreviewUrl);
+        setPaymentSlipPreviewUrl(null);
+      }
+    }
+  }, [isCreateModalOpen, previewUrl, paymentSlipPreviewUrl]);
 
   useEffect(() => {
     if (isCreateModalOpen && !selectedAttendee) {
-      // eslint-disable-next-line react-hooks/rules-of-hooks, @typescript-eslint/no-unused-expressions
       setPreviewUrl(null);
+      setPaymentSlipPreviewUrl(null);
     }
   }, [isCreateModalOpen, selectedAttendee]);
-  
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (paymentSlipPreviewUrl) URL.revokeObjectURL(paymentSlipPreviewUrl);
     };
-  }, [previewUrl]);
+  }, [previewUrl, paymentSlipPreviewUrl]);
 
   return (
     <Modal
@@ -85,8 +101,8 @@ export default function CreateAttendee({ onSuccess }: CreateAttendeeProps) {
     >
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col md:grid md:grid-cols-2 gap-2">
-          {/* Profile Picture */}
-          <div className="form-field md:col-span-2">
+          {/* Profile Picture & Payment Slip */}
+          <div className="form-field md:col-span-1">
             <label htmlFor="createAttendee-profilePicture">Profile Picture</label>
             <div className="flex items-center gap-4">
               <input
@@ -104,13 +120,30 @@ export default function CreateAttendee({ onSuccess }: CreateAttendeeProps) {
                   <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
                 </div>
               )}
-              {createForm.profilePicture && (
-                <span className="text-xs text-muted-foreground truncate max-w-[150px]">
-                  {(createForm.profilePicture as File).name}
-                </span>
-              )}
             </div>
             {errors?.profilePicture?.[0] && <span className="field-error">{errors.profilePicture?.[0]}</span>}
+          </div>
+
+          <div className="form-field md:col-span-1">
+            <label htmlFor="createAttendee-paymentSlip">Payment Slip</label>
+            <div className="flex items-center gap-4">
+              <input
+                id="createAttendee-paymentSlip"
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={handlePaymentSlipChange}
+              />
+              <label htmlFor="createAttendee-paymentSlip" className="btn btn-outline-primary cursor-pointer mb-0">
+                Choose Slip
+              </label>
+              {paymentSlipPreviewUrl && (
+                <div className="relative w-12 h-12 rounded overflow-hidden border border-border">
+                  <img src={paymentSlipPreviewUrl} alt="Payment Slip Preview" className="w-full h-full object-cover" />
+                </div>
+              )}
+            </div>
+            {errors?.paymentSlip?.[0] && <span className="field-error">{errors.paymentSlip?.[0]}</span>}
           </div>
 
           {/* Name */}
