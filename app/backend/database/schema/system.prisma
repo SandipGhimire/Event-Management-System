@@ -1,12 +1,12 @@
 model SystemLog {
-  id         String        @id @default(cuid())
-  type       LogType
-  action     ActionType?
-  userId     String?
-  level      LogLevel?
-  message    String
-  metadata   Json?
-  createdAt  DateTime      @default(now())
+  id        String      @id @default(cuid())
+  type      LogType
+  action    ActionType?
+  userId    String?
+  level     LogLevel?
+  message   String
+  metadata  Json?
+  createdAt DateTime    @default(now())
 }
 
 enum LogType {

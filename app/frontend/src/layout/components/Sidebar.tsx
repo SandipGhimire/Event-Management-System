@@ -1,15 +1,43 @@
 import sidebarItems from "@/core/app/sidebarItems";
 import { useCoreStore } from "@/store/app/core.store";
 import { ChevronDown } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router";
+import { useHasPermission } from "@/core/utils/permission.utils";
+import { useAuthStore } from "@/store/auth/auth.store";
 
-const items = sidebarItems();
+const itemsRaw = sidebarItems();
 export default function Sidebar() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const location = useLocation();
 
   const { isSidebarOpen, toggleSidebar } = useCoreStore();
+  const userPermissions = useAuthStore((state) => state.user?.permissions || []);
+
+  const items = useMemo(() => {
+    const checkItemPermission = (itemPermission?: string | string[]) => {
+      if (!itemPermission) return true;
+      if (userPermissions.includes("*")) return true;
+
+      if (Array.isArray(itemPermission)) {
+        return itemPermission.some((p) => userPermissions.includes(p));
+      }
+      return userPermissions.includes(itemPermission);
+    };
+
+    return itemsRaw
+      .filter((item) => checkItemPermission(item.permission))
+      .map((item) => {
+        if (item.children) {
+          return {
+            ...item,
+            children: item.children.filter((child) => checkItemPermission(child.permission)),
+          };
+        }
+        return item;
+      })
+      .filter((item) => (item.children && item.children.length > 0) || item.to || !item.children);
+  }, [userPermissions]);
 
   useEffect(() => {
     items.forEach((item) => {
@@ -21,7 +49,7 @@ export default function Sidebar() {
         });
       }
     });
-  }, [location.pathname]);
+  }, [location.pathname, items]);
 
   const isActive = (to?: string) => {
     if (!to) return false;

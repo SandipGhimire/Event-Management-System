@@ -7,6 +7,7 @@ import { AuthModule } from "./auth/auth.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
+import { PermissionGuard } from "./role/guards/permission.guard";
 import { UserModule } from "./user/user.module";
 import { RoleModule } from "./role/role.module";
 import { SponsorModule } from "./sponsor/sponsor.module";
@@ -38,6 +39,10 @@ import { join } from "path";
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard,
     },
   ],
 })

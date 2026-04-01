@@ -9,6 +9,7 @@ import { useAttendeeStore } from "@/store/app/attendee.store";
 import CreateAttendee from "./CreateAttendee";
 import { getBackendFile } from "@/core/utils/common.utils";
 import ImageViewer from "@/components/common/ImageViewer";
+import { useHasPermission } from "@/core/utils/permission.utils";
 
 export default function Attendees() {
   const [count, setCount] = useState(0);
@@ -95,6 +96,9 @@ export default function Attendees() {
     setCount(data.meta.total);
   }, []);
 
+  const canCreate = useHasPermission("attendee.create");
+  const canUpdate = useHasPermission("attendee.update");
+
   return (
     <ContentLayout
       header={{ label: "Attendees", count }}
@@ -103,6 +107,7 @@ export default function Attendees() {
           label: "Create Attendee",
           onClick: openCreateModal,
           className: "btn-primary",
+          isVisible: canCreate,
         },
       ]}
     >
@@ -131,6 +136,7 @@ export default function Attendees() {
               label: "Edit",
               icon: Pencil,
               onClick: (row) => setSelectedAttendee(row.id),
+              hidden: () => !canUpdate,
             },
           ]}
           initialPageSize={10}

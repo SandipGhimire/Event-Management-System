@@ -55,6 +55,11 @@ export interface RoleDetail {
   updatedBy: string;
   createdAt: string;
   updatedAt: string;
+  permissions?: {
+    permission: {
+      key: string;
+    };
+  }[];
 }
 
 export interface TaskDetail {

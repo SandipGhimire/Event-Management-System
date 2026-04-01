@@ -4,7 +4,7 @@ import path from "path";
 import * as fs from "fs";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-const seederFiles: string[] = ["User", "Tasks", "Permissions"];
+const seederFiles: string[] = ["Permissions", "Tasks", "User"];
 
 const adapter = new PrismaPg({
   host: process.env.DATABASE_HOST,

@@ -9,8 +9,12 @@ import { useSponsorStore } from "@/store/app/sponsor.store";
 import SponsorModal from "./SponsorModal";
 import { getBackendFile } from "@/core/utils/common.utils";
 import ImageViewer from "@/components/common/ImageViewer";
+import { useHasPermission } from "@/core/utils/permission.utils";
 
 export default function Sponsors() {
+  const canCreate = useHasPermission("sponsor.create");
+  const canUpdate = useHasPermission("sponsor.update");
+
   const [count, setCount] = useState(0);
   const openCreateModal = useSponsorStore((s) => s.openCreateModal);
   const setSelectedSponsor = useSponsorStore((s) => s.setSelectedSponsor);
@@ -100,6 +104,7 @@ export default function Sponsors() {
           label: "Create Sponsor",
           onClick: openCreateModal,
           className: "btn-primary",
+          isVisible: canCreate,
         },
       ]}
     >
@@ -121,6 +126,7 @@ export default function Sponsors() {
               label: "Edit",
               icon: Pencil,
               onClick: (row) => setSelectedSponsor(row.id),
+              hidden: () => !canUpdate,
             },
           ]}
           initialPageSize={10}

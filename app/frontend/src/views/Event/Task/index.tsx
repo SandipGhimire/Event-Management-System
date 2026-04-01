@@ -7,8 +7,13 @@ import { useCallback, useMemo, useState, useRef } from "react";
 import { Check, X, Edit2, Trash2 } from "lucide-react";
 import { useTaskStore } from "@/store/app/task.store";
 import CreateTask from "./CreateTask";
+import { useHasPermission } from "@/core/utils/permission.utils";
 
 export default function Task() {
+  const canCreate = useHasPermission("task.create");
+  const canUpdate = useHasPermission("task.update");
+  const canDelete = useHasPermission("task.delete");
+
   const [count, setCount] = useState(0);
   const { openCreateModal, setSelectedTask, deleteTask } = useTaskStore();
   const tableRef = useRef<any>(null);
@@ -64,31 +69,27 @@ export default function Task() {
           </>
         ),
       },
+    ],
+    []
+  );
+
+  const tableActions = useMemo(
+    () => [
       {
-        key: "id",
-        header: "Actions",
-        className: "w-24",
-        render: (row) => (
-          <div className="flex items-center gap-2">
-            <button
-              className="btn btn-icon btn-sm btn-outline-primary"
-              onClick={() => handleEdit(row)}
-              title="Edit Task"
-            >
-              <Edit2 size={16} />
-            </button>
-            <button
-              className="btn btn-icon btn-sm btn-outline-danger"
-              onClick={() => handleDelete(row)}
-              title="Delete Task"
-            >
-              <Trash2 size={16} />
-            </button>
-          </div>
-        ),
+        label: "Edit",
+        icon: Edit2,
+        onClick: (row: TaskDetail) => handleEdit(row),
+        hidden: () => !canUpdate,
+      },
+      {
+        label: "Delete",
+        icon: Trash2,
+        onClick: (row: TaskDetail) => handleDelete(row),
+        className: "text-danger hover:bg-danger/10",
+        hidden: () => !canDelete,
       },
     ],
-    [handleEdit, handleDelete]
+    [handleEdit, handleDelete, canUpdate, canDelete]
   );
   
   const onFetch = useCallback((data: any) => {
@@ -103,6 +104,7 @@ export default function Task() {
           label: "Create Task",
           onClick: openCreateModal,
           className: "btn-primary",
+          isVisible: canCreate,
         },
       ]}
     >
@@ -113,6 +115,7 @@ export default function Task() {
           apiUrl={endpoints.task.list}
           fetchCallback={onFetch}
           columns={columns}
+          actions={tableActions}
           initialPageSize={10}
           heightOffset={15.5}
         />

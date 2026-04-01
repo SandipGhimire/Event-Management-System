@@ -3,12 +3,14 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { SponsorService } from "./sponsor.service";
 import { parseQuery } from "../prisma/prisma.utils";
 import { SponsorCreateDto, SponsorUpdateDto } from "./sponsor.dto";
+import { Permission } from "../role/decorators/permission.decorator";
 
 @Controller("sponsor")
 export class SponsorController {
   constructor(private readonly sponserService: SponsorService) {}
 
   @Get("list")
+  @Permission(["sponsor.list"])
   async listSponsors(@Query() query: Record<string, any>) {
     const result = await this.sponserService.getAllSponsors(parseQuery(query));
     return {
@@ -20,6 +22,7 @@ export class SponsorController {
   }
 
   @Get("detail/:id")
+  @Permission(["sponsor.view"])
   async getSponsorById(@Param("id") id: string) {
     const numericId = parseInt(id, 10);
     const result = await this.sponserService.getSponsorById(numericId);
@@ -32,6 +35,7 @@ export class SponsorController {
   }
 
   @Post("create")
+  @Permission(["sponsor.create"])
   @UseInterceptors(FileInterceptor("logo"))
   async createSponsor(@Body() body: SponsorCreateDto, @UploadedFile() file?: Express.Multer.File) {
     const result = await this.sponserService.createSponsor(body, file);
@@ -44,6 +48,7 @@ export class SponsorController {
   }
 
   @Post("update/:id")
+  @Permission(["sponsor.update"])
   @UseInterceptors(FileInterceptor("logo"))
   async updateSponsor(
     @Param("id") id: string,

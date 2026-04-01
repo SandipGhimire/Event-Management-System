@@ -3,18 +3,19 @@ import api from "@/core/app/api";
 import endpoints from "@/core/app/endpoints";
 import { useLoaderStore } from "@/store/app/loader.store";
 
-interface CreateUserForm {
+interface UserForm {
+  id?: number;
   firstName: string;
   middleName: string;
   lastName: string;
   email: string;
   username: string;
   phoneNumber: string;
-  password: string;
-  confirmPassword: string;
+  password?: string;
+  confirmPassword?: string;
 }
 
-const defaultForm: CreateUserForm = {
+const defaultForm: UserForm = {
   firstName: "",
   middleName: "",
   lastName: "",
@@ -26,55 +27,104 @@ const defaultForm: CreateUserForm = {
 };
 
 interface UserState {
-  isCreateModalOpen: boolean;
-  createForm: CreateUserForm;
+  isModalOpen: boolean;
+  form: UserForm;
+  mode: "create" | "edit";
 
-  openCreateModal: () => void;
-  closeCreateModal: () => void;
-  setCreateFormField: <K extends keyof CreateUserForm>(field: K, value: CreateUserForm[K]) => void;
-  resetCreateForm: () => void;
-  createUser: (successCallback?: () => void) => Promise<void>;
+  openModal: (mode: "create" | "edit", user?: any) => void;
+  closeModal: () => void;
+  setFormField: <K extends keyof UserForm>(field: K, value: UserForm[K]) => void;
+  resetForm: () => void;
+  saveUser: (successCallback?: () => void) => Promise<void>;
+  deleteUser: (id: number, successCallback?: () => void) => Promise<void>;
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
-  isCreateModalOpen: false,
-  createForm: { ...defaultForm },
+  isModalOpen: false,
+  form: { ...defaultForm },
+  mode: "create",
 
-  openCreateModal: () => set({ isCreateModalOpen: true }),
-
-  closeCreateModal: () => {
-    set({ isCreateModalOpen: false, createForm: { ...defaultForm } });
+  openModal: (mode, user) => {
+    if (mode === "edit" && user) {
+      set({
+        isModalOpen: true,
+        mode,
+        form: {
+          id: user.id,
+          firstName: user.firstName,
+          middleName: user.middleName || "",
+          lastName: user.lastName,
+          email: user.email,
+          username: user.username,
+          phoneNumber: user.phoneNumber || "",
+        },
+      });
+    } else {
+      set({ isModalOpen: true, mode: "create", form: { ...defaultForm } });
+    }
   },
 
-  setCreateFormField: (field, value) => {
+  closeModal: () => {
+    set({ isModalOpen: false, form: { ...defaultForm } });
+  },
+
+  setFormField: (field, value) => {
     set((state) => ({
-      createForm: { ...state.createForm, [field]: value },
+      form: { ...state.form, [field]: value },
     }));
   },
 
-  resetCreateForm: () => set({ createForm: { ...defaultForm } }),
+  resetForm: () => set({ form: { ...defaultForm } }),
 
-  createUser: async (successCallback?: () => void) => {
+  saveUser: async (successCallback?: () => void) => {
     const { startLoader, stopLoader } = useLoaderStore.getState();
-    const { createForm } = get();
+    const { form, mode } = get();
 
-    startLoader("createUser");
+    startLoader("saveUser");
     try {
-      await api.post(endpoints.user.create, {
-        firstName: createForm.firstName,
-        middleName: createForm.middleName || undefined,
-        lastName: createForm.lastName,
-        email: createForm.email,
-        username: createForm.username,
-        phoneNumber: createForm.phoneNumber || undefined,
-        password: createForm.password,
-      });
-      get().closeCreateModal();
+      if (mode === "create") {
+        await api.post(endpoints.user.create, {
+          firstName: form.firstName,
+          middleName: form.middleName || undefined,
+          lastName: form.lastName,
+          email: form.email,
+          username: form.username,
+          phoneNumber: form.phoneNumber || undefined,
+          password: form.password,
+        });
+      } else {
+        await api.patch(endpoints.user.update.replace(":id", String(form.id)), {
+          firstName: form.firstName,
+          middleName: form.middleName || undefined,
+          lastName: form.lastName,
+          email: form.email,
+          username: form.username,
+          phoneNumber: form.phoneNumber || undefined,
+          password: form.password || undefined,
+        });
+      }
+      get().closeModal();
       successCallback?.();
     } catch (err) {
-      console.error("Create user failed:", err);
+      console.error("Save user failed:", err);
     } finally {
-      stopLoader("createUser");
+      stopLoader("saveUser");
+    }
+  },
+
+  deleteUser: async (id: number, successCallback?: () => void) => {
+    const { startLoader, stopLoader } = useLoaderStore.getState();
+
+    if (!confirm("Are you sure you want to delete this user?")) return;
+
+    startLoader("deleteUser");
+    try {
+      await api.delete(endpoints.user.delete.replace(":id", String(id)));
+      successCallback?.();
+    } catch (err) {
+      console.error("Delete user failed:", err);
+    } finally {
+      stopLoader("deleteUser");
     }
   },
 }));

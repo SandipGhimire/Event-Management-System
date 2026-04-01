@@ -1,43 +1,54 @@
 import Modal from "@/components/common/Modal";
 import { useUserStore } from "@/store/app/user.store";
 import { useLoaderStore } from "@/store/app/loader.store";
+import { useMemo } from "react";
 
-export default function CreateUser() {
-  const { isCreateModalOpen, closeCreateModal, createForm, setCreateFormField, createUser } = useUserStore();
-  const isLoading = useLoaderStore((s) => s.isLoading("createUser"));
+interface CreateUserProps {
+  successCallback?: () => void;
+}
+
+export default function CreateUser({ successCallback }: CreateUserProps) {
+  const { isModalOpen, closeModal, form, setFormField, saveUser, mode } = useUserStore();
+  const isLoading = useLoaderStore((s) => s.isLoading("saveUser"));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createUser();
+    saveUser(successCallback);
   };
+
+  const isFormValid = useMemo(() => {
+    if (mode === "create") {
+      return (
+        !!(form.firstName &&
+        form.lastName &&
+        form.email &&
+        form.username &&
+        form.password &&
+        form.confirmPassword &&
+        form.password === form.confirmPassword)
+      );
+    }
+    return !!(form.firstName && form.lastName && form.email && form.username);
+  }, [form, mode]);
 
   return (
     <Modal
-      isOpen={isCreateModalOpen}
-      onClose={closeCreateModal}
-      title="Create New User"
+      isOpen={isModalOpen}
+      onClose={closeModal}
+      title={mode === "create" ? "Create New User" : "Edit User"}
       size="lg"
       footer={
         <>
-          <button type="button" className="btn btn-outline-secondary" onClick={closeCreateModal} disabled={isLoading}>
+          <button type="button" className="btn btn-outline-secondary" onClick={closeModal} disabled={isLoading}>
             Cancel
           </button>
           <button
             type="button"
             className={`btn btn-primary ${isLoading ? "btn-loading" : ""}`}
             onClick={handleSubmit}
-            disabled={
-              isLoading ||
-              !createForm.firstName ||
-              !createForm.lastName ||
-              !createForm.email ||
-              !createForm.username ||
-              !createForm.password ||
-              !createForm.confirmPassword ||
-              createForm.password !== createForm.confirmPassword
-            }
+            disabled={isLoading || !isFormValid}
           >
-            Create User
+            {mode === "create" ? "Create User" : "Update User"}
           </button>
         </>
       }
@@ -46,107 +57,113 @@ export default function CreateUser() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4">
           {/* First Name */}
           <div className="form-field field-required">
-            <label htmlFor="create-firstName">First Name</label>
+            <label htmlFor="user-firstName">First Name</label>
             <input
-              id="create-firstName"
+              id="user-firstName"
               type="text"
               className="input-full"
               placeholder="Enter first name"
-              value={createForm.firstName}
-              onChange={(e) => setCreateFormField("firstName", e.target.value)}
+              value={form.firstName}
+              onChange={(e) => setFormField("firstName", e.target.value)}
             />
           </div>
 
           {/* Middle Name */}
           <div className="form-field">
-            <label htmlFor="create-middleName">Middle Name</label>
+            <label htmlFor="user-middleName">Middle Name</label>
             <input
-              id="create-middleName"
+              id="user-middleName"
               type="text"
               className="input-full"
               placeholder="Enter middle name"
-              value={createForm.middleName}
-              onChange={(e) => setCreateFormField("middleName", e.target.value)}
+              value={form.middleName}
+              onChange={(e) => setFormField("middleName", e.target.value)}
             />
           </div>
 
           {/* Last Name */}
           <div className="form-field field-required">
-            <label htmlFor="create-lastName">Last Name</label>
+            <label htmlFor="user-lastName">Last Name</label>
             <input
-              id="create-lastName"
+              id="user-lastName"
               type="text"
               className="input-full"
               placeholder="Enter last name"
-              value={createForm.lastName}
-              onChange={(e) => setCreateFormField("lastName", e.target.value)}
+              value={form.lastName}
+              onChange={(e) => setFormField("lastName", e.target.value)}
             />
           </div>
 
           {/* Email */}
           <div className="form-field field-required">
-            <label htmlFor="create-email">Email Address</label>
+            <label htmlFor="user-email">Email Address</label>
             <input
-              id="create-email"
+              id="user-email"
               type="email"
               className="input-full"
               placeholder="Enter email address"
-              value={createForm.email}
-              onChange={(e) => setCreateFormField("email", e.target.value)}
+              value={form.email}
+              onChange={(e) => setFormField("email", e.target.value)}
             />
           </div>
 
           {/* Username */}
           <div className="form-field field-required">
-            <label htmlFor="create-username">Username</label>
+            <label htmlFor="user-username">Username</label>
             <input
-              id="create-username"
+              id="user-username"
               type="text"
               className="input-full"
               placeholder="Enter username"
-              value={createForm.username}
-              onChange={(e) => setCreateFormField("username", e.target.value)}
+              value={form.username}
+              onChange={(e) => setFormField("username", e.target.value)}
             />
           </div>
 
           {/* Phone Number */}
           <div className="form-field">
-            <label htmlFor="create-phoneNumber">Phone Number</label>
+            <label htmlFor="user-phoneNumber">Phone Number</label>
             <input
-              id="create-phoneNumber"
+              id="user-phoneNumber"
               type="tel"
               className="input-full"
               placeholder="Enter phone number"
-              value={createForm.phoneNumber}
-              onChange={(e) => setCreateFormField("phoneNumber", e.target.value)}
+              value={form.phoneNumber}
+              onChange={(e) => setFormField("phoneNumber", e.target.value)}
             />
           </div>
 
+          <div className="col-span-full border-t border-border mt-2 pt-4">
+            <h4 className="text-sm font-semibold mb-3">
+              {mode === "create" ? "Set Password" : "Change Password (Optional)"}
+            </h4>
+          </div>
+
           {/* Password */}
-          <div className="form-field field-required">
-            <label htmlFor="create-password">Password</label>
+          <div className={`form-field ${mode === "create" ? "field-required" : ""}`}>
+            <label htmlFor="user-password">Password</label>
             <input
-              id="create-password"
+              id="user-password"
               type="password"
               className="input-full"
-              placeholder="Enter password"
-              value={createForm.password}
-              onChange={(e) => setCreateFormField("password", e.target.value)}
+              placeholder={mode === "create" ? "Enter password" : "Leave blank to keep current"}
+              value={form.password || ""}
+              onChange={(e) => setFormField("password", e.target.value)}
             />
           </div>
 
           {/* Confirm Password */}
-          <div className="form-field field-required">
-            <label htmlFor="create-confirmPassword">Confirm Password</label>
+          <div className={`form-field ${mode === "create" ? "field-required" : ""}`}>
+            <label htmlFor="user-confirmPassword">Confirm Password</label>
             <input
-              id="create-confirmPassword"
+              id="user-confirmPassword"
               type="password"
-              className={`input-full ${createForm.confirmPassword && createForm.password !== createForm.confirmPassword ? "input-error" : ""}`}
+              className={`input-full ${form.confirmPassword && form.password !== form.confirmPassword ? "input-error" : ""}`}
               placeholder="Confirm password"
-              value={createForm.confirmPassword}
-              onChange={(e) => setCreateFormField("confirmPassword", e.target.value)}
+              value={form.confirmPassword || ""}
+              onChange={(e) => setFormField("confirmPassword", e.target.value)}
             />
-            {createForm.confirmPassword && createForm.password !== createForm.confirmPassword && (
+            {form.confirmPassword && form.password !== form.confirmPassword && (
               <span className="field-error">Passwords do not match</span>
             )}
           </div>

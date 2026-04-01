@@ -8,10 +8,17 @@ const user = {
   self: "/user/self/",
   list: "/user/list/",
   create: "/user/create/",
+  update: "/user/:id/",
+  delete: "/user/:id/",
 };
 
 const role = {
   list: "/role/list/",
+  create: "/role/create/",
+  update: "/role/:id/",
+  detail: "/role/:id/",
+  delete: "/role/:id/",
+  permissions: "/role/permissions/list/",
 };
 
 const attendees = {

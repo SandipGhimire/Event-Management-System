@@ -3,12 +3,14 @@ import { AttendeesService } from "./attendees.service";
 import { parseQuery } from "../prisma/prisma.utils";
 import { AttendeeCreateDto } from "./attendees.dto";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
+import { Permission } from "../role/decorators/permission.decorator";
 
 @Controller("attendees")
 export class AttendeesController {
   constructor(private readonly attendeesService: AttendeesService) {}
 
   @Get("list")
+  @Permission(["attendee.list"])
   async listAttendees(@Query() query: Record<string, any>) {
     const result = await this.attendeesService.getAllAttendees(parseQuery(query));
     return {
@@ -20,6 +22,7 @@ export class AttendeesController {
   }
 
   @Get(":id")
+  @Permission(["attendee.view"])
   async getAttendeeById(@Param("id") id: string) {
     const numericId = parseInt(id, 10);
     const result = await this.attendeesService.getAttendeeById(numericId);
@@ -32,6 +35,7 @@ export class AttendeesController {
   }
 
   @Post("create")
+  @Permission(["attendee.create"])
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: "profilePicture", maxCount: 1 },
@@ -54,6 +58,7 @@ export class AttendeesController {
   }
 
   @Post("update/:id")
+  @Permission(["attendee.update"])
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: "profilePicture", maxCount: 1 },

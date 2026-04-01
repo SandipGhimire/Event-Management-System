@@ -1,14 +1,5 @@
 import type { SidebarItem } from "@/core/types/app/sidebar.type";
-import {
-  LayoutDashboard,
-  Users,
-  Scan,
-  ClipboardList,
-  Handshake,
-  SquarePen,
-  UserLock,
-  Database,
-} from "lucide-react";
+import { LayoutDashboard, Users, Scan, ClipboardList, Handshake, SquarePen, UserLock, Database } from "lucide-react";
 
 const sidebarItems = (): SidebarItem[] => {
   return [
@@ -19,6 +10,7 @@ const sidebarItems = (): SidebarItem[] => {
       label: "Dashboard",
       icon: LayoutDashboard,
       to: "/",
+      permission: "dashboard.view",
     },
     {
       label: "Event",
@@ -27,16 +19,19 @@ const sidebarItems = (): SidebarItem[] => {
       label: "Attendees",
       icon: Users,
       to: "/event/attendees",
+      permission: "attendee.list",
     },
     {
       label: "Scanner",
       icon: Scan,
       to: "/event/scanner",
+      permission: "attendee.scan",
     },
     {
       label: "Tasks",
       icon: ClipboardList,
       to: "/event/tasks",
+      permission: "task.list",
     },
     {
       label: "Sponsors",
@@ -45,6 +40,7 @@ const sidebarItems = (): SidebarItem[] => {
       label: "Sponsors List",
       icon: Handshake,
       to: "/sponsors",
+      permission: "sponsor.list",
     },
     {
       label: "Settings",
@@ -53,11 +49,13 @@ const sidebarItems = (): SidebarItem[] => {
       label: "Roles",
       icon: SquarePen,
       to: "/settings/roles",
+      permission: "role.list",
     },
     {
       label: "Users",
       icon: UserLock,
       to: "/settings/users",
+      permission: "user.list",
     },
     {
       label: "Demo",

@@ -2,6 +2,7 @@ export interface ButtonConfig {
   label: string;
   onClick?: () => void;
   className?: string;
+  isVisible?: boolean;
 }
 
 export interface ContentLayoutProps {
