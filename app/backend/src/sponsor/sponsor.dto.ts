@@ -41,7 +41,11 @@ export class SponsorCreateDto implements CreateSponsorPayload {
   order?: number;
 
   @IsOptional()
-  @Transform(({ value }) => (typeof value === "string" ? JSON.parse(value) : value))
+  @Transform(({ value }) =>
+    typeof value === "string"
+      ? (JSON.parse(value) as { label: string; url: string }[])
+      : (value as { label: string; url: string }[])
+  )
   links: { label: string; url: string }[];
 }
 

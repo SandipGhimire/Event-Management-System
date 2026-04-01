@@ -36,7 +36,7 @@ export default function RoleModal({ successCallback }: RoleModalProps) {
     setFormField("permissionKeys", newKeys);
   };
 
-  const toggleModulePermissions = (module: string, perms: any[], isAllSelected: boolean) => {
+  const toggleModulePermissions = (perms: any[], isAllSelected: boolean) => {
     const moduleKeys = perms.map((p) => p.key);
     if (isAllSelected) {
       // Remove all module permissions
@@ -128,38 +128,37 @@ export default function RoleModal({ successCallback }: RoleModalProps) {
                 onChange={(e) => setFormField("description", e.target.value)}
               />
             </div>
-            
+
             <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl">
-               <p className="text-[12px] text-primary leading-relaxed">
-                 <span className="font-bold block mb-1">System Security Tip:</span>
-                 Select only the permissions necessary for the role. This ensures a principle of least privilege is maintained.
-               </p>
+              <p className="text-[12px] text-primary leading-relaxed">
+                <span className="font-bold block mb-1">System Security Tip:</span>
+                Select only the permissions necessary for the role. This ensures a principle of least privilege is
+                maintained.
+              </p>
             </div>
           </div>
 
           <div className="md:col-span-2">
             <div className="flex items-baseline justify-between mb-4">
-              <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider">
-                Access Entitlements
-              </h4>
+              <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider">Access Entitlements</h4>
               <span className="text-[11px] font-medium px-2 py-0.5 bg-bg-secondary rounded-full text-text-secondary border border-border">
                 {form.permissionKeys.length} Selected
               </span>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
               {Object.entries(groupedPermissions).map(([module, perms]) => {
                 const isAllSelected = perms.every((p) => form.permissionKeys.includes(p.key));
                 const isSomeSelected = perms.some((p) => form.permissionKeys.includes(p.key));
-                
+
                 return (
-                  <div 
-                    key={module} 
+                  <div
+                    key={module}
                     className={`rounded-2xl border transition-all duration-300 ${
                       isSomeSelected ? "border-primary/30 bg-bg-primary" : "border-border/60 bg-bg-secondary/30"
                     }`}
                   >
-                    <div 
+                    <div
                       className={`flex items-center justify-between px-4 py-3 border-b transition-colors ${
                         isSomeSelected ? "border-primary/10 bg-primary/5" : "border-border/60"
                       }`}
@@ -169,30 +168,30 @@ export default function RoleModal({ successCallback }: RoleModalProps) {
                       </h5>
                       <button
                         type="button"
-                        onClick={() => toggleModulePermissions(module, perms, isAllSelected)}
+                        onClick={() => toggleModulePermissions(perms, isAllSelected)}
                         className={`text-[10px] font-bold px-2 py-0.5 rounded transition-all duration-200 ${
-                          isAllSelected 
-                            ? "text-danger hover:bg-danger/10" 
-                            : "text-primary hover:bg-primary/10"
+                          isAllSelected ? "text-danger hover:bg-danger/10" : "text-primary hover:bg-primary/10"
                         }`}
                       >
                         {isAllSelected ? "Deselect All" : "Select All"}
                       </button>
                     </div>
-                    
+
                     <div className="p-3 space-y-1.5">
                       {perms.map((p) => {
                         const isSelected = form.permissionKeys.includes(p.key);
                         return (
-                          <label 
-                            key={p.key} 
+                          <label
+                            key={p.key}
                             className={`flex items-center gap-3 p-2 rounded-xl cursor-pointer transition-all duration-200 group ${
                               isSelected ? "bg-primary/10" : "hover:bg-bg-hover"
                             }`}
                           >
-                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all duration-200 ${
+                            <div
+                              className={`w-4 h-4 rounded border flex items-center justify-center transition-all duration-200 ${
                                 isSelected ? "bg-primary border-primary" : "border-border group-hover:border-primary/50"
-                              }`}>
+                              }`}
+                            >
                               {isSelected && <Check size={10} className="text-white stroke-[3px]" />}
                             </div>
                             <input
@@ -202,9 +201,11 @@ export default function RoleModal({ successCallback }: RoleModalProps) {
                               onChange={() => handlePermissionToggle(p.key)}
                             />
                             <div className="flex flex-col">
-                              <span className={`text-[11px] font-bold leading-none mb-1 transition-colors ${
-                                isSelected ? "text-primary" : "text-text-primary"
-                              }`}>
+                              <span
+                                className={`text-[11px] font-bold leading-none mb-1 transition-colors ${
+                                  isSelected ? "text-primary" : "text-text-primary"
+                                }`}
+                              >
                                 {p.name}
                               </span>
                               <span className="text-[9px] text-text-secondary opacity-60 font-mono italic">

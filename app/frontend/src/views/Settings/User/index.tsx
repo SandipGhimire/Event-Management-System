@@ -65,7 +65,7 @@ export default function UserList() {
       {
         label: "Delete User",
         icon: Trash2,
-        onClick: (row: UserDetail) => deleteUser(row.id, () => setRefresh((c) => c + 1)),
+        onClick: (row: UserDetail) => deleteUser(row.id!, () => setRefresh((c) => c + 1)),
         className: "text-danger hover:bg-danger/10",
         hidden: () => !canDelete,
       },

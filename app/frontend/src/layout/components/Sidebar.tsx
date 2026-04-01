@@ -3,7 +3,6 @@ import { useCoreStore } from "@/store/app/core.store";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router";
-import { useHasPermission } from "@/core/utils/permission.utils";
 import { useAuthStore } from "@/store/auth/auth.store";
 
 const itemsRaw = sidebarItems();
