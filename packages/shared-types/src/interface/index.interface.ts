@@ -1,5 +1,5 @@
 export interface UserDetail {
-  id: number;
+  id?: number;
   uuid: string;
   fullName: string;
   email: string;
@@ -8,7 +8,12 @@ export interface UserDetail {
   lastName: string;
   middleName: string;
   phoneNumber: string;
-  permissions: string[];
+  permissions?: string[];
+  roles?: {
+    role?: {
+      name?: string;
+    };
+  }[];
 }
 
 export interface AttendeesDetail {

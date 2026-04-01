@@ -33,7 +33,10 @@ export class RoleService {
   async updateRole(id: number, data: UpdateRoleDto, userId: number) {
     const { permissionKeys, ...rest } = data;
     const user = await this.db.user.findUnique({ where: { id: userId }, select: { username: true } });
-    const updateData: any = { ...rest, updatedBy: user?.username || "system" };
+    const updateData: UpdateRoleDto & { permissions?: { create: { permissionId: number }[] }; updatedBy: string } = {
+      ...rest,
+      updatedBy: user?.username || "system",
+    };
 
     if (permissionKeys) {
       await this.db.rolePermission.deleteMany({ where: { roleId: id } });

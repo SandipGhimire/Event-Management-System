@@ -45,7 +45,7 @@ export class AttendeesService {
     profilePic?: Express.Multer.File,
     paymentSlip?: Express.Multer.File
   ) {
-    const generateRandomQRCode = async (length: number = 30): Promise<string> => {
+    const generateRandomQRCode = async (length: number = 100): Promise<string> => {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       let result = "";
       for (let i = 0; i < length; i++) {

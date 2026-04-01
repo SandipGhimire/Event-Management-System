@@ -5,6 +5,10 @@ import { paginate } from "../prisma/prisma.utils";
 import { CreateUserDto, UpdateUserDto } from "./user.dto";
 import * as bcrypt from "bcrypt";
 
+function generateFullName(firstName: string, middleName: string | null, lastName: string) {
+  return `${firstName} ${middleName || ""} ${lastName}`.replace("  ", " ");
+}
+
 @Injectable()
 export class UserService {
   constructor(private readonly db: PrismaService) {}
@@ -46,7 +50,7 @@ export class UserService {
       firstName: userDetail.firstName,
       middleName: userDetail?.middleName,
       lastName: userDetail.lastName,
-      fullName: `${userDetail.firstName} ${userDetail.middleName || ""} ${userDetail.lastName}`.replace("  ", " "),
+      fullName: generateFullName(userDetail.firstName, userDetail?.middleName, userDetail.lastName),
       permissions: userDetail.roles.flatMap((role) =>
         role.role.permissions.map((permission) => permission.permission.key)
       ),
@@ -76,7 +80,7 @@ export class UserService {
 
   async updateUser(id: number, data: UpdateUserDto) {
     const { password, roleIds, ...rest } = data;
-    const updateData: any = { ...rest };
+    const updateData: UpdateUserDto & { password?: string; roles?: { create: { roleId: number }[] } } = { ...rest };
 
     const user = await this.db.user.findUnique({ where: { id }, select: { uuid: true } });
     if (!user) {
@@ -108,7 +112,7 @@ export class UserService {
     });
   }
 
-  async getUserById(id: number): Promise<any> {
+  async getUserById(id: number): Promise<UserDetail | null> {
     const userDetail = await this.db.user.findUnique({
       where: {
         id,
@@ -133,7 +137,12 @@ export class UserService {
 
     if (!userDetail) return null;
 
-    return userDetail;
+    const user = {
+      ...userDetail,
+      fullName: generateFullName(userDetail.firstName, userDetail.middleName, userDetail.lastName),
+    } as UserDetail;
+
+    return user;
   }
 
   async getAllUsers(params: FetchParams): Promise<PaginatedData<any>> {
