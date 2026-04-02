@@ -3,7 +3,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateAttendeePayload, FetchParams, PaginatedData } from "shared-types";
 import { paginate } from "../prisma/prisma.utils";
 import { Attendee } from "../../database/generated/client";
-import { saveFile, saveBuffer, renameFile, deleteFile } from "../common/utils/file-upload.utils";
+import { saveFile, saveBuffer } from "../common/utils/file-upload.utils";
 import { generateIdCard } from "../core/utils/cardGenerator";
 import * as fs from "fs";
 import * as path from "path";
@@ -53,6 +53,7 @@ export class AttendeesService {
 
     if (missingCards.length > 0 && !this.isGeneratingCards) {
       this.isGeneratingCards = true;
+      console.log(`🎴 [getAllIdCards] Starting background generation for ${missingCards.length} missing cards`);
       // Start background generation
       void this.generateMissingCards(missingCards);
     }
@@ -67,17 +68,20 @@ export class AttendeesService {
     try {
       for (const attendee of attendees) {
         try {
+          console.log(`🎴 [generateMissingCards] Generating card for attendee #${attendee.id} (${attendee.name})`);
           const idCardPath = await this.generateAndSaveIdCard(attendee);
           await this.db.attendee.update({
             where: { id: attendee.id },
             data: { idCard: idCardPath },
           });
+          console.log(`✅ [generateMissingCards] Card saved for attendee #${attendee.id}: ${idCardPath}`);
         } catch (error) {
-          console.error(`⚠️ Failed to generate background ID card for ${attendee.name}:`, error);
+          console.error(`❌ [generateMissingCards] Failed for attendee #${attendee.id} (${attendee.name}):`, error);
         }
       }
     } finally {
       this.isGeneratingCards = false;
+      console.log(`🎴 [generateMissingCards] Background generation complete`);
     }
   }
 
@@ -88,21 +92,28 @@ export class AttendeesService {
   private getProfilePicBuffer(profilePicPath: string | null): Buffer | null {
     if (!profilePicPath) return null;
     const fullPath = path.join(process.cwd(), "public", profilePicPath);
-    if (!fs.existsSync(fullPath)) return null;
+    if (!fs.existsSync(fullPath)) {
+      console.log(`⚠️ [getProfilePicBuffer] Profile pic not found on disk: ${fullPath}`);
+      return null;
+    }
+    console.log(`📸 [getProfilePicBuffer] Loaded profile pic: ${profilePicPath}`);
     return fs.readFileSync(fullPath);
   }
 
   /**
    * Generates and saves an ID card for the attendee.
-   * Returns the relative path to the saved card image.
+   * Uses ID-based path: attendees/idcard/{id}-idcard.png
    */
   private async generateAndSaveIdCard(attendee: {
+    id: number;
     name: string;
     position: string | null;
     clubName: string;
     qrCode: string;
     profilePic: string | null;
   }): Promise<string> {
+    console.log(`🎴 [generateAndSaveIdCard] Generating ID card for attendee #${attendee.id} (${attendee.name})`);
+
     const profilePicBuffer = this.getProfilePicBuffer(attendee.profilePic);
 
     const cardBuffer = await generateIdCard({
@@ -113,8 +124,10 @@ export class AttendeesService {
       profilePicBuffer,
     });
 
-    const fileName = `${attendee.name.replace(/\s+/g, "-").toLowerCase()}-idcard`;
-    return saveBuffer(cardBuffer, "attendees", fileName, ".png");
+    const fileName = `${attendee.id}-idcard`;
+    const savedPath = saveBuffer(cardBuffer, "attendees/idcard", fileName, ".png");
+    console.log(`✅ [generateAndSaveIdCard] ID card saved: ${savedPath}`);
+    return savedPath;
   }
 
   async createAttendee(
@@ -140,20 +153,10 @@ export class AttendeesService {
       return result;
     };
 
-    let profilePicPath: string | null = null;
-    if (profilePic) {
-      const fileName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-profile`;
-      profilePicPath = saveFile(profilePic, "attendees", fileName);
-    }
-
-    let paymentSlipPath: string | null = null;
-    if (paymentSlip) {
-      const fileName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-payment`;
-      paymentSlipPath = saveFile(paymentSlip, "attendees", fileName);
-    }
-
     const qrCode = await generateRandomQRCode();
 
+    // Step 1: Create the DB record first to get the auto-increment ID
+    console.log(`👤 [createAttendee] Creating attendee: ${body.name}`);
     const attendee = await this.db.attendee.create({
       data: {
         name: body.name,
@@ -162,22 +165,71 @@ export class AttendeesService {
         clubName: body.clubName,
         membershipID: body.membershipID ? String(body.membershipID) : null,
         isVeg: body.isVeg,
-        profilePic: profilePicPath,
-        paymentSlip: paymentSlipPath,
         position: body.position,
         qrCode,
       },
     });
 
+    console.log(`✅ [createAttendee] DB record created with ID #${attendee.id}`);
+
+    // Step 2: Save files using the attendee ID
+    let profilePicPath: string | null = null;
+    if (profilePic) {
+      const fileName = `${attendee.id}-profile`;
+      profilePicPath = saveFile(profilePic, "attendees/profile", fileName);
+      console.log(`📸 [createAttendee] Profile pic saved: ${profilePicPath}`);
+    }
+
+    let paymentSlipPath: string | null = null;
+    if (paymentSlip) {
+      const fileName = `${attendee.id}-payslip`;
+      paymentSlipPath = saveFile(paymentSlip, "attendees/payslip", fileName);
+      console.log(`💳 [createAttendee] Payment slip saved: ${paymentSlipPath}`);
+    }
+
+    // Step 3: Generate ID card and update all file paths in one go
     try {
-      const idCardPath = await this.generateAndSaveIdCard(attendee);
+      // Update profile/payment paths first so the card generator can read the profile pic
+      if (profilePicPath || paymentSlipPath) {
+        await this.db.attendee.update({
+          where: { id: attendee.id },
+          data: {
+            profilePic: profilePicPath,
+            paymentSlip: paymentSlipPath,
+          },
+        });
+      }
+
+      const idCardPath = await this.generateAndSaveIdCard({
+        ...attendee,
+        profilePic: profilePicPath,
+      });
+
+      const result = await this.db.attendee.update({
+        where: { id: attendee.id },
+        data: {
+          profilePic: profilePicPath,
+          paymentSlip: paymentSlipPath,
+          idCard: idCardPath,
+        },
+      });
+
+      console.log(`✅ [createAttendee] All files saved for attendee #${attendee.id}`);
+      console.log(`   Profile: ${profilePicPath || "none"}`);
+      console.log(`   Payment: ${paymentSlipPath || "none"}`);
+      console.log(`   ID Card: ${idCardPath}`);
+
+      return result;
+    } catch (error) {
+      console.error(`❌ [createAttendee] Failed to generate ID card for #${attendee.id}:`, error);
+      // Still update file paths even if card generation fails
       return await this.db.attendee.update({
         where: { id: attendee.id },
-        data: { idCard: idCardPath },
+        data: {
+          profilePic: profilePicPath,
+          paymentSlip: paymentSlipPath,
+        },
       });
-    } catch (error) {
-      console.error("⚠️ Failed to generate ID card:", error);
-      return attendee;
     }
   }
 
@@ -187,36 +239,42 @@ export class AttendeesService {
     paymentSlip?: Express.Multer.File
   ) {
     if (!body.id) throw new Error("Attendee ID is required for update");
+    const attendeeId = Number(body.id);
+
     const existingAttendee = await this.db.attendee.findUnique({
-      where: { id: Number(body.id) },
+      where: { id: attendeeId },
     });
 
     if (!existingAttendee) {
+      console.log(`⚠️ [updateAttendee] Attendee #${attendeeId} not found`);
       return null;
     }
 
+    console.log(`✏️ [updateAttendee] Updating attendee #${attendeeId} (${existingAttendee.name} → ${body.name})`);
+
+    // Save new profile pic using ID-based path (no rename needed!)
     let profilePicPath = existingAttendee.profilePic;
     if (profilePic) {
-      const fileName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-profile`;
-      profilePicPath = saveFile(profilePic, "attendees", fileName, existingAttendee.profilePic);
-    } else if (existingAttendee.name !== body.name && existingAttendee.profilePic) {
-      const newPicName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-profile`;
-      const renamedPath = renameFile(existingAttendee.profilePic, newPicName);
-      if (renamedPath) profilePicPath = renamedPath;
+      const fileName = `${attendeeId}-profile`;
+      profilePicPath = saveFile(profilePic, "attendees/profile", fileName, existingAttendee.profilePic);
+      console.log(`📸 [updateAttendee] New profile pic saved: ${profilePicPath}`);
+    } else {
+      console.log(`📸 [updateAttendee] Profile pic unchanged: ${profilePicPath || "none"}`);
     }
 
+    // Save new payment slip using ID-based path (no rename needed!)
     let paymentSlipPath = existingAttendee.paymentSlip as string;
     if (paymentSlip) {
-      const fileName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-payment`;
-      paymentSlipPath = saveFile(paymentSlip, "attendees", fileName, existingAttendee.paymentSlip);
-    } else if (existingAttendee.name !== body.name && existingAttendee.paymentSlip) {
-      const newSlipName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-payment`;
-      const renamedPath = renameFile(existingAttendee.paymentSlip, newSlipName);
-      if (renamedPath) paymentSlipPath = renamedPath;
+      const fileName = `${attendeeId}-payslip`;
+      paymentSlipPath = saveFile(paymentSlip, "attendees/payslip", fileName, existingAttendee.paymentSlip);
+      console.log(`💳 [updateAttendee] New payment slip saved: ${paymentSlipPath}`);
+    } else {
+      console.log(`💳 [updateAttendee] Payment slip unchanged: ${paymentSlipPath || "none"}`);
     }
 
+    // Update DB with new data
     const updatedAttendee = await this.db.attendee.update({
-      where: { id: Number(body.id) },
+      where: { id: attendeeId },
       data: {
         name: body.name,
         email: body.email,
@@ -230,17 +288,28 @@ export class AttendeesService {
       },
     });
 
+    console.log(`✅ [updateAttendee] DB record updated for attendee #${attendeeId}`);
+
+    // Always regenerate ID card (overwrites old one automatically via ID-based naming)
     try {
-      if (existingAttendee.name !== body.name && existingAttendee.idCard) {
-        deleteFile(existingAttendee.idCard);
-      }
-      const idCardPath = await this.generateAndSaveIdCard(updatedAttendee);
-      return await this.db.attendee.update({
+      const idCardPath = await this.generateAndSaveIdCard({
+        ...updatedAttendee,
+        profilePic: profilePicPath,
+      });
+
+      const result = await this.db.attendee.update({
         where: { id: updatedAttendee.id },
         data: { idCard: idCardPath },
       });
+
+      console.log(`✅ [updateAttendee] All done for attendee #${attendeeId}`);
+      console.log(`   Profile: ${profilePicPath || "none"}`);
+      console.log(`   Payment: ${paymentSlipPath || "none"}`);
+      console.log(`   ID Card: ${idCardPath}`);
+
+      return result;
     } catch (error) {
-      console.error("⚠️ Failed to regenerate ID card:", error);
+      console.error(`❌ [updateAttendee] Failed to regenerate ID card for #${attendeeId}:`, error);
       return updatedAttendee;
     }
   }
