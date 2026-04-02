@@ -5,6 +5,7 @@ const sidebarItems = (): SidebarItem[] => {
   return [
     {
       label: "Dashboard",
+      permission: ["dashboard.view"],
     },
     {
       label: "Dashboard",
@@ -14,6 +15,7 @@ const sidebarItems = (): SidebarItem[] => {
     },
     {
       label: "Event",
+      permission: ["attendee.list", "attendee.scan", "task.list"],
     },
     {
       label: "Attendees",
@@ -35,6 +37,7 @@ const sidebarItems = (): SidebarItem[] => {
     },
     {
       label: "Sponsors",
+      permission: ["sponsor.list"],
     },
     {
       label: "Sponsors List",
@@ -44,6 +47,7 @@ const sidebarItems = (): SidebarItem[] => {
     },
     {
       label: "Settings",
+      permission: ["role.list", "user.list"],
     },
     {
       label: "Roles",
