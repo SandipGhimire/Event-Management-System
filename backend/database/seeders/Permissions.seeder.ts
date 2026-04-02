@@ -41,6 +41,7 @@ const run = async (prisma: PrismaClient) => {
       { name: "Create User", key: "user.create", description: "Create a new user" },
       { name: "Update User", key: "user.update", description: "Update an existing user" },
       { name: "Delete User", key: "user.delete", description: "Delete a user" },
+      { name: "Revoke User Sessions", key: "user.session.revoke", description: "Revoke all sessions for a user" },
 
       // Roles
       { name: "List Roles", key: "role.list", description: "View the list of roles" },

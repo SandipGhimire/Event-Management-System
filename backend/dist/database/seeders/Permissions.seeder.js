@@ -33,6 +33,7 @@ const run = async (prisma) => {
             { name: "Create User", key: "user.create", description: "Create a new user" },
             { name: "Update User", key: "user.update", description: "Update an existing user" },
             { name: "Delete User", key: "user.delete", description: "Delete a user" },
+            { name: "Revoke User Sessions", key: "user.session.revoke", description: "Revoke all sessions for a user" },
             { name: "List Roles", key: "role.list", description: "View the list of roles" },
             { name: "View Role", key: "role.view", description: "View role details" },
             { name: "Create Role", key: "role.create", description: "Create a new role" },
