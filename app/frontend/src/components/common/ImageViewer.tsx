@@ -21,11 +21,10 @@ export default function ImageViewer({
   alt = "Image",
   printWidth,
   printHeight,
-  isIdCard = false,
 }: ImageViewerProps) {
   const handlePrint = useCallback(() => {
-    const pWidth = printWidth || (isIdCard ? "86mm" : "210mm");
-    const pHeight = printHeight || (isIdCard ? "114mm" : "297mm");
+    const pWidth = printWidth;
+    const pHeight = printHeight;
 
     const iframe = document.createElement("iframe");
     iframe.style.position = "absolute";
@@ -43,9 +42,13 @@ export default function ImageViewer({
       <head>
         <title>Print ${title}</title>
         <style>
-          @page {
+          ${
+            pWidth && pHeight
+              ? `@page {
             size: ${pWidth} ${pHeight};
             margin: 0;
+          }`
+              : ""
           }
           body {
             margin: 0;
@@ -73,7 +76,7 @@ export default function ImageViewer({
     setTimeout(() => {
       document.body.removeChild(iframe);
     }, 1000);
-  }, [printWidth, printHeight, isIdCard, src, title]);
+  }, [printWidth, printHeight, src, title]);
 
   return (
     <Modal

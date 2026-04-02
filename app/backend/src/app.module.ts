@@ -13,6 +13,7 @@ import { RoleModule } from "./role/role.module";
 import { SponsorModule } from "./sponsor/sponsor.module";
 import { AttendeesModule } from "./attendees/attendees.module";
 import { TaskModule } from "./task/task.module";
+import { DashboardModule } from "./dashboard/dashboard.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 
@@ -33,6 +34,7 @@ import { join } from "path";
     SponsorModule,
     AttendeesModule,
     TaskModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [

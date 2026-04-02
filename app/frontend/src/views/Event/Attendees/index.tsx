@@ -179,7 +179,8 @@ export default function Attendees() {
         src={viewerConfig.src}
         title={viewerConfig.title}
         alt={viewerConfig.title}
-        isIdCard={viewerConfig.isIdCard}
+        printHeight={viewerConfig.isIdCard ? "1200px" : ""}
+        printWidth={viewerConfig.isIdCard ? "900px" : ""}
       />
 
       <AllIDCardsModal isOpen={allCardsModalOpen} onClose={() => setAllCardsModalOpen(false)} />

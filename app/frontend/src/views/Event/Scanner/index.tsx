@@ -22,8 +22,22 @@ export default function Scanner() {
     if (isStarting) return;
 
     try {
-      setScannedData(null);
       setIsStarting(true);
+
+      if (scannedData) {
+        setScannedData(null);
+        await new Promise((resolve) => setTimeout(resolve, 150));
+      }
+
+      await stopScanner();
+
+      const readerElement = document.getElementById("reader");
+      if (!readerElement) {
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        if (!document.getElementById("reader")) {
+          throw new Error("Scanner display area not ready. Please try again.");
+        }
+      }
 
       const html5QrCode = new Html5Qrcode("reader");
       qrScannerRef.current = html5QrCode;
@@ -34,7 +48,7 @@ export default function Scanner() {
         { facingMode: "environment" },
         config,
         async (decodedText) => {
-          stopScanner();
+          await stopScanner();
           setIsFetchingAttendee(true);
           try {
             const { data: res } = await api.get(`/attendees/qr/${decodedText}`);
@@ -54,34 +68,35 @@ export default function Scanner() {
       );
 
       setIsScanning(true);
-      setIsStarting(false);
     } catch (err: any) {
       console.error("Scanner error:", err);
       toast.error(`Failed to start camera: ${err.message || "Unknown error"}`);
+    } finally {
       setIsStarting(false);
     }
   };
 
   const stopScanner = async () => {
-    if (qrScannerRef.current && qrScannerRef.current.isScanning) {
+    if (qrScannerRef.current) {
       try {
-        await qrScannerRef.current.stop();
-        qrScannerRef.current = null;
-        setIsScanning(false);
+        if (qrScannerRef.current.isScanning) {
+          await qrScannerRef.current.stop();
+        }
       } catch (err) {
         console.error("Stop error:", err);
+      } finally {
+        qrScannerRef.current = null;
+        setIsScanning(false);
       }
     }
   };
 
   useEffect(() => {
-    // Fetch active tasks for toggling
     api
       .get("/task/list", { params: { pageSize: 100 } })
       .then((res) => setTasks(res.data.data.data || []))
       .catch((err) => console.error("Failed to load tasks", err));
 
-    // Cleanup scanner on unmount
     return () => {
       stopScanner();
     };
@@ -189,13 +204,7 @@ export default function Scanner() {
 
               {/* Action buttons */}
               <div className="flex flex-col sm:flex-row gap-3 mt-8">
-                <button
-                  onClick={() => {
-                    setScannedData(null);
-                    startScanner();
-                  }}
-                  className="btn btn-outline-secondary btn-lg flex-1 gap-2"
-                >
+                <button onClick={() => startScanner()} className="btn btn-outline-secondary btn-lg flex-1 gap-2">
                   <Camera className="w-4 h-4" /> Scan Next
                 </button>
                 <button

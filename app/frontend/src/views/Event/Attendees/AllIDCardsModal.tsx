@@ -22,7 +22,6 @@ export default function AllIDCardsModal({ isOpen, onClose }: AllIDCardsModalProp
   const [attendees, setAttendees] = useState<AttendeeWithCard[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Default sizes: 86mm x 114mm (ratio from 3543x4724)
   const [printWidth, setPrintWidth] = useState("900");
   const [printHeight, setPrintHeight] = useState("1200");
   const [unit, setUnit] = useState("px");

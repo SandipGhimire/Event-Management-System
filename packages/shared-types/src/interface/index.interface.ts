@@ -89,3 +89,5 @@ export interface TaskDetail {
   slug: string;
   createdAt: string; // ISO date string
 }
+ 
+export * from "./dashboard.interface";
