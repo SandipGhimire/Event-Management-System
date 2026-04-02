@@ -89,6 +89,7 @@ let AttendeesService = class AttendeesService {
         const missingCards = attendees.filter((a) => !a.idCard);
         if (missingCards.length > 0 && !this.isGeneratingCards) {
             this.isGeneratingCards = true;
+            console.log(`🎴 [getAllIdCards] Starting background generation for ${missingCards.length} missing cards`);
             void this.generateMissingCards(missingCards);
         }
         return {
@@ -100,30 +101,37 @@ let AttendeesService = class AttendeesService {
         try {
             for (const attendee of attendees) {
                 try {
+                    console.log(`🎴 [generateMissingCards] Generating card for attendee #${attendee.id} (${attendee.name})`);
                     const idCardPath = await this.generateAndSaveIdCard(attendee);
                     await this.db.attendee.update({
                         where: { id: attendee.id },
                         data: { idCard: idCardPath },
                     });
+                    console.log(`✅ [generateMissingCards] Card saved for attendee #${attendee.id}: ${idCardPath}`);
                 }
                 catch (error) {
-                    console.error(`⚠️ Failed to generate background ID card for ${attendee.name}:`, error);
+                    console.error(`❌ [generateMissingCards] Failed for attendee #${attendee.id} (${attendee.name}):`, error);
                 }
             }
         }
         finally {
             this.isGeneratingCards = false;
+            console.log(`🎴 [generateMissingCards] Background generation complete`);
         }
     }
     getProfilePicBuffer(profilePicPath) {
         if (!profilePicPath)
             return null;
         const fullPath = path.join(process.cwd(), "public", profilePicPath);
-        if (!fs.existsSync(fullPath))
+        if (!fs.existsSync(fullPath)) {
+            console.log(`⚠️ [getProfilePicBuffer] Profile pic not found on disk: ${fullPath}`);
             return null;
+        }
+        console.log(`📸 [getProfilePicBuffer] Loaded profile pic: ${profilePicPath}`);
         return fs.readFileSync(fullPath);
     }
     async generateAndSaveIdCard(attendee) {
+        console.log(`🎴 [generateAndSaveIdCard] Generating ID card for attendee #${attendee.id} (${attendee.name})`);
         const profilePicBuffer = this.getProfilePicBuffer(attendee.profilePic);
         const cardBuffer = await (0, cardGenerator_1.generateIdCard)({
             name: attendee.name,
@@ -132,8 +140,10 @@ let AttendeesService = class AttendeesService {
             qrCodeText: attendee.qrCode,
             profilePicBuffer,
         });
-        const fileName = `${attendee.name.replace(/\s+/g, "-").toLowerCase()}-idcard`;
-        return (0, file_upload_utils_1.saveBuffer)(cardBuffer, "attendees", fileName, ".png");
+        const fileName = `${attendee.id}-idcard`;
+        const savedPath = (0, file_upload_utils_1.saveBuffer)(cardBuffer, "attendees/idcard", fileName, ".png");
+        console.log(`✅ [generateAndSaveIdCard] ID card saved: ${savedPath}`);
+        return savedPath;
     }
     async createAttendee(body, profilePic, paymentSlip) {
         const generateRandomQRCode = async (length = 100) => {
@@ -150,17 +160,8 @@ let AttendeesService = class AttendeesService {
             }
             return result;
         };
-        let profilePicPath = null;
-        if (profilePic) {
-            const fileName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-profile`;
-            profilePicPath = (0, file_upload_utils_1.saveFile)(profilePic, "attendees", fileName);
-        }
-        let paymentSlipPath = null;
-        if (paymentSlip) {
-            const fileName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-payment`;
-            paymentSlipPath = (0, file_upload_utils_1.saveFile)(paymentSlip, "attendees", fileName);
-        }
         const qrCode = await generateRandomQRCode();
+        console.log(`👤 [createAttendee] Creating attendee: ${body.name}`);
         const attendee = await this.db.attendee.create({
             data: {
                 name: body.name,
@@ -169,57 +170,94 @@ let AttendeesService = class AttendeesService {
                 clubName: body.clubName,
                 membershipID: body.membershipID ? String(body.membershipID) : null,
                 isVeg: body.isVeg,
-                profilePic: profilePicPath,
-                paymentSlip: paymentSlipPath,
                 position: body.position,
                 qrCode,
             },
         });
+        console.log(`✅ [createAttendee] DB record created with ID #${attendee.id}`);
+        let profilePicPath = null;
+        if (profilePic) {
+            const fileName = `${attendee.id}-profile`;
+            profilePicPath = (0, file_upload_utils_1.saveFile)(profilePic, "attendees/profile", fileName);
+            console.log(`📸 [createAttendee] Profile pic saved: ${profilePicPath}`);
+        }
+        let paymentSlipPath = null;
+        if (paymentSlip) {
+            const fileName = `${attendee.id}-payslip`;
+            paymentSlipPath = (0, file_upload_utils_1.saveFile)(paymentSlip, "attendees/payslip", fileName);
+            console.log(`💳 [createAttendee] Payment slip saved: ${paymentSlipPath}`);
+        }
         try {
-            const idCardPath = await this.generateAndSaveIdCard(attendee);
-            return await this.db.attendee.update({
-                where: { id: attendee.id },
-                data: { idCard: idCardPath },
+            if (profilePicPath || paymentSlipPath) {
+                await this.db.attendee.update({
+                    where: { id: attendee.id },
+                    data: {
+                        profilePic: profilePicPath,
+                        paymentSlip: paymentSlipPath,
+                    },
+                });
+            }
+            const idCardPath = await this.generateAndSaveIdCard({
+                ...attendee,
+                profilePic: profilePicPath,
             });
+            const result = await this.db.attendee.update({
+                where: { id: attendee.id },
+                data: {
+                    profilePic: profilePicPath,
+                    paymentSlip: paymentSlipPath,
+                    idCard: idCardPath,
+                },
+            });
+            console.log(`✅ [createAttendee] All files saved for attendee #${attendee.id}`);
+            console.log(`   Profile: ${profilePicPath || "none"}`);
+            console.log(`   Payment: ${paymentSlipPath || "none"}`);
+            console.log(`   ID Card: ${idCardPath}`);
+            return result;
         }
         catch (error) {
-            console.error("⚠️ Failed to generate ID card:", error);
-            return attendee;
+            console.error(`❌ [createAttendee] Failed to generate ID card for #${attendee.id}:`, error);
+            return await this.db.attendee.update({
+                where: { id: attendee.id },
+                data: {
+                    profilePic: profilePicPath,
+                    paymentSlip: paymentSlipPath,
+                },
+            });
         }
     }
     async updateAttendee(body, profilePic, paymentSlip) {
         if (!body.id)
             throw new Error("Attendee ID is required for update");
+        const attendeeId = Number(body.id);
         const existingAttendee = await this.db.attendee.findUnique({
-            where: { id: Number(body.id) },
+            where: { id: attendeeId },
         });
         if (!existingAttendee) {
+            console.log(`⚠️ [updateAttendee] Attendee #${attendeeId} not found`);
             return null;
         }
+        console.log(`✏️ [updateAttendee] Updating attendee #${attendeeId} (${existingAttendee.name} → ${body.name})`);
         let profilePicPath = existingAttendee.profilePic;
         if (profilePic) {
-            const fileName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-profile`;
-            profilePicPath = (0, file_upload_utils_1.saveFile)(profilePic, "attendees", fileName, existingAttendee.profilePic);
+            const fileName = `${attendeeId}-profile`;
+            profilePicPath = (0, file_upload_utils_1.saveFile)(profilePic, "attendees/profile", fileName, existingAttendee.profilePic);
+            console.log(`📸 [updateAttendee] New profile pic saved: ${profilePicPath}`);
         }
-        else if (existingAttendee.name !== body.name && existingAttendee.profilePic) {
-            const newPicName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-profile`;
-            const renamedPath = (0, file_upload_utils_1.renameFile)(existingAttendee.profilePic, newPicName);
-            if (renamedPath)
-                profilePicPath = renamedPath;
+        else {
+            console.log(`📸 [updateAttendee] Profile pic unchanged: ${profilePicPath || "none"}`);
         }
         let paymentSlipPath = existingAttendee.paymentSlip;
         if (paymentSlip) {
-            const fileName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-payment`;
-            paymentSlipPath = (0, file_upload_utils_1.saveFile)(paymentSlip, "attendees", fileName, existingAttendee.paymentSlip);
+            const fileName = `${attendeeId}-payslip`;
+            paymentSlipPath = (0, file_upload_utils_1.saveFile)(paymentSlip, "attendees/payslip", fileName, existingAttendee.paymentSlip);
+            console.log(`💳 [updateAttendee] New payment slip saved: ${paymentSlipPath}`);
         }
-        else if (existingAttendee.name !== body.name && existingAttendee.paymentSlip) {
-            const newSlipName = `${body.name.replace(/\s+/g, "-").toLowerCase()}-payment`;
-            const renamedPath = (0, file_upload_utils_1.renameFile)(existingAttendee.paymentSlip, newSlipName);
-            if (renamedPath)
-                paymentSlipPath = renamedPath;
+        else {
+            console.log(`💳 [updateAttendee] Payment slip unchanged: ${paymentSlipPath || "none"}`);
         }
         const updatedAttendee = await this.db.attendee.update({
-            where: { id: Number(body.id) },
+            where: { id: attendeeId },
             data: {
                 name: body.name,
                 email: body.email,
@@ -232,18 +270,24 @@ let AttendeesService = class AttendeesService {
                 paymentSlip: paymentSlipPath,
             },
         });
+        console.log(`✅ [updateAttendee] DB record updated for attendee #${attendeeId}`);
         try {
-            if (existingAttendee.name !== body.name && existingAttendee.idCard) {
-                (0, file_upload_utils_1.deleteFile)(existingAttendee.idCard);
-            }
-            const idCardPath = await this.generateAndSaveIdCard(updatedAttendee);
-            return await this.db.attendee.update({
+            const idCardPath = await this.generateAndSaveIdCard({
+                ...updatedAttendee,
+                profilePic: profilePicPath,
+            });
+            const result = await this.db.attendee.update({
                 where: { id: updatedAttendee.id },
                 data: { idCard: idCardPath },
             });
+            console.log(`✅ [updateAttendee] All done for attendee #${attendeeId}`);
+            console.log(`   Profile: ${profilePicPath || "none"}`);
+            console.log(`   Payment: ${paymentSlipPath || "none"}`);
+            console.log(`   ID Card: ${idCardPath}`);
+            return result;
         }
         catch (error) {
-            console.error("⚠️ Failed to regenerate ID card:", error);
+            console.error(`❌ [updateAttendee] Failed to regenerate ID card for #${attendeeId}:`, error);
             return updatedAttendee;
         }
     }

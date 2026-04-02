@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveBuffer = exports.renameFile = exports.deleteFile = exports.saveFile = void 0;
+exports.renameFile = exports.saveBuffer = exports.deleteFile = exports.saveFile = void 0;
 const common_1 = require("@nestjs/common");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
@@ -41,13 +41,17 @@ const saveFile = (file, directory, fileName, oldFilePath) => {
     try {
         const publicDir = path.join(process.cwd(), "public");
         const targetDir = path.join(publicDir, directory);
+        console.log(`📁 [saveFile] Saving to directory: ${directory}`);
+        console.log(`📁 [saveFile] File name: ${fileName}, Original: ${file.originalname}`);
         if (!fs.existsSync(targetDir)) {
             fs.mkdirSync(targetDir, { recursive: true });
+            console.log(`📁 [saveFile] Created directory: ${targetDir}`);
         }
         if (oldFilePath) {
             const fullOldPath = path.join(publicDir, oldFilePath);
             if (fs.existsSync(fullOldPath)) {
                 fs.unlinkSync(fullOldPath);
+                console.log(`🗑️ [saveFile] Deleted old file: ${oldFilePath}`);
             }
         }
         const fileExt = path.extname(file.originalname);
@@ -60,13 +64,17 @@ const saveFile = (file, directory, fileName, oldFilePath) => {
                 const fullPath = path.join(targetDir, f);
                 if (fs.existsSync(fullPath)) {
                     fs.unlinkSync(fullPath);
+                    console.log(`🗑️ [saveFile] Cleaned up existing file with same base name: ${f}`);
                 }
             }
         });
         fs.writeFileSync(filePath, file.buffer);
-        return path.join(directory, finalFileName);
+        const relativePath = path.join(directory, finalFileName);
+        console.log(`✅ [saveFile] Saved successfully: ${relativePath}`);
+        return relativePath;
     }
     catch (error) {
+        console.error(`❌ [saveFile] Error saving file:`, error);
         throw new common_1.InternalServerErrorException("Error saving file: " + error.message);
     }
 };
@@ -76,19 +84,59 @@ const deleteFile = (filePath) => {
         const fullPath = path.join(process.cwd(), "public", filePath);
         if (fs.existsSync(fullPath)) {
             fs.unlinkSync(fullPath);
+            console.log(`🗑️ [deleteFile] Deleted: ${filePath}`);
+        }
+        else {
+            console.log(`⚠️ [deleteFile] File not found (already deleted?): ${filePath}`);
         }
     }
     catch (error) {
-        console.error("Error deleting file:", error);
+        console.error(`❌ [deleteFile] Error deleting file:`, error);
     }
 };
 exports.deleteFile = deleteFile;
+const saveBuffer = (buffer, directory, fileName, extension) => {
+    try {
+        const publicDir = path.join(process.cwd(), "public");
+        const targetDir = path.join(publicDir, directory);
+        console.log(`📁 [saveBuffer] Saving buffer to directory: ${directory}`);
+        console.log(`📁 [saveBuffer] File name: ${fileName}${extension}`);
+        if (!fs.existsSync(targetDir)) {
+            fs.mkdirSync(targetDir, { recursive: true });
+            console.log(`📁 [saveBuffer] Created directory: ${targetDir}`);
+        }
+        const files = fs.readdirSync(targetDir);
+        files.forEach((f) => {
+            const baseName = path.parse(f).name;
+            if (baseName === fileName) {
+                const fullPath = path.join(targetDir, f);
+                if (fs.existsSync(fullPath)) {
+                    fs.unlinkSync(fullPath);
+                    console.log(`🗑️ [saveBuffer] Cleaned up existing file: ${f}`);
+                }
+            }
+        });
+        const finalFileName = `${fileName}${extension}`;
+        const filePath = path.join(targetDir, finalFileName);
+        fs.writeFileSync(filePath, buffer);
+        const relativePath = path.join(directory, finalFileName);
+        console.log(`✅ [saveBuffer] Saved successfully: ${relativePath}`);
+        return relativePath;
+    }
+    catch (error) {
+        console.error(`❌ [saveBuffer] Error saving buffer:`, error);
+        throw new common_1.InternalServerErrorException("Error saving buffer: " + error.message);
+    }
+};
+exports.saveBuffer = saveBuffer;
 const renameFile = (oldPath, newFileName) => {
     try {
         const publicDir = path.join(process.cwd(), "public");
         const fullOldPath = path.join(publicDir, oldPath);
-        if (!fs.existsSync(fullOldPath))
+        if (!fs.existsSync(fullOldPath)) {
+            console.log(`⚠️ [renameFile] Source not found: ${oldPath}`);
             return null;
+        }
         const directory = path.dirname(oldPath);
         const extension = path.extname(oldPath);
         const finalNewFileName = `${newFileName}${extension}`;
@@ -102,39 +150,13 @@ const renameFile = (oldPath, newFileName) => {
             fs.unlinkSync(fullNewPath);
         }
         fs.renameSync(fullOldPath, fullNewPath);
+        console.log(`📝 [renameFile] Renamed: ${oldPath} → ${newPath}`);
         return newPath;
     }
     catch (error) {
-        console.error("Error renaming file:", error);
+        console.error(`❌ [renameFile] Error renaming file:`, error);
         return null;
     }
 };
 exports.renameFile = renameFile;
-const saveBuffer = (buffer, directory, fileName, extension) => {
-    try {
-        const publicDir = path.join(process.cwd(), "public");
-        const targetDir = path.join(publicDir, directory);
-        if (!fs.existsSync(targetDir)) {
-            fs.mkdirSync(targetDir, { recursive: true });
-        }
-        const files = fs.readdirSync(targetDir);
-        files.forEach((f) => {
-            const baseName = path.parse(f).name;
-            if (baseName === fileName) {
-                const fullPath = path.join(targetDir, f);
-                if (fs.existsSync(fullPath)) {
-                    fs.unlinkSync(fullPath);
-                }
-            }
-        });
-        const finalFileName = `${fileName}${extension}`;
-        const filePath = path.join(targetDir, finalFileName);
-        fs.writeFileSync(filePath, buffer);
-        return path.join(directory, finalFileName);
-    }
-    catch (error) {
-        throw new common_1.InternalServerErrorException("Error saving buffer: " + error.message);
-    }
-};
-exports.saveBuffer = saveBuffer;
 //# sourceMappingURL=file-upload.utils.js.map
