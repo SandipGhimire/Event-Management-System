@@ -66,4 +66,7 @@ export declare class AuthController {
     revokeSession(req: Request, sessionId: string): Promise<{
         message: string;
     }>;
+    revokeUserSessions(userUUID: string): Promise<{
+        message: string;
+    }>;
 }

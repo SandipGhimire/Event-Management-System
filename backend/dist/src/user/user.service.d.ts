@@ -1,10 +1,25 @@
 import { PrismaService } from "../prisma/prisma.service";
 import { UserDetail, FetchParams, PaginatedData } from "shared-types";
-import { CreateUserDto, UpdateUserDto } from "./user.dto";
+import { CreateUserDto, UpdateSelfDto, UpdateUserDto } from "./user.dto";
 export declare class UserService {
     private readonly db;
     constructor(db: PrismaService);
     getSelfUser(uuid: string): Promise<UserDetail>;
+    updateSelfUser(uuid: string, data: UpdateSelfDto): Promise<{
+        id: number;
+        email: string;
+        phoneNumber: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        isActive: boolean;
+        uuid: string;
+        password: string;
+        username: string;
+        firstName: string;
+        middleName: string | null;
+        lastName: string;
+        lastLogin: Date | null;
+    }>;
     createUser(data: CreateUserDto): Promise<{
         id: number;
         email: string;

@@ -26,6 +26,15 @@ let UserController = class UserController {
     async getProfile(req) {
         return await this.userService.getSelfUser(req.user.userUUID);
     }
+    async updateSelf(req, data) {
+        const result = await this.userService.updateSelfUser(req.user.userUUID, data);
+        return {
+            success: true,
+            message: "Profile updated successfully",
+            status: 200,
+            data: result,
+        };
+    }
     async createUser(data) {
         const result = await this.userService.createUser(data);
         return {
@@ -95,6 +104,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getProfile", null);
+__decorate([
+    (0, common_1.Patch)("self"),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, user_dto_1.UpdateSelfDto]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateSelf", null);
 __decorate([
     (0, common_1.Post)("create"),
     (0, permission_decorator_1.Permission)(["user.create"]),

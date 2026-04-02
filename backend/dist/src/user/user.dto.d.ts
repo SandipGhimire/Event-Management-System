@@ -18,3 +18,11 @@ export declare class UpdateUserDto {
     password?: string;
     roleIds?: string[];
 }
+export declare class UpdateSelfDto {
+    firstName?: string;
+    middleName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    oldPassword?: string;
+    password?: string;
+}

@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const auth_dto_1 = require("./dto/auth.dto");
 const jwt_refresh_auth_guard_1 = require("./guards/jwt-refresh-auth.guard");
+const permission_decorator_1 = require("../role/decorators/permission.decorator");
 const common_2 = require("@nestjs/common");
 const public_decorator_1 = require("./decorators/public.decorator");
 const cookie_helper_1 = require("./helpers/cookie.helper");
@@ -79,6 +80,9 @@ let AuthController = class AuthController {
     async revokeSession(req, sessionId) {
         const user = req.user;
         return this.authService.revokeSession(user.userUUID, sessionId);
+    }
+    async revokeUserSessions(userUUID) {
+        return this.authService.logoutAll(userUUID);
     }
 };
 exports.AuthController = AuthController;
@@ -149,6 +153,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "revokeSession", null);
+__decorate([
+    (0, common_1.Delete)("sessions/user/:userUUID"),
+    (0, permission_decorator_1.Permission)(["user.session.revoke"]),
+    __param(0, (0, common_1.Param)("userUUID")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "revokeUserSessions", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)("auth"),
     __metadata("design:paramtypes", [auth_service_1.AuthService,

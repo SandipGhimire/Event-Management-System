@@ -96,6 +96,30 @@ let UserService = class UserService {
         };
         return user;
     }
+    async updateSelfUser(uuid, data) {
+        const { password, oldPassword, ...rest } = data;
+        const user = await this.db.user.findUnique({
+            where: { uuid },
+        });
+        if (!user) {
+            throw new common_1.NotFoundException("User not found");
+        }
+        const updateData = { ...rest };
+        if (password) {
+            if (!oldPassword) {
+                throw new common_1.BadRequestException("Old password is required to set a new password");
+            }
+            const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+            if (!isPasswordValid) {
+                throw new common_1.UnauthorizedException("Invalid old password");
+            }
+            updateData.password = await bcrypt.hash(password, 10);
+        }
+        return await this.db.user.update({
+            where: { uuid },
+            data: updateData,
+        });
+    }
     async createUser(data) {
         const { password, roleIds, ...rest } = data;
         const hashedPassword = await bcrypt.hash(password, 10);
