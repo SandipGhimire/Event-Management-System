@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from "react";
 import type { TableAction } from "@/core/types/component/dataTable.type";
 import { MoreHorizontal } from "lucide-react";
 
@@ -10,12 +10,45 @@ interface ActionDropdownProps<T> {
 
 export const ActionDropdown = <T,>({ actions, row, instanceId }: ActionDropdownProps<T>) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [openUpward, setOpenUpward] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const toggleDropdown = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsOpen(!isOpen);
   };
+
+  // Smart position calculation: check if dropdown fits below, otherwise flip up
+  const calculatePosition = useCallback(() => {
+    if (!buttonRef.current || !menuRef.current) return;
+
+    const buttonRect = buttonRef.current.getBoundingClientRect();
+    const menuHeight = menuRef.current.offsetHeight;
+    const viewportHeight = window.innerHeight;
+
+    // Also check if we're inside a scrollable table body
+    const tableBody = document.querySelector(`[data-instance-id="${instanceId}"] .dt-body`);
+    let containerBottom = viewportHeight;
+    if (tableBody) {
+      const tableRect = tableBody.getBoundingClientRect();
+      containerBottom = tableRect.bottom;
+    }
+
+    const spaceBelow = Math.min(viewportHeight, containerBottom) - buttonRect.bottom;
+    const spaceAbove = buttonRect.top;
+
+    // Open upward if not enough space below but enough above
+    setOpenUpward(spaceBelow < menuHeight + 8 && spaceAbove > menuHeight + 8);
+  }, [instanceId]);
+
+  // Calculate position immediately when menu is opened (before paint)
+  useLayoutEffect(() => {
+    if (isOpen) {
+      calculatePosition();
+    }
+  }, [isOpen, calculatePosition]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -31,23 +64,24 @@ export const ActionDropdown = <T,>({ actions, row, instanceId }: ActionDropdownP
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
 
-      const tableBody = document.querySelector(`[data-instance-id="${instanceId}"] .dt-body`);
-      if (tableBody) tableBody.addEventListener("scroll", handleScroll);
+      // const tableBody = document.querySelector(`[data-instance-id="${instanceId}"] .dt-body`);
+      // if (tableBody) tableBody.addEventListener("scroll", handleScroll);
 
-      window.addEventListener("scroll", handleScroll, true);
+      // window.addEventListener("scroll", handleScroll, true);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       const tableBody = document.querySelector(`[data-instance-id="${instanceId}"] .dt-body`);
       if (tableBody) tableBody.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("scroll", handleScroll, true);
+      // window.removeEventListener("scroll", handleScroll, true);
     };
   }, [isOpen, instanceId]);
 
   return (
     <div className="relative inline-block text-middle" ref={dropdownRef}>
       <button
+        ref={buttonRef}
         onClick={toggleDropdown}
         className="p-1 bg-primary text-white rounded-sm hover:bg-primary-light cursor-pointer transition-colors duration-200 border border-transparent px-2"
       >
@@ -56,8 +90,13 @@ export const ActionDropdown = <T,>({ actions, row, instanceId }: ActionDropdownP
 
       {isOpen && (
         <div
-          className="absolute right-0 mt-0 w-48 rounded-sm shadow-lg bg-white border border-border z-5 animate-in fade-in zoom-in-95 duration-100"
-          style={{ transformOrigin: "top right" }}
+          ref={menuRef}
+          className="absolute right-0 w-48 rounded-sm shadow-lg bg-white border border-border z-5 animate-in fade-in zoom-in-95 duration-100"
+          style={{
+            ...(openUpward
+              ? { bottom: "100%", marginBottom: 4, transformOrigin: "bottom right" }
+              : { top: "100%", marginTop: 4, transformOrigin: "top right" }),
+          }}
         >
           <div className="py-1" role="menu">
             {actions.map((action, idx) => {

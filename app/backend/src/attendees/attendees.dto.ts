@@ -30,10 +30,9 @@ export class AttendeeCreateDto implements CreateAttendeePayload {
   @IsNumber()
   membershipID?: number;
 
-  @Transform(({ value }) => {
-    if (value === "true" || value === true) return true;
-    if (value === "false" || value === false) return false;
-    return value as boolean;
+  @Transform(({ obj }: { obj: Record<string, unknown> }) => {
+    const raw = obj.isVeg;
+    return raw === "true" || raw === true;
   })
   @IsBoolean()
   isVeg: boolean;

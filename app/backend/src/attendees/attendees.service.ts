@@ -187,7 +187,6 @@ export class AttendeesService {
     paymentSlip?: Express.Multer.File
   ) {
     if (!body.id) throw new Error("Attendee ID is required for update");
-
     const existingAttendee = await this.db.attendee.findUnique({
       where: { id: Number(body.id) },
     });
