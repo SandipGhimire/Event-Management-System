@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import type { DataTableProps } from "@/core/types/component/dataTable.type";
+import { useState, useEffect, useCallback, useImperativeHandle, forwardRef } from "react";
+import type { DataTableProps, DataTableHandle } from "@/core/types/component/dataTable.type";
 import { ChevronLeft, ChevronRight, FileX, Loader2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { ActionDropdown } from "./ActionDropdown";
 import api from "@/core/app/api";
@@ -10,19 +10,21 @@ const EMPTY_ARRAY: any[] = [];
  * Custom Paginated DataTable component.
  * Supports both API-driven (server-side) and Local-set (client-side) data processing.
  */
-export default function DataTable<T>({
-  columns,
-  mode,
-  apiUrl,
-  data: localData = EMPTY_ARRAY as T[],
-  fetchCallback,
-  actions,
-  initialPageSize = 10,
-  emptyMessage = "No data available",
-  heightOffset,
-}: DataTableProps<T>) {
+const DataTable = forwardRef<DataTableHandle, DataTableProps<any>>((props, ref) => {
+  const {
+    columns,
+    mode,
+    apiUrl,
+    data: localData = EMPTY_ARRAY,
+    fetchCallback,
+    actions,
+    initialPageSize = 10,
+    emptyMessage = "No data available",
+    heightOffset,
+  } = props;
+
   const instanceId = crypto.randomUUID();
-  const [data, setData] = useState<T[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -89,6 +91,25 @@ export default function DataTable<T>({
       setData(filtered.slice(start, start + pageSize));
     }
   }, [mode, localData, page, pageSize, filters, sortBy, sortOrder, apiUrl, fetchCallback]);
+
+  // Expose refresh function to parent components
+  useImperativeHandle(ref, () => ({
+    refresh: () => {
+      // If we are already at page 1 with no filters/sort, fetchData won't be triggered by dependencies
+      // So we call it explicitly. However, we also want to reset the state.
+      setFilters({});
+      setSortBy(undefined);
+      setSortOrder("asc");
+      setPage(1);
+
+      // If state was already at default, setting them won't trigger re-render/fetchData.
+      // So we must call fetchData manually or rely on state changes.
+      // Since states are set asynchronously, calling fetchData here will use old states.
+      // Better approach: ensure fetchData always runs if needed.
+      // But resetting EVERYTHING usually means a fresh start.
+      fetchData();
+    },
+  }));
 
   useEffect(() => {
     fetchData();
@@ -277,4 +298,8 @@ export default function DataTable<T>({
       </div>
     </div>
   );
-}
+});
+
+DataTable.displayName = "DataTable";
+
+export default DataTable;

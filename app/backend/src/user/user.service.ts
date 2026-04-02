@@ -2,6 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserDetail, FetchParams, PaginatedData } from "shared-types";
 import { paginate } from "../prisma/prisma.utils";
+import { CreateUserDto, UpdateUserDto } from "./user.dto";
+import * as bcrypt from "bcrypt";
+
+function generateFullName(firstName: string, middleName: string | null, lastName: string) {
+  return `${firstName} ${middleName || ""} ${lastName}`.replace("  ", " ");
+}
 
 @Injectable()
 export class UserService {
@@ -44,10 +50,97 @@ export class UserService {
       firstName: userDetail.firstName,
       middleName: userDetail?.middleName,
       lastName: userDetail.lastName,
-      fullName: `${userDetail.firstName} ${userDetail.middleName || ""} ${userDetail.lastName}`.replace("  ", " "),
+      fullName: generateFullName(userDetail.firstName, userDetail?.middleName, userDetail.lastName),
       permissions: userDetail.roles.flatMap((role) =>
         role.role.permissions.map((permission) => permission.permission.key)
       ),
+    } as UserDetail;
+
+    return user;
+  }
+
+  async createUser(data: CreateUserDto) {
+    const { password, roleIds, ...rest } = data;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    return await this.db.user.create({
+      data: {
+        ...rest,
+        password: hashedPassword,
+        roles: roleIds
+          ? {
+              create: roleIds.map((roleId) => ({
+                roleId: Number(roleId),
+              })),
+            }
+          : undefined,
+      },
+    });
+  }
+
+  async updateUser(id: number, data: UpdateUserDto) {
+    const { password, roleIds, ...rest } = data;
+    const updateData: UpdateUserDto & { password?: string; roles?: { create: { roleId: number }[] } } = { ...rest };
+
+    const user = await this.db.user.findUnique({ where: { id }, select: { uuid: true } });
+    if (!user) {
+      return null;
+    }
+
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    if (roleIds) {
+      await this.db.userRole.deleteMany({ where: { userUUID: user.uuid } });
+      updateData.roles = {
+        create: roleIds.map((roleId) => ({
+          roleId: Number(roleId),
+        })),
+      };
+    }
+
+    return await this.db.user.update({
+      where: { id },
+      data: updateData,
+    });
+  }
+
+  async deleteUser(id: number) {
+    return await this.db.user.delete({
+      where: { id },
+    });
+  }
+
+  async getUserById(id: number): Promise<UserDetail | null> {
+    const userDetail = await this.db.user.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        uuid: true,
+        email: true,
+        username: true,
+        firstName: true,
+        middleName: true,
+        lastName: true,
+        phoneNumber: true,
+        isActive: true,
+        roles: {
+          select: {
+            roleId: true,
+          },
+        },
+      },
+    });
+
+    if (!userDetail) return null;
+
+    const user = {
+      ...userDetail,
+      fullName: generateFullName(userDetail.firstName, userDetail.middleName, userDetail.lastName),
+      roleIds: userDetail.roles.map((r) => r.roleId),
     } as UserDetail;
 
     return user;

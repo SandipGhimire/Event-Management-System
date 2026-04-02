@@ -1,15 +1,42 @@
 import sidebarItems from "@/core/app/sidebarItems";
 import { useCoreStore } from "@/store/app/core.store";
-import { DynamicIcon } from "lucide-react/dynamic";
-import { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router";
+import { useAuthStore } from "@/store/auth/auth.store";
 
-const items = sidebarItems();
+const itemsRaw = sidebarItems();
 export default function Sidebar() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const location = useLocation();
 
   const { isSidebarOpen, toggleSidebar } = useCoreStore();
+  const userPermissions = useAuthStore((state) => state.user?.permissions || []);
+
+  const items = useMemo(() => {
+    const checkItemPermission = (itemPermission?: string | string[]) => {
+      if (!itemPermission) return true;
+      if (userPermissions.includes("*")) return true;
+
+      if (Array.isArray(itemPermission)) {
+        return itemPermission.some((p) => userPermissions.includes(p));
+      }
+      return userPermissions.includes(itemPermission);
+    };
+
+    return itemsRaw
+      .filter((item) => checkItemPermission(item.permission))
+      .map((item) => {
+        if (item.children) {
+          return {
+            ...item,
+            children: item.children.filter((child) => checkItemPermission(child.permission)),
+          };
+        }
+        return item;
+      })
+      .filter((item) => (item.children && item.children.length > 0) || item.to || !item.children);
+  }, [userPermissions]);
 
   useEffect(() => {
     items.forEach((item) => {
@@ -21,7 +48,7 @@ export default function Sidebar() {
         });
       }
     });
-  }, [location.pathname]);
+  }, [location.pathname, items]);
 
   const isActive = (to?: string) => {
     if (!to) return false;
@@ -55,7 +82,7 @@ export default function Sidebar() {
                     ${isActive(item.to) ? "bg-primary/10 text-primary font-bold" : "hover:bg-primary/10 text-text-secondary"}
                   `}
                 >
-                  <div>{item.icon ? <DynamicIcon name={item.icon} size={20} /> : ""}</div>
+                  <div>{item.icon && <item.icon size={20} />}</div>
                   <div>{item.label}</div>
                 </Link>
               );
@@ -76,13 +103,13 @@ export default function Sidebar() {
                     `}
                   >
                     <div>
-                      <div>{item.icon ? <DynamicIcon name={item.icon} size={20} /> : ""}</div>
+                      <div>{item.icon && <item.icon size={20} />}</div>
                     </div>
                     <div>{item.label}</div>
                     <div
                       className={`absolute right-2 transition-transform duration-300 ${openDropdown === item.label ? "-rotate-180" : ""}`}
                     >
-                      <DynamicIcon name="chevron-down" size={14} />
+                      <ChevronDown size={14} />
                     </div>
                   </div>
 

@@ -3,6 +3,7 @@ import endpoints from "@/core/app/endpoints";
 import { isDevelopment } from "@/core/utils/common.utils";
 import jwtServices from "@/core/app/jwt";
 import { useAuthStore } from "@/store/auth/auth.store";
+import { toast } from "react-toastify";
 
 const apiURL: string = import.meta.env.VITE_API_BASE_URL;
 
@@ -34,50 +35,57 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     if (!error.response) {
+      toast.error("Network Error: Unable to connect to server.");
       return Promise.reject(error);
     }
 
     const status = error.response.status;
     const { setIsAuthenticated } = useAuthStore.getState();
 
+    // Prevent spamming toast for 401 unauthenticated unless it's a login failure
+    if (status !== 401 && status !== 403) {
+      toast.error(error.response?.data?.message || error.response?.data?.error || "An unexpected error occurred.");
+    }
+
+    if (status === 403) {
+      toast.error("You do not have permission to perform this action.");
+    }
+
     if (status === 401 && originalRequest.url === endpoints.auth.refresh) {
-      jwtServices.destroyToken();
       setIsAuthenticated(false);
       return Promise.reject(error);
     }
 
     if (status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      try {
-        let data = {};
-        if (isDevelopment()) {
-          const refreshToken = jwtServices.getRefreshToken();
-          if (!refreshToken) throw new Error("No refresh token");
-          data = { refresh: refreshToken };
-        }
-        await api
-          .post(endpoints.auth.refresh, data, {
-            headers: {
-              Authorization: `Bearer ${jwtServices.getRefreshToken()}`,
-            },
-          })
-          .then((response) => {
-            if (isDevelopment()) {
-              const token = response.data.accessToken;
-              jwtServices.setToken(token);
-              const refreshToken = response.data.refreshToken;
-              jwtServices.setRefreshToken(refreshToken);
-              originalRequest.headers["Authorization"] = `Bearer ${token}`;
-            }
-            setIsAuthenticated(true);
-          });
-        return await axios(originalRequest);
-      } catch (e) {
-        console.error("Token refresh failed", e);
-        setIsAuthenticated(false);
-        jwtServices.destroyToken();
-        throw e;
+      let data = {};
+      if (isDevelopment()) {
+        const refreshToken = jwtServices.getRefreshToken();
+        if (!refreshToken) throw new Error("No refresh token");
+        data = { refresh: refreshToken };
       }
+      await api
+        .post(endpoints.auth.refresh, data, {
+          headers: {
+            Authorization: `Bearer ${jwtServices.getRefreshToken()}`,
+          },
+        })
+        .then((response) => {
+          if (isDevelopment()) {
+            const token = response.data.accessToken;
+            jwtServices.setToken(token);
+            const refreshToken = response.data.refreshToken;
+            jwtServices.setRefreshToken(refreshToken);
+            originalRequest.headers["Authorization"] = `Bearer ${token}`;
+          }
+          setIsAuthenticated(true);
+        })
+        .catch((e) => {
+          console.error("Token refresh failed", e);
+          setIsAuthenticated(false);
+          throw e;
+        });
+      return await axios(originalRequest);
     }
     return Promise.reject(error);
   }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import type { TableAction } from "@/core/types/component/dataTable.type";
-import { DynamicIcon } from "lucide-react/dynamic";
+import { MoreHorizontal } from "lucide-react";
 
 interface ActionDropdownProps<T> {
   actions: TableAction<T>[];
@@ -51,7 +51,7 @@ export const ActionDropdown = <T,>({ actions, row, instanceId }: ActionDropdownP
         onClick={toggleDropdown}
         className="p-1 bg-primary text-white rounded-sm hover:bg-primary-light cursor-pointer transition-colors duration-200 border border-transparent px-2"
       >
-        <DynamicIcon name="more-horizontal" className="w-6 h-6" />
+        <MoreHorizontal className="w-6 h-6" />
       </button>
 
       {isOpen && (
@@ -65,17 +65,21 @@ export const ActionDropdown = <T,>({ actions, row, instanceId }: ActionDropdownP
               return (
                 <button
                   key={idx}
+                  disabled={action.disabled?.(row)}
                   onClick={(e) => {
                     e.stopPropagation();
+                    if (action.disabled?.(row)) return;
                     action.onClick(row);
                     setIsOpen(false);
                   }}
-                  className={`flex items-center w-full px-4 py-2 text-sm text-text-primary hover:bg-surface-alt transition-colors text-left ${action.className || ""}`}
+                  className={`flex items-center w-full px-4 py-2 text-sm text-text-primary transition-colors text-left ${
+                    action.disabled?.(row) ? "opacity-30 cursor-not-allowed" : "hover:bg-surface-alt"
+                  } ${action.className || ""}`}
                   role="menuitem"
                 >
                   {action.icon && (
                     <span className="mr-3 w-4 h-4 flex items-center justify-center opacity-70">
-                      <DynamicIcon name={action.icon} />
+                      <action.icon />
                     </span>
                   )}
                   {action.label}

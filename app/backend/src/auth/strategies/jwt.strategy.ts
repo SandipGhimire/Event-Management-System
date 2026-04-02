@@ -45,6 +45,23 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
         middleName: true,
         lastName: true,
         isActive: true,
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: {
+                  include: {
+                    permission: {
+                      select: {
+                        key: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
 
@@ -52,12 +69,21 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
       throw new UnauthorizedException("User not found or inactive");
     }
 
+    // Flatten permissions from all roles
+    const permissions = new Set<string>();
+    user.roles.forEach((userRole) => {
+      userRole.role.permissions.forEach((rolePermission) => {
+        permissions.add(rolePermission.permission.key);
+      });
+    });
+
     return {
       userId: user.id,
       userUUID: user.uuid,
       email: user.email,
       username: user.username,
       sessionId: payload.sessionId,
+      permissions: Array.from(permissions),
     };
   }
 }

@@ -22,8 +22,10 @@
     "backend:db:migrate": "pnpm --filter backend run db:migrate",
     "backend:db:migrate:prod": "pnpm --filter backend run db:migrate:prod",
     "backend:db:seed": "pnpm --filter backend run db:seed",
+    "backend:db:seed:file": "pnpm --filter backend run db:seed -- --use-file=true",
     "backend:db:studio": "pnpm --filter backend run db:studio",
-    "backend:db:push": "pnpm --filter backend run db:push"
+    "backend:db:push": "pnpm --filter backend run db:push",
+    "backend:db:reset": "pnpm --filter backend run db:reset"
   },
   "packageManager": "pnpm@10.26.0",
   "devDependencies": {

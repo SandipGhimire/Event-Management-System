@@ -7,14 +7,22 @@ import { AuthModule } from "./auth/auth.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
+import { PermissionGuard } from "./role/guards/permission.guard";
 import { UserModule } from "./user/user.module";
 import { RoleModule } from "./role/role.module";
 import { SponsorModule } from "./sponsor/sponsor.module";
 import { AttendeesModule } from "./attendees/attendees.module";
 import { TaskModule } from "./task/task.module";
+import { DashboardModule } from "./dashboard/dashboard.module";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { join } from "path";
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), "public"),
+      serveRoot: "/public",
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -26,6 +34,7 @@ import { TaskModule } from "./task/task.module";
     SponsorModule,
     AttendeesModule,
     TaskModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [
@@ -33,6 +42,10 @@ import { TaskModule } from "./task/task.module";
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard,
     },
   ],
 })

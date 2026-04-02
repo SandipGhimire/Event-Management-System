@@ -12,11 +12,13 @@ export default function ContentLayout({ header, buttons = [], children }: Conten
             </span>
           </div>
           <div className="flex gap-1">
-            {buttons.map((button, index) => (
-              <button key={index} className={`btn ${button.className}`} onClick={button.onClick}>
-                {button.label}
-              </button>
-            ))}
+            {buttons
+              .filter((button) => button.isVisible !== false)
+              .map((button, index) => (
+                <button key={index} className={`btn ${button.className}`} onClick={button.onClick}>
+                  {button.label}
+                </button>
+              ))}
           </div>
         </div>
         <div className="min-h-[calc(100dvh-13rem)] overflow-y-auto p-4">{children}</div>

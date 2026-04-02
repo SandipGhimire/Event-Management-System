@@ -6,4 +6,8 @@ const isProduction = () => {
   return import.meta.env.VITE_ENV === "production";
 };
 
-export { isDevelopment, isProduction };
+const getBackendFile = (path: string) => {
+  return import.meta.env.VITE_API_BASE_URL + "public/" + path;
+};
+
+export { isDevelopment, isProduction, getBackendFile };

@@ -18,7 +18,7 @@ textarea {
 
 /* Textarea specific height override */
 textarea {
-  @apply h-auto min-h-[80px] resize-y max-h-[150px];
+  @apply h-auto min-h-[80px] resize-y max-h-[150px] px-1 py-2;
 }
 
 /* -----------------------------------------------------------------------------

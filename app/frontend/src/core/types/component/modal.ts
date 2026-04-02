@@ -1,14 +1,10 @@
-export interface ButtonConfig {
-  label: string;
-  onClick?: () => void;
-  className?: string;
-}
-
 export interface ModalProps {
-  header: {
-    label: string;
-    count?: number | string;
-  };
-  buttons?: ButtonConfig[];
+  isOpen: boolean;
+  onClose: () => void;
+  title: string | React.ReactNode;
   children: React.ReactNode;
+  size?: "sm" | "md" | "lg" | "xl";
+  closeOnOverlay?: boolean;
+  showCloseButton?: boolean;
+  footer?: React.ReactNode;
 }

@@ -1,14 +1,17 @@
 model Attendee {
   id           Int     @id @default(autoincrement())
-  email        String  @unique
+  email        String
   name         String
-  phoneNumber  String? @unique
+  phoneNumber  String  @unique
   profilePic   String?
-  clubName     String?
+  paymentSlip  String?
+  idCard       String?
+  clubName     String
+  position     String?
   membershipID String? @unique
 
-  isVeg  Boolean?
-  qrCode String   @unique
+  isVeg  Boolean
+  qrCode String  @unique
 
   logs AttendeeTaskLog[]
 

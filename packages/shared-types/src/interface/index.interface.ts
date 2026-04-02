@@ -1,5 +1,5 @@
 export interface UserDetail {
-  id: number;
+  id?: number;
   uuid: string;
   fullName: string;
   email: string;
@@ -8,7 +8,14 @@ export interface UserDetail {
   lastName: string;
   middleName: string;
   phoneNumber: string;
-  permissions: string[];
+  permissions?: string[];
+  roles?: {
+    roleId?: number;
+    role?: {
+      name?: string;
+    };
+  }[];
+  roleIds?: number[];
 }
 
 export interface AttendeesDetail {
@@ -17,12 +24,30 @@ export interface AttendeesDetail {
   name: string;
   phoneNumber: string;
   profilePic: string;
+  paymentSlip: string;
+  idCard: string;
   clubName: string;
+  position?: string;
   membershipID: string;
   isVeg: boolean;
   qrCode: string;
   createdAt: string;
   updatedAt: string;
+  logs?: AttendeeTaskLogDetail[];
+}
+
+export interface AttendeeTaskLogDetail {
+  id: number;
+  attendeeId: number;
+  taskId: number;
+  scannedBy: string;
+  createdAt: string;
+}
+
+export interface SponsorLinkDetail {
+  id: number;
+  label: string;
+  url: string;
 }
 
 export interface SponsorDetail {
@@ -35,6 +60,7 @@ export interface SponsorDetail {
   contribution: string;
   isActive: boolean;
   order: number;
+  links: SponsorLinkDetail[];
   createdAt: string;
   updatedAt: string;
 }
@@ -47,6 +73,11 @@ export interface RoleDetail {
   updatedBy: string;
   createdAt: string;
   updatedAt: string;
+  permissions?: {
+    permission: {
+      key: string;
+    };
+  }[];
 }
 
 export interface TaskDetail {
@@ -58,3 +89,5 @@ export interface TaskDetail {
   slug: string;
   createdAt: string; // ISO date string
 }
+ 
+export * from "./dashboard.interface";

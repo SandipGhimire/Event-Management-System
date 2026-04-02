@@ -1,5 +1,5 @@
-import type { IconName } from "lucide-react/dynamic";
 import React from "react";
+import type { LucideIcon } from "lucide-react";
 import type { PaginatedData, ApiResponse } from "shared-types";
 
 export interface ColumnConfig<T> {
@@ -16,10 +16,11 @@ export interface ColumnConfig<T> {
 
 export interface TableAction<T> {
   label: string;
-  icon?: IconName;
+  icon?: LucideIcon;
   onClick: (row: T) => void;
   className?: string; // e.g. 'text-error' for delete
   hidden?: (row: T) => boolean;
+  disabled?: (row: T) => boolean;
 }
 
 export interface DataTableProps<T> {
@@ -57,4 +58,8 @@ export interface DataTableProps<T> {
 export interface PaginationState {
   page: number;
   pageSize: number;
+}
+
+export interface DataTableHandle {
+  refresh: () => void;
 }

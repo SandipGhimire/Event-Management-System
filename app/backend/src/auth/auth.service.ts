@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException, ForbiddenException } from "@nestjs/common";
+import { Injectable, UnauthorizedException, ConflictException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import * as bcrypt from "bcrypt";
@@ -161,7 +161,7 @@ export class AuthService {
     });
 
     if (result.count === 0) {
-      throw new ForbiddenException("Session not found");
+      throw new UnauthorizedException("Please login to continue!");
     }
 
     return { message: "Logged out successfully" };
@@ -192,18 +192,18 @@ export class AuthService {
     });
 
     if (!storedToken || storedToken.userUUID !== userUUID) {
-      throw new ForbiddenException("Access Denied - Session not found");
+      throw new UnauthorizedException("Access Denied - Session not found");
     }
 
     if (new Date() > storedToken.expiresAt) {
       // Delete expired token
       await this.prisma.refreshToken.delete({ where: { id: sessionId } });
-      throw new ForbiddenException("Access Denied - Token expired");
+      throw new UnauthorizedException("Access Denied - Token expired");
     }
 
     const tokenMatches = await bcrypt.compare(refreshToken, storedToken.token);
     if (!tokenMatches) {
-      throw new ForbiddenException("Access Denied - Invalid token");
+      throw new UnauthorizedException("Access Denied - Invalid token");
     }
 
     // Generate new tokens with the same session ID
@@ -255,7 +255,7 @@ export class AuthService {
     });
 
     if (result.count === 0) {
-      throw new ForbiddenException("Session not found");
+      throw new UnauthorizedException("Please login to continue!");
     }
 
     return { message: "Session revoked successfully" };

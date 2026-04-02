@@ -2,10 +2,30 @@ import { Injectable } from "@nestjs/common";
 import type { FetchParams, PaginatedData } from "shared-types";
 import { PrismaService } from "../prisma/prisma.service";
 import { paginate } from "../prisma/prisma.utils";
+import { saveFile, renameFile } from "../common/utils/file-upload.utils";
+import { SponsorCreateDto, SponsorUpdateDto } from "./sponsor.dto";
 
 @Injectable()
 export class SponsorService {
   constructor(private readonly db: PrismaService) {}
+
+  private getLogoPath(
+    file: Express.Multer.File | undefined,
+    name: string,
+    existingLogo: string | null,
+    isNameChanged: boolean
+  ): string | null {
+    const fileName = name.replace(/\s+/g, "-").toLowerCase();
+    if (file) {
+      return saveFile(file, "sponsors", fileName, existingLogo);
+    }
+    if (isNameChanged && existingLogo) {
+      const renamedPath = renameFile(existingLogo, fileName);
+      return renamedPath || existingLogo;
+    }
+    return existingLogo;
+  }
+
   async getAllSponsors(params: FetchParams): Promise<PaginatedData<any>> {
     const filters = (params.filters as Record<string, any>) || {};
     const prismaFilters: Record<string, any> = {};
@@ -20,6 +40,71 @@ export class SponsorService {
       prismaFilters.phoneNumber = { contains: String(filters.phoneNumber), mode: "insensitive" };
     }
 
-    return await paginate(this.db.sponsor, { ...params, filters: prismaFilters });
+    return await paginate(this.db.sponsor, { ...params, filters: prismaFilters }, {}, { include: { links: true } });
+  }
+
+  async getSponsorById(id: number) {
+    return await this.db.sponsor.findUnique({
+      where: { id },
+      include: { links: true },
+    });
+  }
+
+  async createSponsor(data: SponsorCreateDto, file?: Express.Multer.File) {
+    const logoPath = this.getLogoPath(file, data.name, data.logo || null, false);
+
+    return await this.db.sponsor.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        phoneNumber: String(data.phoneNumber),
+        description: data.description,
+        contribution: data.contribution,
+        logo: logoPath ?? (data.logo as string),
+        order: data.order ? Number(data.order) : undefined,
+        isActive: data.isActive,
+        links: {
+          create: data.links || [],
+        },
+      },
+      include: { links: true },
+    });
+  }
+
+  async updateSponsor(id: number, data: SponsorUpdateDto, file?: Express.Multer.File) {
+    const existingSponsor = await this.db.sponsor.findUnique({
+      where: { id },
+    });
+
+    if (!existingSponsor) {
+      return null;
+    }
+
+    const isNameChanged = existingSponsor.name !== data.name;
+    const logoPath = this.getLogoPath(file, data.name, existingSponsor.logo || (data.logo as string), isNameChanged);
+
+    return await this.db.$transaction(async (tx) => {
+      await tx.sponsorLink.deleteMany({
+        where: { sponsorId: id },
+      });
+
+      return await tx.sponsor.update({
+        where: { id },
+        data: {
+          name: data.name,
+          email: data.email,
+          phoneNumber: String(data.phoneNumber),
+          description: data.description,
+          contribution: data.contribution,
+          logo: logoPath ?? data.logo,
+          order: data.order ? Number(data.order) : undefined,
+          isActive: data.isActive,
+          links: {
+            create: data.links || [],
+          },
+        },
+        include: { links: true },
+      });
+    });
   }
 }
