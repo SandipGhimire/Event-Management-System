@@ -25,7 +25,7 @@
     "backend:db:migrate": "pnpm --filter backend run db:migrate",
     "backend:db:migrate:prod": "pnpm --filter backend run db:migrate:prod",
     "backend:db:seed": "pnpm --filter backend run db:seed",
-    "backend:db:seed:file": "pnpm --filter backend run db:seed -- --use-file=true",
+    "backend:db:seed:file": "pnpm --filter backend run db:seed:file",
     "backend:db:studio": "pnpm --filter backend run db:studio",
     "backend:db:push": "pnpm --filter backend run db:push",
     "backend:db:reset": "pnpm --filter backend run db:reset"
