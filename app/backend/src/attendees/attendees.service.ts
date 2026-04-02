@@ -10,6 +10,8 @@ import * as path from "path";
 
 @Injectable()
 export class AttendeesService {
+  private isGeneratingCards = false;
+
   constructor(private readonly db: PrismaService) {}
 
   async getAllAttendees(params: FetchParams): Promise<PaginatedData<any>> {
@@ -47,32 +49,35 @@ export class AttendeesService {
       orderBy: { name: "asc" },
     });
 
-    let isGenerating = false;
     const missingCards = attendees.filter((a) => !a.idCard);
 
-    if (missingCards.length > 0) {
-      isGenerating = true;
+    if (missingCards.length > 0 && !this.isGeneratingCards) {
+      this.isGeneratingCards = true;
       // Start background generation
       void this.generateMissingCards(missingCards);
     }
 
     return {
       attendees: attendees.filter((a) => !!a.idCard),
-      isGenerating,
+      isGenerating: this.isGeneratingCards || missingCards.length > 0,
     };
   }
 
   private async generateMissingCards(attendees: Attendee[]) {
-    for (const attendee of attendees) {
-      try {
-        const idCardPath = await this.generateAndSaveIdCard(attendee);
-        await this.db.attendee.update({
-          where: { id: attendee.id },
-          data: { idCard: idCardPath },
-        });
-      } catch (error) {
-        console.error(`⚠️ Failed to generate background ID card for ${attendee.name}:`, error);
+    try {
+      for (const attendee of attendees) {
+        try {
+          const idCardPath = await this.generateAndSaveIdCard(attendee);
+          await this.db.attendee.update({
+            where: { id: attendee.id },
+            data: { idCard: idCardPath },
+          });
+        } catch (error) {
+          console.error(`⚠️ Failed to generate background ID card for ${attendee.name}:`, error);
+        }
       }
+    } finally {
+      this.isGeneratingCards = false;
     }
   }
 
