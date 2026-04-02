@@ -12,7 +12,6 @@ const adapter = new PrismaPg({
   port: parseInt(process.env.DATABASE_PORT || "5432"),
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
-  connectionLimit: parseInt(process.env.DATABASE_CONNECTION_LIMIT || "5"),
 });
 
 const SEEDERS_DIR = path.join(__dirname, "seeders");

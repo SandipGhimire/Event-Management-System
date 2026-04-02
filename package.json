@@ -8,7 +8,10 @@
   },
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
-    "build": "echo '================= Building frontend =================' && pnpm --filter frontend run build && echo '\n\n\n================= Building backend =================' && pnpm --filter backend run build",
+    "build": "pnpm build:shared && pnpm build:backend && pnpm build:frontend",
+    "build:shared": "echo '================= Building shared =================' && pnpm --filter shared build",
+    "build:backend": "echo '================= Building backend =================' && pnpm --filter backend run build",
+    "build:frontend": "echo '================= Building frontend =================' && pnpm --filter frontend run build",
     "lint": "pnpm -r --parallel run lint",
     "lint:fix": "pnpm -r --parallel run lint:fix",
     "format": "pnpm -r --parallel run format",
@@ -29,13 +32,13 @@
   },
   "packageManager": "pnpm@10.26.0",
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "eslint": "^9.39.2",
-    "eslint-plugin-prettier": "^5.5.4",
+    "@eslint/js": "^9.39.4",
+    "eslint": "^9.39.4",
+    "eslint-plugin-prettier": "^5.5.5",
     "globals": "^16.5.0",
-    "prettier": "^3.7.4",
+    "prettier": "^3.8.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.50.1"
+    "typescript-eslint": "^8.58.0"
   }
 }
