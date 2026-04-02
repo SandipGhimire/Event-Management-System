@@ -1,9 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
-import ContentLayout from "@/components/common/ContentLayout";
 import api from "@/core/app/api";
 import endpoints from "@/core/app/endpoints";
 import type { DashboardStats } from "shared-types";
-import { Users, CheckCircle, Heart, Activity, LayoutDashboard, ClipboardList, TrendingUp, Loader2 } from "lucide-react";
+import { Users, CheckCircle, Heart, Activity, LayoutDashboard, ClipboardList, Loader2 } from "lucide-react";
 
 type TabType = "overview" | "attendees" | "tasks";
 
