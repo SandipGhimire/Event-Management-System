@@ -8,41 +8,44 @@ CREATE TYPE "ActionType" AS ENUM ('CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT
 CREATE TYPE "LogLevel" AS ENUM ('INFO', 'WARN', 'ERROR', 'DEBUG', 'CRITICAL');
 
 -- CreateTable
-CREATE TABLE "attendees" (
+CREATE TABLE "attendee" (
     "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "phoneNumber" TEXT,
-    "isVeg" INTEGER,
     "profilePic" TEXT,
-    "paymentSlip" TEXT,
     "clubName" TEXT,
-    "membershipID" INTEGER,
+    "membershipID" TEXT,
+    "isVeg" BOOLEAN,
+    "qrCode" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "attendees_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "attendee_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "event" (
+CREATE TABLE "task" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "order" INTEGER,
+    "slug" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "event_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "task_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "attendee_event_logs" (
+CREATE TABLE "attendee_task_log" (
     "id" SERIAL NOT NULL,
     "attendeeId" INTEGER NOT NULL,
-    "eventId" INTEGER NOT NULL,
-    "completed" BOOLEAN NOT NULL DEFAULT false,
+    "taskId" INTEGER NOT NULL,
+    "scannedBy" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "attendee_event_logs_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "attendee_task_log_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -62,6 +65,7 @@ CREATE TABLE "roles" (
 CREATE TABLE "permissions" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "key" TEXT NOT NULL,
     "description" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -83,6 +87,34 @@ CREATE TABLE "pivot_role_permissions" (
     "permissionId" INTEGER NOT NULL,
 
     CONSTRAINT "pivot_role_permissions_pkey" PRIMARY KEY ("roleId","permissionId")
+);
+
+-- CreateTable
+CREATE TABLE "sponsors" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT,
+    "phoneNumber" TEXT,
+    "logo" TEXT,
+    "description" TEXT,
+    "contribution" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "order" INTEGER,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "sponsors_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "sponsors_link" (
+    "id" SERIAL NOT NULL,
+    "sponsorId" INTEGER NOT NULL,
+    "label" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "sponsors_link_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -135,28 +167,22 @@ CREATE TABLE "refresh_tokens" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "attendees_email_key" ON "attendees"("email");
+CREATE UNIQUE INDEX "attendee_email_key" ON "attendee"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "attendees_phoneNumber_key" ON "attendees"("phoneNumber");
+CREATE UNIQUE INDEX "attendee_phoneNumber_key" ON "attendee"("phoneNumber");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "attendees_membershipID_key" ON "attendees"("membershipID");
+CREATE UNIQUE INDEX "attendee_membershipID_key" ON "attendee"("membershipID");
 
 -- CreateIndex
-CREATE INDEX "attendees_id_idx" ON "attendees"("id");
+CREATE UNIQUE INDEX "attendee_qrCode_key" ON "attendee"("qrCode");
 
 -- CreateIndex
-CREATE INDEX "attendees_email_idx" ON "attendees"("email");
+CREATE UNIQUE INDEX "task_slug_key" ON "task"("slug");
 
 -- CreateIndex
-CREATE INDEX "attendees_phoneNumber_idx" ON "attendees"("phoneNumber");
-
--- CreateIndex
-CREATE UNIQUE INDEX "event_name_key" ON "event"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "attendee_event_logs_attendeeId_eventId_key" ON "attendee_event_logs"("attendeeId", "eventId");
+CREATE UNIQUE INDEX "attendee_task_log_attendeeId_taskId_key" ON "attendee_task_log"("attendeeId", "taskId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "roles_name_key" ON "roles"("name");
@@ -168,6 +194,9 @@ CREATE INDEX "roles_name_idx" ON "roles"("name");
 CREATE UNIQUE INDEX "permissions_name_key" ON "permissions"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "permissions_key_key" ON "permissions"("key");
+
+-- CreateIndex
 CREATE INDEX "permissions_name_idx" ON "permissions"("name");
 
 -- CreateIndex
@@ -175,6 +204,9 @@ CREATE INDEX "pivot_user_roles_roleId_idx" ON "pivot_user_roles"("roleId");
 
 -- CreateIndex
 CREATE INDEX "pivot_role_permissions_permissionId_idx" ON "pivot_role_permissions"("permissionId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "sponsors_name_key" ON "sponsors"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_uuid_key" ON "users"("uuid");
@@ -213,10 +245,10 @@ CREATE INDEX "refresh_tokens_expiresAt_idx" ON "refresh_tokens"("expiresAt");
 CREATE INDEX "refresh_tokens_token_idx" ON "refresh_tokens"("token");
 
 -- AddForeignKey
-ALTER TABLE "attendee_event_logs" ADD CONSTRAINT "attendee_event_logs_attendeeId_fkey" FOREIGN KEY ("attendeeId") REFERENCES "attendees"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "attendee_task_log" ADD CONSTRAINT "attendee_task_log_attendeeId_fkey" FOREIGN KEY ("attendeeId") REFERENCES "attendee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "attendee_event_logs" ADD CONSTRAINT "attendee_event_logs_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "attendee_task_log" ADD CONSTRAINT "attendee_task_log_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "task"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "pivot_user_roles" ADD CONSTRAINT "pivot_user_roles_userUUID_fkey" FOREIGN KEY ("userUUID") REFERENCES "users"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -229,6 +261,9 @@ ALTER TABLE "pivot_role_permissions" ADD CONSTRAINT "pivot_role_permissions_role
 
 -- AddForeignKey
 ALTER TABLE "pivot_role_permissions" ADD CONSTRAINT "pivot_role_permissions_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "permissions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "sponsors_link" ADD CONSTRAINT "sponsors_link_sponsorId_fkey" FOREIGN KEY ("sponsorId") REFERENCES "sponsors"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_userUUID_fkey" FOREIGN KEY ("userUUID") REFERENCES "users"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;

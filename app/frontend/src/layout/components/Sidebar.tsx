@@ -35,7 +35,7 @@ export default function Sidebar() {
   return (
     <div className={`"}`}>
       <div
-        className={`fixed top-0 z-1 mt-16 left-0 h-dvh w-64 bg-white border-r select-none transition-all duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed top-0 z-50 mt-16 left-0 h-dvh w-64 bg-white border-r select-none transition-all duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="px-4">
           {items.map((item, index) => {
@@ -115,7 +115,7 @@ export default function Sidebar() {
         </div>
       </div>
       <div
-        className={`fixed top-16 z-0 bg-black/50 w-full h-dvh md:hidden transition-all duration-300 ease-in-out ${isSidebarOpen ? "block" : "hidden"}`}
+        className={`fixed top-16 z-49 bg-black/50 w-full h-dvh md:hidden transition-all duration-300 ease-in-out ${isSidebarOpen ? "block" : "hidden"}`}
         onClick={toggleSidebar}
       ></div>
     </div>

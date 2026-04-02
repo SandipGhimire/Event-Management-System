@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { RoleService } from "./role.service";
 import { APP_GUARD } from "@nestjs/core";
 import { PermissionGuard } from "./guards/permission.guard";
+import { RoleController } from "./role.controller";
 
 @Module({
   providers: [
@@ -11,5 +12,6 @@ import { PermissionGuard } from "./guards/permission.guard";
       useClass: PermissionGuard,
     },
   ],
+  controllers: [RoleController],
 })
 export class RoleModule {}

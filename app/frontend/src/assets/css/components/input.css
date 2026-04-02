@@ -3,60 +3,60 @@
    ----------------------------------------------------------------------------- */
 .mx-input,
 .calendar-input {
-    @apply h-[31px] max-h-[31px] min-h-[31px] px-1! rounded-default!;
-    font-family: inherit !important;
+  @apply h-[31px] max-h-[31px] min-h-[31px] px-1! rounded-default!;
+  font-family: inherit !important;
 }
 
 .nepali-datepicker {
-    font-family: inherit !important;
+  font-family: inherit !important;
 }
 
 input,
 textarea {
-    @apply border outline-none transition focus:border-input-focus! hover:border-input-focus! bg-white! border-border-foreground! text-black! rounded-default h-[41px] max-h-[41px] min-h-[41px] px-1 disabled:bg-secondary-foreground/2! disabled:border-secondary-foreground/20 disabled:cursor-not-allowed disabled:text-secondary-foreground/70 placeholder:text-gray-500;
+  @apply border outline-none transition focus:border-input-focus! hover:border-input-focus! bg-white! border-border-foreground! text-black! rounded-default h-[35px] max-h-[35px] min-h-[35px] px-1 disabled:bg-secondary-foreground/2! disabled:border-secondary-foreground/20 disabled:cursor-not-allowed disabled:text-secondary-foreground/70 placeholder:text-gray-500;
 }
 
 /* Textarea specific height override */
 textarea {
-    @apply h-auto min-h-[80px] resize-y max-h-[150px];
+  @apply h-auto min-h-[80px] resize-y max-h-[150px];
 }
 
 /* -----------------------------------------------------------------------------
    INPUT SIDE BUTTON (INPUT + BUTTON COMBO)
    ----------------------------------------------------------------------------- */
 .input-side-btn {
-    @apply flex gap-[1px];
+  @apply flex gap-[1px];
 }
 .input-side-btn input {
-    @apply rounded-r-[0px]!;
+  @apply rounded-r-[0px]!;
 }
 .input-side-btn button {
-    @apply rounded-l-[0px]!;
+  @apply rounded-l-[0px]!;
 }
 
 /* Left side button variant */
 .input-side-btn-left {
-    @apply flex gap-[1px];
+  @apply flex gap-[1px];
 }
 .input-side-btn-left input {
-    @apply rounded-l-[0px]!;
+  @apply rounded-l-[0px]!;
 }
 .input-side-btn-left button {
-    @apply rounded-r-[0px]!;
+  @apply rounded-r-[0px]!;
 }
 
 /* Both sides buttons variant */
 .input-both-btn {
-    @apply flex gap-[1px];
+  @apply flex gap-[1px];
 }
 .input-both-btn input {
-    @apply rounded-none!;
+  @apply rounded-none!;
 }
 .input-both-btn button:first-child {
-    @apply rounded-r-[0px]!;
+  @apply rounded-r-[0px]!;
 }
 .input-both-btn button:last-child {
-    @apply rounded-l-[0px]!;
+  @apply rounded-l-[0px]!;
 }
 
 /* -----------------------------------------------------------------------------
@@ -64,17 +64,17 @@ textarea {
    ----------------------------------------------------------------------------- */
 input.input-right,
 textarea.input-right {
-    @apply text-right;
+  @apply text-right;
 }
 
 input.input-left,
 textarea.input-left {
-    @apply text-left;
+  @apply text-left;
 }
 
 input.input-center,
 textarea.input-center {
-    @apply text-center;
+  @apply text-center;
 }
 
 /* -----------------------------------------------------------------------------
@@ -83,90 +83,90 @@ textarea.input-center {
 /* Error/Invalid State */
 input.input-error,
 textarea.input-error {
-    @apply border-error! focus:border-error! hover:border-error!;
+  @apply border-error! focus:border-error! hover:border-error!;
 }
 
 /* Success/Valid State */
 input.input-success,
 textarea.input-success {
-    @apply border-success! focus:border-success! hover:border-success!;
+  @apply border-success! focus:border-success! hover:border-success!;
 }
 
 /* Warning State */
 input.input-warning,
 textarea.input-warning {
-    @apply border-warning! focus:border-warning! hover:border-warning!;
+  @apply border-warning! focus:border-warning! hover:border-warning!;
 }
 
 /* Info State */
 input.input-info,
 textarea.input-info {
-    @apply border-info! focus:border-info! hover:border-info!;
+  @apply border-info! focus:border-info! hover:border-info!;
 }
 
 /* -----------------------------------------------------------------------------
    INPUT WITH ICONS
    ----------------------------------------------------------------------------- */
 .input-icon-wrapper {
-    @apply relative flex items-center;
+  @apply relative flex items-center;
 }
 
 .input-icon-wrapper input {
-    @apply pl-8;
+  @apply pl-8;
 }
 
 .input-icon-wrapper .input-icon-left {
-    @apply absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary;
+  @apply absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary;
 }
 
 .input-icon-wrapper .input-icon-right {
-    @apply absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary;
+  @apply absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary;
 }
 
 .input-icon-wrapper.has-icon-right input {
-    @apply pr-8 pl-1;
+  @apply pr-8 pl-1;
 }
 
 .input-icon-wrapper.has-icon-both input {
-    @apply px-8;
+  @apply px-8;
 }
 
 /* Clickable icons */
 .input-icon-wrapper .input-icon-clickable {
-    @apply pointer-events-auto cursor-pointer hover:text-gray-700 transition-colors;
+  @apply pointer-events-auto cursor-pointer hover:text-gray-700 transition-colors;
 }
 
 /* -----------------------------------------------------------------------------
    INPUT GROUPS
    ----------------------------------------------------------------------------- */
 .input-group {
-    @apply flex gap-[1px];
+  @apply flex gap-[1px];
 }
 
 .input-group input:not(:first-child):not(:last-child) {
-    @apply rounded-none!;
+  @apply rounded-none!;
 }
 
 .input-group input:first-child {
-    @apply rounded-r-[0px]!;
+  @apply rounded-r-[0px]!;
 }
 
 .input-group input:last-child {
-    @apply rounded-l-[0px]!;
+  @apply rounded-l-[0px]!;
 }
 
 /* Input group with addon text */
 .input-addon-left,
 .input-addon-right {
-    @apply inline-flex items-center px-3 bg-surface-alt border border-border-foreground text-sm text-text-secondary;
+  @apply inline-flex items-center px-3 bg-surface-alt border border-border-foreground text-sm text-text-secondary;
 }
 
 .input-addon-left {
-    @apply rounded-l-default border-r-0;
+  @apply rounded-l-default border-r-0;
 }
 
 .input-addon-right {
-    @apply rounded-r-default border-l-0;
+  @apply rounded-r-default border-l-0;
 }
 
 /* -----------------------------------------------------------------------------
@@ -174,52 +174,52 @@ textarea.input-info {
    ----------------------------------------------------------------------------- */
 /* Search Input */
 input[type="search"].input-search {
-    @apply pl-8;
+  @apply pl-8;
 }
 
 /* Number Input - Hide Spinners */
 input[type="number"].input-no-spinner::-webkit-outer-spin-button,
 input[type="number"].input-no-spinner::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 input[type="number"].input-no-spinner {
-    -moz-appearance: textfield;
+  -moz-appearance: textfield;
 }
 
 /* File Input */
 input[type="file"].input-file {
-    @apply file:mr-4 file:py-1 file:px-3 file:rounded-default file:border-0 file:text-sm file:font-medium file:bg-primary file:text-white hover:file:bg-primary/90 file:cursor-pointer cursor-pointer file:mt-[2px];
+  @apply file:mr-4 file:py-1 file:px-3 file:rounded-default file:border-0 file:text-sm file:font-medium file:bg-primary file:text-white hover:file:bg-primary/90 file:cursor-pointer cursor-pointer file:mt-[2px];
 }
 
 /* Checkbox & Radio */
 input[type="checkbox"],
 input[type="radio"] {
-    @apply w-4 h-4 min-h-[16px] max-h-[16px] cursor-pointer accent-primary;
+  @apply w-4 h-4 min-h-[16px] max-h-[16px] cursor-pointer accent-primary;
 }
 
 input[type="checkbox"].input-lg,
 input[type="radio"].input-lg {
-    @apply w-5 h-5 min-h-[20px] max-h-[20px];
+  @apply w-5 h-5 min-h-[20px] max-h-[20px];
 }
 
 input[type="checkbox"].input-sm,
 input[type="radio"].input-sm {
-    @apply w-3 h-3 min-h-[12px] max-h-[12px];
+  @apply w-3 h-3 min-h-[12px] max-h-[12px];
 }
 
 /* Range Input */
 input[type="range"] {
-    @apply h-2 min-h-[8px] max-h-[8px] bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary;
+  @apply h-2 min-h-[8px] max-h-[8px] bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary;
 }
 
 /* Color Input */
 .colorpick-eyedropper-input-trigger {
-    display: none !important;
+  display: none !important;
 }
 input[type="color"] {
-    @apply w-12 h-[31px] p-0 border-2 cursor-pointer;
+  @apply w-12 h-[31px] p-0 border-2 cursor-pointer;
 }
 
 /* -----------------------------------------------------------------------------
@@ -227,12 +227,12 @@ input[type="color"] {
    ----------------------------------------------------------------------------- */
 input:read-only,
 textarea:read-only {
-    @apply bg-gray-50! cursor-default;
+  @apply bg-gray-50! cursor-default;
 }
 
 input:read-only:focus,
 textarea:read-only:focus {
-    @apply border-border-foreground!;
+  @apply border-border-foreground!;
 }
 
 /* -----------------------------------------------------------------------------
@@ -240,63 +240,63 @@ textarea:read-only:focus {
    ----------------------------------------------------------------------------- */
 input.input-loading,
 textarea.input-loading {
-    @apply relative pointer-events-none;
+  @apply relative pointer-events-none;
 }
 
 input.input-loading::after,
 textarea.input-loading::after {
-    content: "";
-    @apply absolute right-2 top-1/2 -translate-y-1/2;
-    @apply w-4 h-4 border-2 border-gray-300 border-t-primary rounded-full;
-    animation: spin 0.8s linear infinite;
+  content: "";
+  @apply absolute right-2 top-1/2 -translate-y-1/2;
+  @apply w-4 h-4 border-2 border-gray-300 border-t-primary rounded-full;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-    to {
-        transform: translateY(-50%) rotate(360deg);
-    }
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
 }
 
 /* -----------------------------------------------------------------------------
    FLOATING LABEL
    ----------------------------------------------------------------------------- */
 .input-floating-wrapper {
-    @apply relative;
+  @apply relative;
 }
 
 .input-floating-wrapper label {
-    @apply absolute left-1 top-1/2 -translate-y-1/2 text-text-secondary transition-all duration-200 pointer-events-none px-1 bg-transparent!;
+  @apply absolute left-1 top-1/2 -translate-y-1/2 text-text-secondary transition-all duration-200 pointer-events-none px-1 bg-transparent!;
 }
 
 .input-floating-wrapper textarea + label {
-    @apply top-1 translate-y-0;
+  @apply top-1 translate-y-0;
 }
 
 .input-floating-wrapper input:focus + label,
 .input-floating-wrapper input:not(:placeholder-shown) + label,
 .input-floating-wrapper textarea:focus + label,
 .input-floating-wrapper textarea:not(:placeholder-shown) + label {
-    @apply top-[-15px] left-0 -translate-y-0 text-xs bg-white p-0;
+  @apply top-[-15px] left-0 -translate-y-0 text-xs bg-white p-0;
 }
 
 /* -----------------------------------------------------------------------------
    INPUT WITH CLEAR BUTTON
    ----------------------------------------------------------------------------- */
 .input-clearable-wrapper {
-    @apply relative flex items-center;
+  @apply relative flex items-center;
 }
 
 .input-clearable-wrapper input {
-    @apply pr-8;
+  @apply pr-8;
 }
 
 .input-clearable-wrapper .input-clear-btn {
-    @apply absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors;
+  @apply absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors;
 }
 
 /* Hide clear button when input is empty */
 .input-clearable-wrapper input:placeholder-shown + .input-clear-btn {
-    @apply hidden;
+  @apply hidden;
 }
 
 /* -----------------------------------------------------------------------------
@@ -304,41 +304,41 @@ textarea.input-loading::after {
    ----------------------------------------------------------------------------- */
 /* No resize */
 textarea.textarea-no-resize {
-    @apply resize-none;
+  @apply resize-none;
 }
 
 /* Horizontal resize only */
 textarea.textarea-resize-x {
-    @apply resize-x;
+  @apply resize-x;
 }
 
 /* Auto-grow textarea */
 textarea.textarea-auto-grow {
-    @apply overflow-hidden;
+  @apply overflow-hidden;
 }
 
 /* -----------------------------------------------------------------------------
    FORM FIELD WRAPPER (INPUT + LABEL + ERROR)
    ----------------------------------------------------------------------------- */
 .form-field {
-    @apply flex flex-col gap-1;
+  @apply flex flex-col gap-1;
 }
 
 .form-field label {
-    @apply text-[14px] font-bold text-text-primary;
+  @apply text-[14px] font-bold text-text-primary;
 }
 
 .form-field .field-error {
-    @apply text-xs text-error;
+  @apply text-xs text-error;
 }
 
 .form-field .field-hint {
-    @apply text-xs text-text-secondary;
+  @apply text-xs text-text-secondary;
 }
 
 .form-field.field-required label::after {
-    content: " *";
-    @apply text-red-500;
+  content: " *";
+  @apply text-red-500;
 }
 
 /* -----------------------------------------------------------------------------
@@ -347,22 +347,22 @@ textarea.textarea-auto-grow {
 /* Full width input */
 input.input-full,
 textarea.input-full {
-    @apply w-full;
+  @apply w-full;
 }
 
 /* Inline input */
 input.input-inline {
-    @apply inline-block w-auto;
+  @apply inline-block w-auto;
 }
 
 /* Borderless input */
 input.input-borderless,
 textarea.input-borderless {
-    @apply border-transparent! focus:border-transparent! hover:border-transparent! shadow-none;
+  @apply border-transparent! focus:border-transparent! hover:border-transparent! shadow-none;
 }
 
 /* Underline input */
 input.input-underline,
 textarea.input-underline {
-    @apply border-0 border-b-2 rounded-none! px-0 focus:border-input-focus! hover:border-input-focus!;
+  @apply border-0 border-b-2 rounded-none! px-0 focus:border-input-focus! hover:border-input-focus!;
 }

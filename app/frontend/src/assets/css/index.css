@@ -3,3 +3,23 @@
 
 @import "./components/btn.css";
 @import "./components/input.css";
+@import "./table.css";
+
+.line {
+  position: absolute;
+  width: 60%;
+  height: 3px;
+  background-color: rgba(59, 130, 246, 0.3); /* equivalent to bg-primary/30 */
+  box-shadow: 0 0 15px rgba(59, 130, 246, 1); /* shadow-primary */
+  animation: updown 3s ease-in-out infinite;
+}
+
+@keyframes updown {
+  0%,
+  100% {
+    transform: translateY(130px); /* start at bottom */
+  }
+  50% {
+    transform: translateY(-130px); /* move up */
+  }
+}
