@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import type { TableAction } from "@/core/types/component/dataTable.type";
 import { MoreHorizontal } from "lucide-react";
 
@@ -10,7 +10,6 @@ interface ActionDropdownProps<T> {
 
 export const ActionDropdown = <T,>({ actions, row, instanceId }: ActionDropdownProps<T>) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [openUpward, setOpenUpward] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -20,15 +19,16 @@ export const ActionDropdown = <T,>({ actions, row, instanceId }: ActionDropdownP
     setIsOpen(!isOpen);
   };
 
-  // Smart position calculation: check if dropdown fits below, otherwise flip up
-  const calculatePosition = useCallback(() => {
-    if (!buttonRef.current || !menuRef.current) return;
+  // Position the menu directly via DOM manipulation (no setState, no cascading render)
+  useLayoutEffect(() => {
+    if (!isOpen || !buttonRef.current || !menuRef.current) return;
 
+    const menu = menuRef.current;
     const buttonRect = buttonRef.current.getBoundingClientRect();
-    const menuHeight = menuRef.current.offsetHeight;
+    const menuHeight = menu.offsetHeight;
     const viewportHeight = window.innerHeight;
 
-    // Also check if we're inside a scrollable table body
+    // Check if we're inside a scrollable table body
     const tableBody = document.querySelector(`[data-instance-id="${instanceId}"] .dt-body`);
     let containerBottom = viewportHeight;
     if (tableBody) {
@@ -39,16 +39,23 @@ export const ActionDropdown = <T,>({ actions, row, instanceId }: ActionDropdownP
     const spaceBelow = Math.min(viewportHeight, containerBottom) - buttonRect.bottom;
     const spaceAbove = buttonRect.top;
 
-    // Open upward if not enough space below but enough above
-    setOpenUpward(spaceBelow < menuHeight + 8 && spaceAbove > menuHeight + 8);
-  }, [instanceId]);
+    const shouldOpenUpward = spaceBelow < menuHeight + 8 && spaceAbove > menuHeight + 8;
 
-  // Calculate position immediately when menu is opened (before paint)
-  useLayoutEffect(() => {
-    if (isOpen) {
-      calculatePosition();
+    // Apply position directly to the DOM element — avoids setState in effect
+    if (shouldOpenUpward) {
+      menu.style.top = "";
+      menu.style.marginTop = "";
+      menu.style.bottom = "100%";
+      menu.style.marginBottom = "4px";
+      menu.style.transformOrigin = "bottom right";
+    } else {
+      menu.style.bottom = "";
+      menu.style.marginBottom = "";
+      menu.style.top = "100%";
+      menu.style.marginTop = "4px";
+      menu.style.transformOrigin = "top right";
     }
-  }, [isOpen, calculatePosition]);
+  }, [isOpen, instanceId]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -63,18 +70,12 @@ export const ActionDropdown = <T,>({ actions, row, instanceId }: ActionDropdownP
 
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-
-      // const tableBody = document.querySelector(`[data-instance-id="${instanceId}"] .dt-body`);
-      // if (tableBody) tableBody.addEventListener("scroll", handleScroll);
-
-      // window.addEventListener("scroll", handleScroll, true);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       const tableBody = document.querySelector(`[data-instance-id="${instanceId}"] .dt-body`);
       if (tableBody) tableBody.removeEventListener("scroll", handleScroll);
-      // window.removeEventListener("scroll", handleScroll, true);
     };
   }, [isOpen, instanceId]);
 
@@ -92,11 +93,6 @@ export const ActionDropdown = <T,>({ actions, row, instanceId }: ActionDropdownP
         <div
           ref={menuRef}
           className="absolute right-0 w-48 rounded-sm shadow-lg bg-white border border-border z-5 animate-in fade-in zoom-in-95 duration-100"
-          style={{
-            ...(openUpward
-              ? { bottom: "100%", marginBottom: 4, transformOrigin: "bottom right" }
-              : { top: "100%", marginTop: 4, transformOrigin: "top right" }),
-          }}
         >
           <div className="py-1" role="menu">
             {actions.map((action, idx) => {
