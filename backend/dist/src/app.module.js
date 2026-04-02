@@ -34,6 +34,11 @@ exports.AppModule = AppModule = __decorate([
             serve_static_1.ServeStaticModule.forRoot({
                 rootPath: (0, path_1.join)(process.cwd(), "public"),
                 serveRoot: "/public",
+                serveStaticOptions: {
+                    cacheControl: false,
+                    etag: false,
+                    lastModified: false,
+                },
             }),
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
