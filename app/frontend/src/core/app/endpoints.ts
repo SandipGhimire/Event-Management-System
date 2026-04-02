@@ -43,6 +43,10 @@ const task = {
   detail: "/task/detail/",
   delete: "/task/delete/",
 };
+
+const dashboard = {
+  stats: "/dashboard/stats/",
+};
 const endpoints = {
   auth,
   user,
@@ -50,6 +54,7 @@ const endpoints = {
   attendees,
   sponsor,
   task,
+  dashboard,
 };
 
 export default endpoints;
