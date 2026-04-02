@@ -1,5 +1,5 @@
 import type { SidebarItem } from "@/core/types/app/sidebar.type";
-import { LayoutDashboard, Users, Scan, ClipboardList, Handshake, SquarePen, UserLock, Database } from "lucide-react";
+import { LayoutDashboard, Users, Scan, ClipboardList, Handshake, SquarePen, UserLock } from "lucide-react";
 
 const sidebarItems = (): SidebarItem[] => {
   return [
