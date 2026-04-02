@@ -7,7 +7,7 @@ export type RouteMeta = {
 export type RouterConfig = {
   path?: string;
   index?: boolean;
-  component: () => Promise<any>;
+  component?: () => Promise<any>;
   children?: RouterConfig[];
   meta?: RouteMeta;
 };
