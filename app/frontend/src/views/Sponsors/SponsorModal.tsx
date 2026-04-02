@@ -2,8 +2,8 @@ import Modal from "@/components/common/Modal";
 import { useSponsorStore } from "@/store/app/sponsor.store";
 import { useLoaderStore } from "@/store/app/loader.store";
 import { Plus, Trash2 } from "lucide-react";
-import { useState, useEffect } from "react";
 import { getBackendFile } from "@/core/utils/common.utils";
+import FileUpload from "@/components/common/FileUpload";
 
 interface CreateSponsorProps {
   onSuccess?: () => void;
@@ -27,7 +27,6 @@ export default function CreateSponsor({ onSuccess }: CreateSponsorProps) {
   const isEdit = !!selectedSponsor;
   const isLoading = useLoaderStore((s) => s.isLoading(isEdit ? "updateSponsor" : "createSponsor"));
   const isFetching = useLoaderStore((s) => s.isLoading("fetchSponsor"));
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,32 +36,6 @@ export default function CreateSponsor({ onSuccess }: CreateSponsorProps) {
       await createSponsor(onSuccess);
     }
   };
-
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setCreateFormField("logo", file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-    }
-  };
-
-  // Reset state during render when modal closes or switches to "Create" mode
-  // This avoids cascading renders from useEffect and satisfies react-hooks/set-state-in-effect
-  const [prevMeta, setPrevMeta] = useState({ isOpen: isCreateModalOpen, selectedId: selectedSponsor?.id });
-  if (isCreateModalOpen !== prevMeta.isOpen || selectedSponsor?.id !== prevMeta.selectedId) {
-    setPrevMeta({ isOpen: isCreateModalOpen, selectedId: selectedSponsor?.id });
-    if (!isCreateModalOpen || (isCreateModalOpen && !selectedSponsor)) {
-      setPreviewUrl(null);
-    }
-  }
-
-  // Handle Object URL lifecycle to prevent memory leaks
-  useEffect(() => {
-    return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-    };
-  }, [previewUrl]);
 
   return (
     <Modal
@@ -131,40 +104,21 @@ export default function CreateSponsor({ onSuccess }: CreateSponsorProps) {
             </div>
 
             {/* Logo Upload */}
-            <div className="form-field field-required md:col-span-2">
-              <label htmlFor="createSponsor-logo">Logo</label>
-              <div className="flex items-center gap-4">
-                <input
-                  id="createSponsor-logo"
-                  type="file"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleLogoChange}
-                />
-                <label htmlFor="createSponsor-logo" className="btn btn-outline-primary cursor-pointer mb-0">
-                  Choose Logo
-                </label>
-
-                {(previewUrl || createForm.logo) && (
-                  <div className="relative w-16 h-16 rounded-md overflow-hidden border border-border bg-muted/20">
-                    <img
-                      src={previewUrl || (typeof createForm.logo === "string" ? getBackendFile(createForm.logo) : "")}
-                      alt="Logo Preview"
-                      className="w-full h-full object-contain"
-                    />
-                    {previewUrl && (
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <span className="text-[10px] text-white font-medium text-center">New</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-                {createForm.logo instanceof File && (
-                  <span className="text-xs text-text-secondary truncate max-w-[150px]">{createForm.logo.name}</span>
-                )}
-              </div>
-              {errors?.logo?.[0] && <span className="field-error">{errors.logo?.[0]}</span>}
-            </div>
+            <FileUpload
+              id="createSponsor-logo"
+              label="Logo"
+              className="md:col-span-2"
+              accept="image/*"
+              onChange={(file) => setCreateFormField("logo", file ?? "")}
+              previewUrl={
+                createForm.logo instanceof File
+                  ? undefined
+                  : createForm.logo
+                    ? getBackendFile(createForm.logo)
+                    : undefined
+              }
+              error={errors?.logo?.[0]}
+            />
 
             {/* Description */}
             <div className="form-field md:col-span-2">

@@ -1,7 +1,8 @@
 import Modal from "@/components/common/Modal";
 import { useAttendeeStore } from "@/store/app/attendee.store";
 import { useLoaderStore } from "@/store/app/loader.store";
-import { useState, useEffect } from "react"; // Added useState and useEffect
+import FileUpload from "@/components/common/FileUpload";
+import { getBackendFile } from "@/core/utils/common.utils";
 
 interface CreateAttendeeProps {
   onSuccess?: () => void;
@@ -19,8 +20,6 @@ export default function CreateAttendee({ onSuccess }: CreateAttendeeProps) {
     errors,
   } = useAttendeeStore();
   const isLoading = useLoaderStore((s) => s.isLoading("createAttendee") || s.isLoading("updateAttendee"));
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [paymentSlipPreviewUrl, setPaymentSlipPreviewUrl] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,48 +29,6 @@ export default function CreateAttendee({ onSuccess }: CreateAttendeeProps) {
       createAttendee(onSuccess);
     }
   };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setCreateFormField("profilePicture", file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-    }
-  };
-
-  const handlePaymentSlipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setCreateFormField("paymentSlip", file);
-      const url = URL.createObjectURL(file);
-      setPaymentSlipPreviewUrl(url);
-    }
-  };
-
-  // Reset state during render when modal closes or switches to "Create" mode
-  // This avoids cascading renders from useEffect and satisfies react-hooks/set-state-in-effect
-  const [prevMeta, setPrevMeta] = useState({ isOpen: isCreateModalOpen, selectedId: selectedAttendee?.id });
-  if (isCreateModalOpen !== prevMeta.isOpen || selectedAttendee?.id !== prevMeta.selectedId) {
-    setPrevMeta({ isOpen: isCreateModalOpen, selectedId: selectedAttendee?.id });
-    if (!isCreateModalOpen || (isCreateModalOpen && !selectedAttendee)) {
-      setPreviewUrl(null);
-      setPaymentSlipPreviewUrl(null);
-    }
-  }
-
-  // Handle Object URL lifecycle to prevent memory leaks
-  useEffect(() => {
-    return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-    };
-  }, [previewUrl]);
-
-  useEffect(() => {
-    return () => {
-      if (paymentSlipPreviewUrl) URL.revokeObjectURL(paymentSlipPreviewUrl);
-    };
-  }, [paymentSlipPreviewUrl]);
 
   return (
     <Modal
@@ -93,49 +50,35 @@ export default function CreateAttendee({ onSuccess }: CreateAttendeeProps) {
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col md:grid md:grid-cols-2 gap-2">
           {/* Profile Picture & Payment Slip */}
-          <div className="form-field md:col-span-1">
-            <label htmlFor="createAttendee-profilePicture">Profile Picture</label>
-            <div className="flex items-center gap-4">
-              <input
-                id="createAttendee-profilePicture"
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-              <label htmlFor="createAttendee-profilePicture" className="btn btn-outline-primary cursor-pointer mb-0">
-                Choose Image
-              </label>
-              {previewUrl && (
-                <div className="relative w-12 h-12 rounded-full overflow-hidden border border-border">
-                  <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                </div>
-              )}
-            </div>
-            {errors?.profilePicture?.[0] && <span className="field-error">{errors.profilePicture?.[0]}</span>}
-          </div>
+          <FileUpload
+            id="createAttendee-profilePicture"
+            label="Profile Picture"
+            accept="image/*"
+            onChange={(file) => setCreateFormField("profilePicture", file)}
+            previewUrl={
+              createForm.profilePicture instanceof File
+                ? undefined
+                : createForm.profilePicture
+                  ? getBackendFile(createForm.profilePicture)
+                  : undefined
+            }
+            error={errors?.profilePicture?.[0]}
+          />
 
-          <div className="form-field md:col-span-1">
-            <label htmlFor="createAttendee-paymentSlip">Payment Slip</label>
-            <div className="flex items-center gap-4">
-              <input
-                id="createAttendee-paymentSlip"
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handlePaymentSlipChange}
-              />
-              <label htmlFor="createAttendee-paymentSlip" className="btn btn-outline-primary cursor-pointer mb-0">
-                Choose Slip
-              </label>
-              {paymentSlipPreviewUrl && (
-                <div className="relative w-12 h-12 rounded overflow-hidden border border-border">
-                  <img src={paymentSlipPreviewUrl} alt="Payment Slip Preview" className="w-full h-full object-cover" />
-                </div>
-              )}
-            </div>
-            {errors?.paymentSlip?.[0] && <span className="field-error">{errors.paymentSlip?.[0]}</span>}
-          </div>
+          <FileUpload
+            id="createAttendee-paymentSlip"
+            label="Payment Slip"
+            accept="image/*"
+            onChange={(file) => setCreateFormField("paymentSlip", file)}
+            previewUrl={
+              createForm.paymentSlip instanceof File
+                ? undefined
+                : createForm.paymentSlip
+                  ? getBackendFile(createForm.paymentSlip)
+                  : undefined
+            }
+            error={errors?.paymentSlip?.[0]}
+          />
 
           {/* Name */}
           <div className="form-field field-required">

@@ -1,0 +1,48 @@
+.fileupload-container {
+  @apply relative w-full;
+}
+
+.fileupload-dropzone {
+  @apply flex flex-col items-center justify-center w-full min-h-[120px] p-4 text-center border-2 border-dashed border-border rounded-xl bg-background transition-all duration-200 cursor-pointer hover:border-primary/50 hover:bg-primary/5;
+}
+
+.fileupload-dropzone.dragging {
+  @apply border-primary bg-primary/10 shadow-lg scale-[1.01];
+}
+
+.fileupload-dropzone.has-error {
+  @apply border-red-500 bg-red-50/50 hover:border-red-600 hover:bg-red-50;
+}
+
+.fileupload-icon {
+  @apply p-3 mb-2 rounded-full bg-background/30 text-text-secondary transition-colors duration-200;
+}
+
+.fileupload-dropzone:hover .fileupload-icon,
+.fileupload-dropzone.dragging .fileupload-icon {
+  @apply bg-primary/20 text-primary;
+}
+
+.fileupload-text {
+  @apply text-sm font-medium text-text-primary mb-1;
+}
+
+.fileupload-subtext {
+  @apply text-xs text-text-secondary;
+}
+
+.fileupload-preview {
+  @apply relative w-full mt-3 rounded-lg overflow-hidden border border-border bg-background animate-fade-in-up;
+}
+
+.fileupload-preview img {
+  @apply w-full h-32 object-contain bg-background/10;
+}
+
+.fileupload-remove {
+  @apply absolute top-1 right-1 p-1.5 rounded-full bg-red-500 text-white shadow-md hover:bg-red-600 transition-colors duration-200;
+}
+
+.fileupload-error {
+  @apply mt-1.5 text-xs text-red-500 font-medium duration-200;
+}
