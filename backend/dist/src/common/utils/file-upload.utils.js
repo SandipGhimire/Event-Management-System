@@ -99,29 +99,16 @@ const saveBuffer = (buffer, directory, fileName, extension) => {
     try {
         const publicDir = path.join(process.cwd(), "public");
         const targetDir = path.join(publicDir, directory);
-        console.log(`📁 [saveBuffer] Saving buffer to directory: ${directory}`);
-        console.log(`📁 [saveBuffer] File name: ${fileName}${extension}`);
         if (!fs.existsSync(targetDir)) {
             fs.mkdirSync(targetDir, { recursive: true });
-            console.log(`📁 [saveBuffer] Created directory: ${targetDir}`);
         }
-        const files = fs.readdirSync(targetDir);
-        files.forEach((f) => {
-            const baseName = path.parse(f).name;
-            if (baseName === fileName) {
-                const fullPath = path.join(targetDir, f);
-                if (fs.existsSync(fullPath)) {
-                    fs.unlinkSync(fullPath);
-                    console.log(`🗑️ [saveBuffer] Cleaned up existing file: ${f}`);
-                }
-            }
-        });
         const finalFileName = `${fileName}${extension}`;
         const filePath = path.join(targetDir, finalFileName);
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
         fs.writeFileSync(filePath, buffer);
-        const relativePath = path.join(directory, finalFileName);
-        console.log(`✅ [saveBuffer] Saved successfully: ${relativePath}`);
-        return relativePath;
+        return path.join(directory, finalFileName);
     }
     catch (error) {
         console.error(`❌ [saveBuffer] Error saving buffer:`, error);
