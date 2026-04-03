@@ -19,10 +19,38 @@ const sponsor_service_1 = require("./sponsor.service");
 const prisma_utils_1 = require("../prisma/prisma.utils");
 const sponsor_dto_1 = require("./sponsor.dto");
 const permission_decorator_1 = require("../role/decorators/permission.decorator");
+const public_decorator_1 = require("../auth/decorators/public.decorator");
 let SponsorController = class SponsorController {
     sponserService;
     constructor(sponserService) {
         this.sponserService = sponserService;
+    }
+    async publicList() {
+        const result = await this.sponserService.getPublicSponsors();
+        return {
+            success: true,
+            message: "Public sponsors fetched successfully",
+            status: 200,
+            data: result,
+        };
+    }
+    async publicDetail(id) {
+        const numericId = parseInt(id, 10);
+        const result = await this.sponserService.getSponsorById(numericId);
+        if (!result) {
+            return {
+                success: false,
+                message: "Sponsor not found",
+                status: 200,
+                data: null,
+            };
+        }
+        return {
+            success: true,
+            message: "Sponsor fetched successfully",
+            status: 200,
+            data: result,
+        };
     }
     async listSponsors(query) {
         const result = await this.sponserService.getAllSponsors((0, prisma_utils_1.parseQuery)(query));
@@ -80,6 +108,21 @@ let SponsorController = class SponsorController {
     }
 };
 exports.SponsorController = SponsorController;
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)("public/list"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SponsorController.prototype, "publicList", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)("public/detail/:id"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], SponsorController.prototype, "publicDetail", null);
 __decorate([
     (0, common_1.Get)("list"),
     (0, permission_decorator_1.Permission)(["sponsor.list"]),

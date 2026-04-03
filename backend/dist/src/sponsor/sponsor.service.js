@@ -101,6 +101,13 @@ let SponsorService = class SponsorService {
             });
         });
     }
+    async getPublicSponsors() {
+        return await this.db.sponsor.findMany({
+            where: { isActive: true },
+            orderBy: { order: "asc" },
+            include: { links: true },
+        });
+    }
 };
 exports.SponsorService = SponsorService;
 exports.SponsorService = SponsorService = __decorate([

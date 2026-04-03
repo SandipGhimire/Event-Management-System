@@ -69,4 +69,5 @@ export declare class SponsorService {
         logo: string;
         contribution: string | null;
     }) | null>;
+    getPublicSponsors(): Promise<any[]>;
 }
