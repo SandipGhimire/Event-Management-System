@@ -53,7 +53,7 @@ export default function PublicSponsors() {
       </section>
 
       {/* Sponsors Grid */}
-      <section className="py-4 md:py-8 container mx-auto px-4">
+      <section className="pt-4 md:pt-8 container mx-auto px-4 pb-14">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {sponsors.length > 0 ? (
             sponsors.map((sponsor) => (
@@ -71,7 +71,7 @@ export default function PublicSponsors() {
                       className="w-full h-full object-contain filte border rounded-sm"
                     />
                   ) : (
-                    <div className="w-full h-full object-contain filte border rounded-sm">
+                    <div className="w-full h-full object-contain filte border rounded-sm flex justify-center p-10">
                       <LayoutGrid size={40} />
                     </div>
                   )}
